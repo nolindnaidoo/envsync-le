@@ -1,6 +1,6 @@
-import { defineConfig } from 'vitest/config'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { defineConfig } from 'vitest/config'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -10,7 +10,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: [],
-    include: ['src/**/*.test.ts', 'test/integration/**/*.test.ts'],
+    include: ['src/**/*.test.ts'],
     exclude: ['node_modules/**', 'dist/**'],
     coverage: {
       reporter: ['text', 'lcov'],

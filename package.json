@@ -5,6 +5,7 @@
 	"description": "Detect and compare .env files across your workspace",
 	"version": "1.0.0",
 	"license": "MIT",
+	"type": "module",
 	"author": {
 		"name": "Nolin D Naidoo",
 		"url": "https://github.com/nolindnaidoo"
