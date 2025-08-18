@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/github/license/nolindnaidoo/envsync-le/src/assets/images/icon.png" alt="envsync-le Logo" width="96" height="96"/>
+  <img src="src/assets/images/icon.png" alt="envsync-le Logo" width="96" height="96"/>
 </p>
 <h1 align="center">EnvSync-LE: Zero Hassle .env Sync</h1>
 <p align="center">
