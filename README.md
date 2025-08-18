@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://img.shields.io/github/license/nolindnaidoo/envsync-le/src/assets/images/icon.png" alt="envsync-le Logo" width="96" height="96"/>
 </p>
-<h1 align="center">envsync-le: Zero Hassle .env Sync</h1>
+<h1 align="center">EnvSync-LE: Zero Hassle .env Sync</h1>
 <p align="center">
   <b>Effortlessly detect, compare, and synchronize .env files across your workspace.</b><br/>
   <i>Featuring visual diffs, automatic, manual, and template-based comparison modes.</i>

@@ -72,7 +72,7 @@ describe('createVSCodeStatusBar', () => {
 		statusBar.updateStatus('missing-keys', 2)
 		const item = (window.createStatusBarItem as any).mock.results[0].value
 		expect(item.text).toContain('$(warning)')
-expect(item.command).toBe('envsync-le.showIssues')
+		expect(item.command).toBe('envsync-le.showIssues')
 		expect(item.show).toHaveBeenCalled()
 	})
 
@@ -91,7 +91,7 @@ expect(item.command).toBe('envsync-le.showIssues')
 		statusBar.updateStatus('parse-error', 1)
 		const item = (window.createStatusBarItem as any).mock.results[0].value
 		expect(item.text).toContain('$(error)')
-expect(item.command).toBe('envsync-le.showIssues')
+		expect(item.command).toBe('envsync-le.showIssues')
 		expect(item.backgroundColor).toBeInstanceOf(ThemeColor as any)
 	})
 
