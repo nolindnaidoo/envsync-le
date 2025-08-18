@@ -1,0 +1,244 @@
+{
+	"name": "envsync-le",
+	"publisher": "nolindnaidoo",
+	"displayName": "EnvSync-LE",
+	"description": "Detect and compare .env files across your workspace",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": {
+		"name": "Nolin D Naidoo",
+		"url": "https://github.com/nolindnaidoo"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/nolindnaidoo/envsync-le.git"
+	},
+	"bugs": {
+		"url": "https://github.com/nolindnaidoo/envsync-le/issues"
+	},
+	"homepage": "https://github.com/nolindnaidoo/envsync-le#readme",
+	"engines": {
+		"vscode": "^1.70.0",
+		"node": ">=18.0.0"
+	},
+	"categories": [
+		"Other",
+		"Programming Languages",
+		"Linters"
+	],
+	"keywords": [
+		"dotenv",
+		"env",
+		"environment",
+		"sync",
+		"synchronization",
+		"detection",
+		"configuration",
+		"development"
+	],
+	"icon": "src/assets/images/icon.png",
+	"main": "./dist/extension.js",
+	"l10n": "./package.nls.json",
+	"activationEvents": [
+		"workspaceContains:**/.env*"
+	],
+	"capabilities": {
+		"virtualWorkspaces": {
+			"supported": "limited",
+			"description": "%manifest.capability.virtual-workspaces.desc%"
+		},
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "%manifest.capability.untrusted-workspaces.desc%"
+		}
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "envsync-le.openSettings",
+				"title": "%manifest.command.settings.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.showIssues",
+				"title": "%manifest.command.show-issues.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.compareSelected",
+				"title": "%manifest.command.compare-selected.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.setTemplate",
+				"title": "%manifest.command.set-template.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.clearTemplate",
+				"title": "%manifest.command.clear-template.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.ignoreFile",
+				"title": "%manifest.command.ignore-file.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.stopIgnoring",
+				"title": "%manifest.command.stop-ignoring.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.clearAllIgnored",
+				"title": "%manifest.command.clear-all-ignored.title%",
+				"category": "%manifest.command.category%"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "envsync-le.compareSelected",
+					"when": "resourceExtname == .env || resourceFilename =~ /^\\.env\\./",
+					"group": "dotsync@1"
+				},
+				{
+					"command": "envsync-le.ignoreFile",
+					"when": "resourceExtname == .env || resourceFilename =~ /^\\.env\\./",
+					"group": "dotsync@2"
+				}
+			]
+		},
+		"configuration": {
+			"title": "%manifest.settings.title%",
+			"properties": {
+				"envsync-le.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.enabled.desc%"
+				},
+				"envsync-le.watchPatterns": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						"**/.env*"
+					],
+					"description": "%manifest.settings.watch-patterns.desc%"
+				},
+				"envsync-le.excludePatterns": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.exclude-patterns.desc%"
+				},
+				"envsync-le.notificationLevel": {
+					"type": "string",
+					"default": "important",
+					"enum": [
+						"all",
+						"important",
+						"silent"
+					],
+					"description": "%manifest.settings.notifications.level.desc%",
+					"enumDescriptions": [
+						"%manifest.settings.notifications.level.option.all%",
+						"%manifest.settings.notifications.level.option.important%",
+						"%manifest.settings.notifications.level.option.silent%"
+					]
+				},
+				"envsync-le.statusBar.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.statusbar.enabled.desc%"
+				},
+				"envsync-le.debounceMs": {
+					"type": "number",
+					"default": 1000,
+					"minimum": 100,
+					"description": "%manifest.settings.debounce.desc%"
+				},
+				"envsync-le.ignoreComments": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.ignore-comments.desc%"
+				},
+				"envsync-le.caseSensitive": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.case-sensitive.desc%"
+				},
+				"envsync-le.telemetryEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%manifest.settings.telemetry.desc%"
+				},
+				"envsync-le.comparisonMode": {
+					"type": "string",
+					"default": "auto",
+					"enum": [
+						"auto",
+						"manual",
+						"template"
+					],
+					"description": "%manifest.settings.comparison-mode.desc%",
+					"enumDescriptions": [
+						"%manifest.settings.comparison-mode.option.auto%",
+						"%manifest.settings.comparison-mode.option.manual%",
+						"%manifest.settings.comparison-mode.option.template%"
+					]
+				},
+				"envsync-le.compareOnlyFiles": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.compare-only-files.desc%"
+				},
+				"envsync-le.templateFile": {
+					"type": "string",
+					"description": "%manifest.settings.template-file.desc%"
+				},
+				"envsync-le.temporaryIgnore": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.temporary-ignore.desc%"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"prebuild": "npm run clean",
+		"build": "tsc -p ./",
+		"clean": "rm -rf dist coverage release/*.vsix",
+		"watch": "tsc -watch -p ./",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"test:ui": "vitest --ui",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"vscode:prepublish": "npm run build",
+		"package": "mkdir -p release && npx vsce package --out release/${npm_package_name}-${npm_package_version}.vsix"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.0",
+		"@types/node": "^24.3.0",
+		"@types/vscode": "^1.70.0",
+		"@vscode/vsce": "^3.6.0",
+		"@vitest/coverage-v8": "^3.2.4",
+		"vitest": "^3.2.4",
+		"typescript": "^5.5.3"
+	},
+	"dependencies": {
+		"dotenv": "^16.0.0",
+		"vscode-nls": "^5.2.0"
+	}
+}

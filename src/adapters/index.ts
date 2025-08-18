@@ -1,0 +1,8 @@
+export { createVSCodeConfiguration } from './vscodeConfiguration'
+export { createVSCodeFileSystem } from './vscodeFileSystem'
+export { createVSCodeNotifier } from './vscodeNotifier'
+export { createVSCodeStatusBar } from './vscodeStatusBar'
+export { createVSCodeTelemetry } from './vscodeTelemetry'
+export { createVSCodeUserInterface } from './vscodeUserInterface'
+export { registerVSCodeWatchers } from './vscodeWatcher'
+export { createVSCodeWorkspace } from './vscodeWorkspace'

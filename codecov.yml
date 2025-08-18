@@ -1,0 +1,22 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 2%
+    patch:
+      default:
+        target: 80%
+
+comment:
+  layout: 'reach,diff,flags,tree'
+  behavior: default
+  require_changes: false
+
+ignore:
+  - 'src/__mocks__/**'
+  - 'src/__tests__/**'
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+  - 'dist/**'
+  - 'coverage/**'
