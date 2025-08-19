@@ -38,7 +38,7 @@ describe('createVSCodeStatusBar', () => {
 		expect(item.hide).toHaveBeenCalled()
 	})
 
-	it('shows in-sync status with check icon and clears background', () => {
+	it('shows in-sync status with file icon and 0 count, clears background', () => {
 		const configuration = cfg({ 'statusBar.enabled': true })
 		const statusBar = createVSCodeStatusBar(
 			mockExtensionContext as any,
@@ -52,12 +52,13 @@ describe('createVSCodeStatusBar', () => {
 		)
 		statusBar.updateStatus('in-sync', 0)
 		const item = (window.createStatusBarItem as any).mock.results[0].value
-		expect(item.text).toContain('$(check)')
+		expect(item.text).toContain('$(file)')
+		expect(item.text).toContain('0')
 		expect(item.backgroundColor).toBeUndefined()
 		expect(item.show).toHaveBeenCalled()
 	})
 
-	it('shows warning for missing/extra keys and sets command', () => {
+	it('shows warning state with file icon + count and sets command', () => {
 		const configuration = cfg({ 'statusBar.enabled': true })
 		const statusBar = createVSCodeStatusBar(
 			mockExtensionContext as any,
@@ -71,12 +72,13 @@ describe('createVSCodeStatusBar', () => {
 		)
 		statusBar.updateStatus('missing-keys', 2)
 		const item = (window.createStatusBarItem as any).mock.results[0].value
-		expect(item.text).toContain('$(warning)')
+		expect(item.text).toContain('$(file)')
+		expect(item.text).toContain('2')
 		expect(item.command).toBe('envsync-le.showIssues')
 		expect(item.show).toHaveBeenCalled()
 	})
 
-	it('shows error for parse-error and sets background color', () => {
+	it('shows error state with file icon + count and sets background color', () => {
 		const configuration = cfg({ 'statusBar.enabled': true })
 		const statusBar = createVSCodeStatusBar(
 			mockExtensionContext as any,
@@ -90,7 +92,7 @@ describe('createVSCodeStatusBar', () => {
 		)
 		statusBar.updateStatus('parse-error', 1)
 		const item = (window.createStatusBarItem as any).mock.results[0].value
-		expect(item.text).toContain('$(error)')
+		expect(item.text).toContain('$(file)')
 		expect(item.command).toBe('envsync-le.showIssues')
 		expect(item.backgroundColor).toBeInstanceOf(ThemeColor as any)
 	})

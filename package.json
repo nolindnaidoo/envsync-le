@@ -229,9 +229,9 @@
 		}
 	},
 	"scripts": {
-		"prebuild": "npm run clean",
+		"prebuild": "npm run clean && npm run copy:i18n",
 		"build": "tsc -p ./",
-		"clean": "rm -rf dist coverage release/*.vsix",
+		"clean": "rm -rf dist coverage release/*.vsix && rm -f package.nls.*.json",
 		"watch": "tsc -watch -p ./",
 		"test": "vitest run --pool=threads",
 		"test:watch": "vitest --pool=threads",
@@ -240,7 +240,8 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"vscode:prepublish": "npm run build",
-		"package": "mkdir -p release && npx vsce package --out release/${npm_package_name}-${npm_package_version}.vsix"
+		"package": "mkdir -p release && npx vsce package --out release/${npm_package_name}-${npm_package_version}.vsix",
+		"copy:i18n": "cp -f src/i18n/package.nls.*.json . || true"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.0",

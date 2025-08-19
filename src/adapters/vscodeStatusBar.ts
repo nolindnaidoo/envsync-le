@@ -44,7 +44,8 @@ export function createVSCodeStatusBar(
 
 		switch (status) {
 			case 'in-sync':
-				statusBarItem.text = localize('runtime.status.in-sync', '$(check) Dotenv files in sync')
+				// Minimal: file icon + 0 count for in-sync
+				statusBarItem.text = '$(file) 0'
 				statusBarItem.tooltip = localize('runtime.tooltip.in-sync', 'All dotenv files are in sync')
 				statusBarItem.backgroundColor = undefined
 				statusBarItem.command = undefined
@@ -52,21 +53,23 @@ export function createVSCodeStatusBar(
 
 			case 'missing-keys':
 			case 'extra-keys':
-				statusBarItem.text = localize('runtime.status.out-of-sync', '$(warning) {0} files out of sync', issueCount)
+				// Minimal: file icon + count, warning background indicates severity
+				statusBarItem.text = `$(file) ${issueCount}`
 				statusBarItem.tooltip = localize('runtime.tooltip.out-of-sync', 'Dotenv files out of sync - click for details')
 				statusBarItem.backgroundColor = new deps.ThemeColor('statusBarItem.warningBackground')
 				statusBarItem.command = 'envsync-le.showIssues'
 				break
 
 			case 'parse-error':
-				statusBarItem.text = localize('runtime.status.error', '$(error) Error checking dotenv files')
+				// Minimal: file icon + count, error background indicates severity
+				statusBarItem.text = `$(file) ${issueCount > 0 ? issueCount : ''}`.trim()
 				statusBarItem.tooltip = localize('runtime.tooltip.error', 'Error checking dotenv files - click for settings')
 				statusBarItem.backgroundColor = new deps.ThemeColor('statusBarItem.errorBackground')
 				statusBarItem.command = 'envsync-le.showIssues'
 				break
 
 			case 'no-files':
-				statusBarItem.text = localize('runtime.status.no-files', 'No dotenv files found')
+				// Hide when no dotenv files
 				statusBarItem.hide()
 				return
 		}
