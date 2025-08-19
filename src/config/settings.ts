@@ -6,6 +6,6 @@ export function registerOpenSettingsCommand(commandAdapter: CommandAdapter, tele
 	commandAdapter.registerCommand('envsync-le.openSettings', async () => {
 		telemetry.event('command', { name: 'openSettings' })
 		// Open Settings UI filtered by exact setting prefix to avoid unrelated matches
-		await commandAdapter.executeCommand('workbench.action.openSettings', 'envsync-le.')
+		await commandAdapter.executeCommand('workbench.action.openSettings', '@ext:nolindnaidoo.envsync-le')
 	})
 }

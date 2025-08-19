@@ -30,8 +30,11 @@ describe('registerOpenSettingsCommand', () => {
 		expect(mockTelemetry.event).toHaveBeenCalledTimes(1)
 		expect(mockTelemetry.event).toHaveBeenCalledWith('command', { name: 'openSettings' })
 
-		// Expect executeCommand to have been called
+		// Expect executeCommand to have been called with extension filter
 		expect(mockCommandAdapter.executeCommand).toHaveBeenCalledTimes(1)
-		expect(mockCommandAdapter.executeCommand).toHaveBeenCalledWith('workbench.action.openSettings', 'envsync-le.')
+		expect(mockCommandAdapter.executeCommand).toHaveBeenCalledWith(
+			'workbench.action.openSettings',
+			'@ext:nolindnaidoo.envsync-le',
+		)
 	})
 })

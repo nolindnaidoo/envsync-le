@@ -2,10 +2,9 @@
 	"name": "envsync-le",
 	"publisher": "nolindnaidoo",
 	"displayName": "EnvSync-LE",
-	"description": "Detect and compare .env files across your workspace",
-	"version": "1.0.0",
+	"description": "Zero Hassle .env Sync- Effortlessly detect, compare, and synchronize .env files across your workspace with visual diff.",
+	"version": "1.1.1",
 	"license": "MIT",
-	"type": "module",
 	"author": {
 		"name": "Nolin D Naidoo",
 		"url": "https://github.com/nolindnaidoo"
@@ -28,20 +27,34 @@
 		"Linters"
 	],
 	"keywords": [
-		"dotenv",
 		"env",
+		"dotenv",
 		"environment",
 		"sync",
-		"synchronization",
-		"detection",
-		"configuration",
-		"development"
+		"compare",
+		"diff",
+		"config",
+		"settings",
+		"workspace",
+		"monorepo",
+		"consistency",
+		"developer-tools",
+		"ci",
+		"team"
 	],
 	"icon": "src/assets/images/icon.png",
 	"main": "./dist/extension.js",
 	"l10n": "./package.nls.json",
 	"activationEvents": [
-		"workspaceContains:**/.env*"
+		"workspaceContains:**/.env*",
+		"onCommand:envsync-le.openSettings",
+		"onCommand:envsync-le.showIssues",
+		"onCommand:envsync-le.compareSelected",
+		"onCommand:envsync-le.setTemplate",
+		"onCommand:envsync-le.clearTemplate",
+		"onCommand:envsync-le.ignoreFile",
+		"onCommand:envsync-le.stopIgnoring",
+		"onCommand:envsync-le.clearAllIgnored"
 	],
 	"capabilities": {
 		"virtualWorkspaces": {
@@ -138,7 +151,7 @@
 				},
 				"envsync-le.notificationLevel": {
 					"type": "string",
-					"default": "important",
+					"default": "silent",
 					"enum": [
 						"all",
 						"important",
@@ -220,7 +233,7 @@
 		"build": "tsc -p ./",
 		"clean": "rm -rf dist coverage release/*.vsix",
 		"watch": "tsc -watch -p ./",
-		"test": "vitest run",
+		"test": "vitest run --pool=threads",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
 		"test:ui": "vitest --ui",

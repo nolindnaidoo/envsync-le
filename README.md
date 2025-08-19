@@ -97,6 +97,11 @@
 - `envsync-le.templateFile` – Template path for template mode
 - `envsync-le.temporaryIgnore` – Files temporarily excluded from checks
 
+## 🌍 English + 12 translations
+
+- Chinese (Simplified), Spanish, French, Russian, Portuguese (Brazil)
+- Japanese, Korean, German, Italian, Vietnamese, Ukrainian, Indonesian
+
 ## 🧩 Compatibility
 
 - Works in standard workspaces.

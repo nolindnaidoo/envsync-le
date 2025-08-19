@@ -10,7 +10,6 @@ tscofig.json
 vitest.config.ts
 .github/
 docs/
-node_modules/
 src/**/*.test.ts
 test/
 README-STRINGLE.md
@@ -19,3 +18,7 @@ src/
 !src/assets/images/icon.png
 dist/**/*.js.map
 dist/__mocks__/
+.env
+.env.example
+.env.local
+.env.production

@@ -105,3 +105,6 @@ dist/
 *.webp
 *.svg
 *.tiff
+
+.env
+*.env.*
