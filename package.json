@@ -362,7 +362,7 @@
 	"scripts": {
 		"prebuild": "npm run clean && npm run copy:i18n",
 		"build": "tsc -p ./",
-		"clean": "rm -rf dist coverage release/*.vsix && rm -f package.nls.*.json",
+		"clean": "rm -rf dist coverage && rm -f package.nls.*.json",
 		"watch": "tsc -watch -p ./",
 		"test": "vitest run --pool=threads",
 		"test:watch": "vitest --pool=threads",
