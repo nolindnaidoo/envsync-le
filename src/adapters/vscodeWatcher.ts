@@ -2,6 +2,7 @@ import * as vscode from 'vscode'
 import { readConfig } from '../config/config'
 import type { Detector } from '../detection/detector'
 import type { Configuration, FileSystem } from '../interfaces'
+import type { SyncReport } from '../types'
 
 export function registerVSCodeWatchers(
 	context: vscode.ExtensionContext,
@@ -13,21 +14,32 @@ export function registerVSCodeWatchers(
 
 	// Debounced detection shared by all watchers
 	let timeoutId: NodeJS.Timeout | undefined
-	let isChecking = false
+	let checkPromise: Promise<SyncReport> | undefined
+	let disposed = false
+
 	const debouncedDetect = (): void => {
+		if (disposed) return // Early exit if disposed
 		if (timeoutId) clearTimeout(timeoutId)
+
 		timeoutId = setTimeout(async () => {
-			if (isChecking) return // Prevent concurrent checks
-			isChecking = true
+			if (disposed) return // Check again before executing
+			if (checkPromise) {
+				// Wait for existing check to complete instead of creating race condition
+				await checkPromise
+				return
+			}
+
+			checkPromise = detector.checkSync().finally(() => {
+				checkPromise = undefined
+			})
+
 			try {
-				await detector.checkSync()
+				await checkPromise
 			} catch (error) {
 				// Only log if notifications are enabled - respect user's preference
 				if (config.notificationLevel !== 'silent') {
 					console.error('File watcher sync check failed:', error)
 				}
-			} finally {
-				isChecking = false
 			}
 		}, config.debounceMs)
 	}
@@ -60,9 +72,15 @@ export function registerVSCodeWatchers(
 		watchers.push(watcher)
 	}
 
-	// Cleanup debounce timer
+	// Cleanup debounce timer and set disposed flag
 	context.subscriptions.push({
-		dispose: () => timeoutId && clearTimeout(timeoutId),
+		dispose: () => {
+			disposed = true
+			if (timeoutId) {
+				clearTimeout(timeoutId)
+				timeoutId = undefined
+			}
+		},
 	})
 }
 

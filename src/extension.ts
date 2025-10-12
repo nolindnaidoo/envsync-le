@@ -49,10 +49,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
 	// Perform initial sync check
 	detector.checkSync().catch((error) => {
-		// Only log if notifications are enabled - respect user's preference
+		// Always log errors for debugging, regardless of notification preference
+		console.error('EnvSync-LE: Initial sync check failed:', error)
+
+		// Only show notifications based on user preference
 		const config = readConfig(configuration)
 		if (config.notificationLevel !== 'silent') {
-			console.warn('Initial sync check failed:', error)
+			notifier.showError(`Initial sync check failed: ${error instanceof Error ? error.message : String(error)}`)
 		}
 	})
 

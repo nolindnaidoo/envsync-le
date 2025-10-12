@@ -5,6 +5,26 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-10-12
+
+### 🐛 Bug Fixes
+
+- **Fixed race condition in file watcher**: Replaced boolean flag with promise-based mutex to prevent concurrent sync checks
+- **Improved error logging**: Extension activation errors are now always logged to console for debugging, regardless of notification preferences
+- **Enhanced disposal safety**: Added disposed flag to prevent timer callbacks from executing after extension deactivation
+
+### 🔧 Technical Improvements
+
+- Eliminated potential race conditions when multiple file changes occur rapidly
+- Better error visibility during development and troubleshooting
+- More robust cleanup on extension deactivation
+
+## [1.3.1] - 2025-10-11
+
+### 🐛 Bug Fixes
+
+- Minor stability improvements
+
 ## [1.3.0] - 2025-10-11
 
 ### 🎉 Initial Public Release
