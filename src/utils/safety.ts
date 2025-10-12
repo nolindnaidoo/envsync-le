@@ -1,7 +1,7 @@
-import * as nls from 'vscode-nls'
-import type { DotSyncConfig } from '../types'
+import * as nls from 'vscode-nls';
+import type { DotSyncConfig } from '../types';
 
-const localize = nls.config({ messageFormat: nls.MessageFormat.file })()
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 /**
  * Safety utilities for EnvSync-LE
@@ -9,20 +9,20 @@ const localize = nls.config({ messageFormat: nls.MessageFormat.file })()
  */
 
 export interface SafetyMetrics {
-	readonly fileCount: number
-	readonly totalFileSize: number
-	readonly largestFileSize: number
-	readonly averageFileSize: number
-	readonly estimatedProcessingTime: number
-	readonly memoryUsage: number
+	readonly fileCount: number;
+	readonly totalFileSize: number;
+	readonly largestFileSize: number;
+	readonly averageFileSize: number;
+	readonly estimatedProcessingTime: number;
+	readonly memoryUsage: number;
 }
 
 export interface SafetyCheckResult {
-	readonly safe: boolean
-	readonly warnings: readonly string[]
-	readonly errors: readonly string[]
-	readonly metrics: SafetyMetrics
-	readonly recommendations: readonly string[]
+	readonly safe: boolean;
+	readonly warnings: readonly string[];
+	readonly errors: readonly string[];
+	readonly metrics: SafetyMetrics;
+	readonly recommendations: readonly string[];
 }
 
 /**
@@ -32,10 +32,10 @@ export function performSafetyChecks(
 	files: readonly { path: string; size: number }[],
 	_config: DotSyncConfig,
 ): SafetyCheckResult {
-	const metrics = calculateSafetyMetrics(files)
-	const warnings: string[] = []
-	const errors: string[] = []
-	const recommendations: string[] = []
+	const metrics = calculateSafetyMetrics(files);
+	const warnings: string[] = [];
+	const errors: string[] = [];
+	const recommendations: string[] = [];
 
 	// Check file count
 	if (metrics.fileCount > 100) {
@@ -45,13 +45,13 @@ export function performSafetyChecks(
 				'Too many files ({0}). This may cause performance issues.',
 				metrics.fileCount,
 			),
-		)
+		);
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.many-files',
 				'Consider using exclusion patterns to reduce the number of files being processed',
 			),
-		)
+		);
 	} else if (metrics.fileCount > 50) {
 		warnings.push(
 			localize(
@@ -59,7 +59,7 @@ export function performSafetyChecks(
 				'Many files detected ({0}). Processing may take longer.',
 				metrics.fileCount,
 			),
-		)
+		);
 	}
 
 	// Check total file size
@@ -71,13 +71,13 @@ export function performSafetyChecks(
 				'Total file size too large ({0} MB). This may cause memory issues.',
 				Math.round(metrics.totalFileSize / (1024 * 1024)),
 			),
-		)
+		);
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.large-total-size',
 				'Consider processing files in batches or excluding large files',
 			),
-		)
+		);
 	} else if (metrics.totalFileSize > 5 * 1024 * 1024) {
 		// 5MB
 		warnings.push(
@@ -86,7 +86,7 @@ export function performSafetyChecks(
 				'Large total file size ({0} MB). Processing may take longer.',
 				Math.round(metrics.totalFileSize / (1024 * 1024)),
 			),
-		)
+		);
 	}
 
 	// Check individual file size
@@ -98,13 +98,13 @@ export function performSafetyChecks(
 				'Large file detected ({0} KB). This may cause performance issues.',
 				Math.round(metrics.largestFileSize / 1024),
 			),
-		)
+		);
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.large-file',
 				'Consider splitting large files or using streaming processing',
 			),
-		)
+		);
 	}
 
 	// Check estimated processing time
@@ -116,13 +116,13 @@ export function performSafetyChecks(
 				'Estimated processing time too long ({0} seconds). This may cause UI freezing.',
 				Math.round(metrics.estimatedProcessingTime / 1000),
 			),
-		)
+		);
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.long-processing',
 				'Consider reducing the scope of the operation or processing in batches',
 			),
-		)
+		);
 	} else if (metrics.estimatedProcessingTime > 5000) {
 		// 5 seconds
 		warnings.push(
@@ -131,7 +131,7 @@ export function performSafetyChecks(
 				'Long processing time expected ({0} seconds). Consider reducing scope.',
 				Math.round(metrics.estimatedProcessingTime / 1000),
 			),
-		)
+		);
 	}
 
 	// Check memory usage
@@ -143,16 +143,16 @@ export function performSafetyChecks(
 				'High memory usage expected ({0} MB). Monitor system resources.',
 				Math.round(metrics.memoryUsage / (1024 * 1024)),
 			),
-		)
+		);
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.high-memory',
 				'Consider processing files in smaller batches to reduce memory usage',
 			),
-		)
+		);
 	}
 
-	const safe = errors.length === 0
+	const safe = errors.length === 0;
 
 	return {
 		safe,
@@ -160,23 +160,25 @@ export function performSafetyChecks(
 		errors: Object.freeze(errors),
 		metrics,
 		recommendations: Object.freeze(recommendations),
-	}
+	};
 }
 
 /**
  * Calculate safety metrics
  */
-function calculateSafetyMetrics(files: readonly { path: string; size: number }[]): SafetyMetrics {
-	const fileCount = files.length
-	const totalFileSize = files.reduce((sum, file) => sum + file.size, 0)
-	const largestFileSize = Math.max(...files.map((file) => file.size), 0)
-	const averageFileSize = fileCount > 0 ? totalFileSize / fileCount : 0
+function calculateSafetyMetrics(
+	files: readonly { path: string; size: number }[],
+): SafetyMetrics {
+	const fileCount = files.length;
+	const totalFileSize = files.reduce((sum, file) => sum + file.size, 0);
+	const largestFileSize = Math.max(...files.map((file) => file.size), 0);
+	const averageFileSize = fileCount > 0 ? totalFileSize / fileCount : 0;
 
 	// Estimate processing time (rough calculation)
-	const estimatedProcessingTime = fileCount * 50 + totalFileSize / 1024 // 50ms per file + 1ms per KB
+	const estimatedProcessingTime = fileCount * 50 + totalFileSize / 1024; // 50ms per file + 1ms per KB
 
 	// Estimate memory usage (rough calculation)
-	const memoryUsage = totalFileSize * 2 + fileCount * 1024 // 2x file size + 1KB per file metadata
+	const memoryUsage = totalFileSize * 2 + fileCount * 1024; // 2x file size + 1KB per file metadata
 
 	return {
 		fileCount,
@@ -185,53 +187,65 @@ function calculateSafetyMetrics(files: readonly { path: string; size: number }[]
 		averageFileSize,
 		estimatedProcessingTime,
 		memoryUsage,
-	}
+	};
 }
 
 /**
  * Check if operation should proceed based on safety checks
  */
-export function shouldProceedWithOperation(safetyResult: SafetyCheckResult, config: DotSyncConfig): boolean {
+export function shouldProceedWithOperation(
+	safetyResult: SafetyCheckResult,
+	config: DotSyncConfig,
+): boolean {
 	// If safety is disabled, always proceed
 	if (!config.safetyEnabled) {
-		return true
+		return true;
 	}
 
 	// If there are errors, don't proceed
 	if (safetyResult.errors.length > 0) {
-		return false
+		return false;
 	}
 
 	// If there are warnings, proceed but show warnings
-	return true
+	return true;
 }
 
 /**
  * Get safety configuration recommendations
  */
-export function getSafetyRecommendations(safetyResult: SafetyCheckResult, config: DotSyncConfig): readonly string[] {
-	const recommendations: string[] = []
+export function getSafetyRecommendations(
+	safetyResult: SafetyCheckResult,
+	config: DotSyncConfig,
+): readonly string[] {
+	const recommendations: string[] = [];
 
 	// Add safety result recommendations
-	recommendations.push(...safetyResult.recommendations)
+	recommendations.push(...safetyResult.recommendations);
 
 	// Add configuration-specific recommendations
-	if (safetyResult.metrics.fileCount > 50 && config.excludePatterns.length === 0) {
+	if (
+		safetyResult.metrics.fileCount > 50 &&
+		config.excludePatterns.length === 0
+	) {
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.add-exclusions',
 				'Consider adding exclusion patterns to reduce the number of files being processed',
 			),
-		)
+		);
 	}
 
-	if (safetyResult.metrics.totalFileSize > 5 * 1024 * 1024 && config.debounceMs < 1000) {
+	if (
+		safetyResult.metrics.totalFileSize > 5 * 1024 * 1024 &&
+		config.debounceMs < 1000
+	) {
 		recommendations.push(
 			localize(
 				'runtime.safety.recommendation.increase-debounce',
 				'Consider increasing the debounce delay to improve performance with large files',
 			),
-		)
+		);
 	}
 
 	if (safetyResult.metrics.fileCount > 20 && config.comparisonMode === 'auto') {
@@ -240,63 +254,75 @@ export function getSafetyRecommendations(safetyResult: SafetyCheckResult, config
 				'runtime.safety.recommendation.use-template',
 				'Consider using template mode to reduce comparison complexity',
 			),
-		)
+		);
 	}
 
-	return Object.freeze(recommendations)
+	return Object.freeze(recommendations);
 }
 
 /**
  * Format safety report for display
  */
 export function formatSafetyReport(safetyResult: SafetyCheckResult): string {
-	const lines: string[] = []
+	const lines: string[] = [];
 
-	lines.push('# EnvSync-LE Safety Report')
-	lines.push('')
+	lines.push('# EnvSync-LE Safety Report');
+	lines.push('');
 
 	// Status
-	lines.push(`**Status**: ${safetyResult.safe ? '✅ Safe' : '⚠️ Warnings/Errors'}`)
-	lines.push('')
+	lines.push(
+		`**Status**: ${safetyResult.safe ? '✅ Safe' : '⚠️ Warnings/Errors'}`,
+	);
+	lines.push('');
 
 	// Metrics
-	lines.push('## Metrics')
-	lines.push(`- **Files**: ${safetyResult.metrics.fileCount}`)
-	lines.push(`- **Total Size**: ${formatFileSize(safetyResult.metrics.totalFileSize)}`)
-	lines.push(`- **Largest File**: ${formatFileSize(safetyResult.metrics.largestFileSize)}`)
-	lines.push(`- **Average File Size**: ${formatFileSize(safetyResult.metrics.averageFileSize)}`)
-	lines.push(`- **Estimated Processing Time**: ${Math.round(safetyResult.metrics.estimatedProcessingTime / 1000)}s`)
-	lines.push(`- **Estimated Memory Usage**: ${formatFileSize(safetyResult.metrics.memoryUsage)}`)
-	lines.push('')
+	lines.push('## Metrics');
+	lines.push(`- **Files**: ${safetyResult.metrics.fileCount}`);
+	lines.push(
+		`- **Total Size**: ${formatFileSize(safetyResult.metrics.totalFileSize)}`,
+	);
+	lines.push(
+		`- **Largest File**: ${formatFileSize(safetyResult.metrics.largestFileSize)}`,
+	);
+	lines.push(
+		`- **Average File Size**: ${formatFileSize(safetyResult.metrics.averageFileSize)}`,
+	);
+	lines.push(
+		`- **Estimated Processing Time**: ${Math.round(safetyResult.metrics.estimatedProcessingTime / 1000)}s`,
+	);
+	lines.push(
+		`- **Estimated Memory Usage**: ${formatFileSize(safetyResult.metrics.memoryUsage)}`,
+	);
+	lines.push('');
 
 	// Warnings
 	if (safetyResult.warnings.length > 0) {
-		lines.push('## ⚠️ Warnings')
+		lines.push('## ⚠️ Warnings');
 		for (const warning of safetyResult.warnings) {
-			lines.push(`- ${warning}`)
+			lines.push(`- ${warning}`);
 		}
-		lines.push('')
+		lines.push('');
 	}
 
 	// Errors
 	if (safetyResult.errors.length > 0) {
-		lines.push('## ❌ Errors')
+		lines.push('## ❌ Errors');
 		for (const error of safetyResult.errors) {
-			lines.push(`- ${error}`)
+			lines.push(`- ${error}`);
 		}
-		lines.push('')
+		lines.push('');
 	}
 
 	// Recommendations
 	if (safetyResult.recommendations.length > 0) {
-		lines.push('## 💡 Recommendations')
+		lines.push('## 💡 Recommendations');
 		for (const recommendation of safetyResult.recommendations) {
-			lines.push(`- ${recommendation}`)
+			lines.push(`- ${recommendation}`);
 		}
-		lines.push('')
+		lines.push('');
 	}
 
-	return lines.join('\n')
+	return lines.join('\n');
 }
 
 /**
@@ -304,39 +330,42 @@ export function formatSafetyReport(safetyResult: SafetyCheckResult): string {
  */
 function formatFileSize(bytes: number): string {
 	if (bytes < 1024) {
-		return `${bytes} B`
+		return `${bytes} B`;
 	} else if (bytes < 1024 * 1024) {
-		return `${Math.round(bytes / 1024)} KB`
+		return `${Math.round(bytes / 1024)} KB`;
 	} else {
-		return `${Math.round(bytes / (1024 * 1024))} MB`
+		return `${Math.round(bytes / (1024 * 1024))} MB`;
 	}
 }
 
 /**
  * Check if file should be excluded based on safety criteria
  */
-export function shouldExcludeFileForSafety(file: { path: string; size: number }, config: DotSyncConfig): boolean {
+export function shouldExcludeFileForSafety(
+	file: { path: string; size: number },
+	config: DotSyncConfig,
+): boolean {
 	// Check file size threshold
 	if (config.safetyEnabled && file.size > config.fileSizeWarnBytes) {
-		return true
+		return true;
 	}
 
-	return false
+	return false;
 }
 
 /**
  * Get safety configuration defaults
  */
 export function getSafetyDefaults(): {
-	readonly fileSizeWarnBytes: number
-	readonly maxFilesWarn: number
-	readonly maxTotalSizeWarn: number
-	readonly maxProcessingTimeWarn: number
+	readonly fileSizeWarnBytes: number;
+	readonly maxFilesWarn: number;
+	readonly maxTotalSizeWarn: number;
+	readonly maxProcessingTimeWarn: number;
 } {
 	return Object.freeze({
 		fileSizeWarnBytes: 1024 * 1024, // 1MB
 		maxFilesWarn: 50,
 		maxTotalSizeWarn: 5 * 1024 * 1024, // 5MB
 		maxProcessingTimeWarn: 5000, // 5 seconds
-	})
+	});
 }

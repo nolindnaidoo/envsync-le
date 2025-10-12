@@ -3,32 +3,12 @@
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
-		"useIgnoreFile": true
+		"useIgnoreFile": false
 	},
 	"files": {
-		"ignoreUnknown": true,
-		"includes": ["src/**/*.ts"]
+		"ignoreUnknown": false,
+		"includes": ["src/**/*.ts", "src/**/*.js"]
 	},
-	"overrides": [
-		{
-			"includes": ["dist", "coverage"],
-			"linter": {
-				"enabled": false
-			}
-		},
-		{
-			"includes": ["src/__mocks__/**"],
-			"linter": {
-				"enabled": false
-			}
-		},
-		{
-			"includes": ["**/*.test.ts", "test/**"],
-			"linter": {
-				"enabled": false
-			}
-		}
-	],
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
@@ -38,15 +18,36 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noExplicitAny": "warn"
+				"noExplicitAny": "warn",
+				"noImplicitAnyLet": "off",
+				"noAssignInExpressions": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
 			}
 		}
 	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.ts", "**/__mocks__/**"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off",
+						"noImplicitAnyLet": "off",
+						"noAssignInExpressions": "off"
+					},
+					"correctness": {
+						"noUnusedFunctionParameters": "off"
+					}
+				}
+			}
+		}
+	],
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "single",
-			"semicolons": "asNeeded",
-			"lineWidth": 120
+			"semicolons": "always"
 		}
 	}
 }

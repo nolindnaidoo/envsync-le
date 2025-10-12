@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export const Uri = {
 	file: vi.fn((path: string) => ({
@@ -13,7 +13,7 @@ export const Uri = {
 		scheme: 'file',
 		toString: () => str,
 	})),
-}
+};
 
 export const workspace = {
 	getConfiguration: vi.fn(() => ({
@@ -27,7 +27,9 @@ export const workspace = {
 		_setFile: vi.fn(),
 		_reset: vi.fn(),
 	},
-	asRelativePath: vi.fn((pathOrUri: any) => (typeof pathOrUri === 'string' ? pathOrUri : pathOrUri.fsPath)),
+	asRelativePath: vi.fn((pathOrUri: any) =>
+		typeof pathOrUri === 'string' ? pathOrUri : pathOrUri.fsPath,
+	),
 	createFileSystemWatcher: vi.fn(() => ({
 		onDidCreate: vi.fn(),
 		onDidDelete: vi.fn(),
@@ -41,7 +43,7 @@ export const workspace = {
 			index: 0,
 		},
 	],
-}
+};
 
 export const window = {
 	showInformationMessage: vi.fn(),
@@ -60,17 +62,17 @@ export const window = {
 		show: vi.fn(),
 		dispose: vi.fn(),
 	})),
-}
+};
 
 export const commands = {
 	registerCommand: vi.fn(),
 	executeCommand: vi.fn(),
-}
+};
 
 export const StatusBarAlignment = {
 	Left: 1,
 	Right: 2,
-}
+};
 
 export class ThemeColor {
 	constructor(public id: string) {}
@@ -80,4 +82,4 @@ export const mockExtensionContext = {
 	subscriptions: {
 		push: vi.fn(),
 	},
-}
+};
