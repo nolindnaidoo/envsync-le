@@ -43,6 +43,15 @@ Thank you for using EnvSync-LE! If this extension has been helpful in managing y
 
 ⭐ **Enjoying EnvSync-LE?** [Leave a rating](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le) and help others find it too!
 
+## ✅ Why EnvSync‑LE
+
+- **Simple sync detection**: Instantly see if your environment files are in sync.
+- **One‑click details**: Click the status bar to open a comprehensive <a href="docs/SCREENSHOTS.md#sync-details-report">visual diff report</a> showing which files are out of sync and which keys are missing.
+- **Clear signals**: Status bar indicators for in-sync, missing/extra keys, and parse errors.
+- **Flexible modes**: Auto scan, manual selection, or compare all files to a template.
+- **Noise control**: Ignore comments, toggle case sensitivity, and debounce checks.
+- **Granular scope**: Include/exclude file patterns and temporarily ignore specific files.
+
 ## 🚀 More from the LE Family
 
 **EnvSync-LE** is part of a growing family of developer tools designed to make your workflow effortless:
@@ -66,15 +75,6 @@ Thank you for using EnvSync-LE! If this extension has been helpful in managing y
   _Coming October 2025_
 
 Each tool follows the same philosophy: **Zero Hassle, Maximum Productivity**.
-
-## ✅ Why EnvSync‑LE
-
-- **Simple sync detection**: Instantly see if your environment files are in sync.
-- **One‑click details**: Click the status bar to open a comprehensive <a href="docs/SCREENSHOTS.md#sync-details-report">visual diff report</a> showing which files are out of sync and which keys are missing.
-- **Clear signals**: Status bar indicators for in-sync, missing/extra keys, and parse errors.
-- **Flexible modes**: Auto scan, manual selection, or compare all files to a template.
-- **Noise control**: Ignore comments, toggle case sensitivity, and debounce checks.
-- **Granular scope**: Include/exclude file patterns and temporarily ignore specific files.
 
 ## 💡 Use Cases & Examples
 
