@@ -28,6 +28,10 @@
   </a>
 </p>
 
+<p align="center">
+  <i>Tested on <b>Ubuntu</b>, <b>macOS</b>, and <b>Windows</b> for maximum compatibility.</i>
+</p>
+
 ---
 
 <p align="center">
