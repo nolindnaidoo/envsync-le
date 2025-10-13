@@ -1,9 +1,5 @@
 # real world experience to exclude things people often accidently commit
 
-#project
-dist/
-gemini.md
-
 package.nls.de.json
 package.nls.es.json
 package.nls.fr.json
@@ -29,6 +25,10 @@ lerna-debug.log*
 
 # Coverage directory used by tools like istanbul
 *.lcov
+
+# Coverage - ignore all except main summary
+coverage/*
+!coverage/index.html
 
 # Dependency directories
 node_modules/
