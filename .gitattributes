@@ -1,21 +1,15 @@
+# Normalize line endings for all text files
+* text=auto eol=lf
 
-# Documentation
+# Specific file types
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
 *.md text eol=lf
-*.txt text eol=lf
-
-# Configuration files
-*.cfg text eol=lf
-*.ini text eol=lf
-*.toml text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
-*.json text eol=lf
-
-# Shell scripts
-*.sh text eol=lf
-
-# Auto detect text files and perform LF normalization
-* text=auto
+*.csv text eol=lf
+*.env text eol=lf
 
 # Binary files
 *.png binary
@@ -23,10 +17,4 @@
 *.jpeg binary
 *.gif binary
 *.ico binary
-*.pdf binary
-*.zip binary
-*.tar.gz binary
-*.exe binary
-*.dll binary
-*.so binary
-*.dylib binary
+*.vsix binary
