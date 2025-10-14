@@ -5,6 +5,7 @@ import type { Notifier } from '../interfaces/notifier';
 import type { StatusBar } from '../interfaces/statusBar';
 import type { Telemetry } from '../interfaces/telemetry';
 import { registerCompareSelectedCommand } from './compareSelected';
+import { registerHelpCommand } from './help';
 import { registerIgnoreFileCommand } from './ignoreFile';
 import { registerSetTemplateCommand } from './setTemplate';
 import { registerShowIssuesCommand } from './showIssues';
@@ -26,4 +27,5 @@ export function registerAllCommands(
 	registerSetTemplateCommand(context, deps);
 	registerIgnoreFileCommand(context, deps);
 	registerShowIssuesCommand(context, deps);
+	registerHelpCommand(context, deps);
 }

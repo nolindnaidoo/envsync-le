@@ -3,6 +3,7 @@
 	"manifest.ext.desc": "Detect and sync .env files",
 	"manifest.command.category": "envsync-le",
 	"manifest.command.settings.title": "Open Settings",
+	"manifest.command.help.title": "Help & Troubleshooting",
 	"manifest.command.compare-selected.title": "Compare Files",
 	"manifest.command.set-template.title": "Set Template",
 	"manifest.command.clear-template.title": "Clear Template",
