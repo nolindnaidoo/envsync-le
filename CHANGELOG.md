@@ -5,6 +5,13 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-10-14
+
+### Documentation
+
+- Added actual test coverage metrics: 121 passing tests across 17 test suites with 79.04% overall coverage
+- Adds transparency and aligns with the documentation standard across the LE family
+
 ## [1.3.2] - 2025-10-12
 
 ### 🐛 Bug Fixes
