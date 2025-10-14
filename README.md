@@ -74,13 +74,13 @@ Thank you for using EnvSync-LE! If this extension has been helpful in managing y
   [[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.scrape-le)]
 
 - **Colors-LE** - Extract and analyze colors from CSS, HTML, JavaScript, and TypeScript  
-  _Coming Soon_
+  [[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.colors-le)] [[Open VSX](https://open-vsx.org/extension/nolindnaidoo/colors-le)]
 
 - **Dates-LE** - Extract and analyze dates from logs, APIs, and temporal data  
-  _Coming Soon_
+  [[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.dates-le)] [[Open VSX](https://open-vsx.org/extension/nolindnaidoo/dates-le)]
 
 - **URLs-LE** - Extract and analyze URLs from web content, APIs, and resources  
-  _Coming Soon_
+  [[VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.urls-le)] [[Open VSX](https://open-vsx.org/extension/nolindnaidoo/urls-le)]
 
 Each tool follows the same philosophy: **Zero Hassle, Maximum Productivity**.
 
