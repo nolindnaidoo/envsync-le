@@ -245,7 +245,7 @@ Monitor for configuration changes across different environments and alert when i
 
 ## 🧩 System Requirements
 
-- **VS Code**: 1.85.0 or higher
+- **VS Code**: 1.70.0 or higher
 - **Node.js**: Not required (extension runs in VS Code's built-in runtime)
 - **Platform**: Windows, macOS, Linux
 - **Memory**: 30MB minimum, 100MB recommended for large workspaces
@@ -317,7 +317,7 @@ EnvSync-LE is optimized for workspace monitoring:
 
 **Extension crashes or freezes**
 
-- Check VS Code version compatibility (requires 1.85.0+)
+- Check VS Code version compatibility (requires 1.70.0+)
 - Disable other environment-related extensions temporarily
 - Check Output panel → "EnvSync-LE" for error messages
 
