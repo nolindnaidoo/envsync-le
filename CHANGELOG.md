@@ -5,6 +5,14 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Command category casing** - Standardized command palette category from "envsync-le" to "EnvSync-LE" for visual consistency
+- **Help command UX** - Help documentation now opens beside source code by default for better workflow
+- **Documentation** - Updated README to use new demo.gif and command palette screenshot
+
 ## [1.4.0] - 2025-10-14
 
 ### Added
