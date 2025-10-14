@@ -346,10 +346,11 @@ A: EnvSync-LE can monitor up to 10,000 .env files efficiently. For larger worksp
 
 ## 📊 Test Coverage
 
-- Tests powered by Vitest with V8 coverage.
-- Runs quickly and locally: `npm run test` or `npm run test:coverage`.
-- Coverage reports output to `coverage/` (HTML summary at `coverage/index.html`).
-- Core logic is designed for unit testing; additional suites will expand over time.
+- 121 passing tests across 17 test suites with 79.04% overall coverage
+- Tests powered by Vitest with V8 coverage
+- Runs quickly and locally: `npm run test` or `npm run test:coverage`
+- Coverage reports output to `coverage/` (HTML summary at `coverage/index.html`)
+- Core logic is designed for unit testing; additional suites will expand over time
 
 ---
 
