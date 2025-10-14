@@ -6,12 +6,12 @@ Test files for EnvSync-LE's environment file synchronization and comparison feat
 
 ## 📋 Sample Files Overview
 
-| File               | Purpose                  | Keys | Description                                |
-| ------------------ | ------------------------ | ---- | ------------------------------------------ |
-| `.env.example`     | Template/Reference       | 8    | Example template with all required keys    |
-| `.env`             | Development Environment  | 8    | Local development configuration            |
-| `.env.local`       | Local Overrides          | 8    | Local machine-specific settings            |
-| `.env.production`  | Production Environment   | 8    | Production deployment configuration        |
+| File              | Purpose                 | Keys | Description                             |
+| ----------------- | ----------------------- | ---- | --------------------------------------- |
+| `.env.example`    | Template/Reference      | 8    | Example template with all required keys |
+| `.env`            | Development Environment | 8    | Local development configuration         |
+| `.env.local`      | Local Overrides         | 8    | Local machine-specific settings         |
+| `.env.production` | Production Environment  | 8    | Production deployment configuration     |
 
 **Total**: 4 files with 8 keys each, demonstrating environment file comparison scenarios
 
@@ -62,6 +62,7 @@ Test files for EnvSync-LE's environment file synchronization and comparison feat
 **Description**: Acts as source of truth for required configuration
 
 **Contents**:
+
 ```bash
 NODE_ENV=development
 DATABASE_URL=postgresql://localhost:5432/myapp
@@ -73,7 +74,8 @@ LOG_LEVEL=info
 ENABLE_FEATURES=true
 ```
 
-**Use Case**: 
+**Use Case**:
+
 - Set as template for comparison
 - New team members copy this file
 - CI/CD validation reference
@@ -87,6 +89,7 @@ ENABLE_FEATURES=true
 **Description**: Actual values for local development
 
 **Contents**:
+
 ```bash
 NODE_ENV=development
 DATABASE_URL=postgresql://localhost:5432/myapp_dev
@@ -99,6 +102,7 @@ ENABLE_FEATURES=true
 ```
 
 **Differences from template**:
+
 - `DATABASE_URL`: Has `_dev` suffix
 - `API_KEY`: Real development key
 - `SECRET_KEY`: Real development secret
@@ -113,6 +117,7 @@ ENABLE_FEATURES=true
 **Description**: Personal local settings that override defaults
 
 **Contents**:
+
 ```bash
 NODE_ENV=development
 DATABASE_URL=postgresql://localhost:5432/myapp_local
@@ -125,6 +130,7 @@ ENABLE_FEATURES=true
 ```
 
 **Differences from .env**:
+
 - `DATABASE_URL`: Uses `_local` suffix
 - `PORT`: Different port (3001 vs 3000)
 - Other values personalized
@@ -140,6 +146,7 @@ ENABLE_FEATURES=true
 **Description**: Production-ready values (sanitized for sample)
 
 **Contents**:
+
 ```bash
 NODE_ENV=production
 DATABASE_URL=postgresql://prod-db:5432/myapp
@@ -152,6 +159,7 @@ ENABLE_FEATURES=true
 ```
 
 **Differences**:
+
 - `NODE_ENV`: Production mode
 - `DATABASE_URL`: Production database host
 - `PORT`: Standard HTTP port (80)
@@ -166,11 +174,13 @@ ENABLE_FEATURES=true
 **Goal**: Verify automatic sync detection  
 **Settings**: Default (auto mode)  
 **Steps**:
+
 1. Open workspace with sample folder
 2. Wait for auto-detection
 3. Check status bar
 
-**Expected**: 
+**Expected**:
+
 - Status bar shows ✅ (files are in sync)
 - Hover shows "4 files in sync"
 
@@ -180,6 +190,7 @@ ENABLE_FEATURES=true
 
 **Goal**: Test missing key detection  
 **Steps**:
+
 1. Open `.env.local`
 2. Delete the `API_KEY` line
 3. Save file
@@ -187,6 +198,7 @@ ENABLE_FEATURES=true
 5. Check status bar
 
 **Expected**:
+
 - Status bar shows ⚠️
 - Click to see: ".env.local is missing: API_KEY"
 
@@ -196,12 +208,14 @@ ENABLE_FEATURES=true
 
 **Goal**: Test extra key detection  
 **Steps**:
+
 1. Open `.env`
 2. Add new line: `EXTRA_KEY=extra-value`
 3. Save file
 4. Check status bar
 
 **Expected**:
+
 - Status bar shows ⚠️
 - Click to see: ".env has extra key: EXTRA_KEY"
 
@@ -212,12 +226,14 @@ ENABLE_FEATURES=true
 **Goal**: Test template-based comparison  
 **Settings**: Mode = template  
 **Steps**:
+
 1. Run **Set Template File**
 2. Select `.env.example`
 3. Status bar updates
 4. All files compared against template
 
 **Expected**:
+
 - Template icon in status bar
 - All files validated against `.env.example`
 - Report shows any missing template keys
@@ -229,12 +245,14 @@ ENABLE_FEATURES=true
 **Goal**: Test manual file selection  
 **Settings**: Mode = manual  
 **Steps**:
+
 1. Change mode to manual: `envsync-le.comparisonMode: "manual"`
 2. Run **Compare Selected .env Files**
 3. Select `.env` and `.env.production`
 4. View comparison
 
 **Expected**:
+
 - Only selected files compared
 - Report shows differences between the two
 
@@ -244,11 +262,13 @@ ENABLE_FEATURES=true
 
 **Goal**: Test file ignoring  
 **Steps**:
+
 1. Right-click `.env.local` in explorer
 2. Select **EnvSync-LE: Ignore File**
 3. Check status bar
 
 **Expected**:
+
 - `.env.local` excluded from sync checks
 - Status bar reflects 3 files instead of 4
 
@@ -259,11 +279,13 @@ ENABLE_FEATURES=true
 **Goal**: Test case-sensitive key comparison  
 **Settings**: `envsync-le.caseSensitive: true` (default)  
 **Steps**:
+
 1. Open `.env`
 2. Change `PORT` to `port`
 3. Save file
 
 **Expected**:
+
 - Detects as different keys
 - Status bar shows out-of-sync
 - Report shows "missing: PORT, extra: port"
@@ -277,11 +299,13 @@ ENABLE_FEATURES=true
 **Goal**: Test comment ignoring  
 **Settings**: `envsync-le.ignoreComments: true` (default)  
 **Steps**:
+
 1. Open `.env.example`
 2. Add comment: `# This is a comment`
 3. Save file
 
 **Expected**:
+
 - Comments ignored
 - No impact on sync status
 
@@ -291,11 +315,13 @@ ENABLE_FEATURES=true
 
 **Goal**: Test malformed .env handling  
 **Steps**:
+
 1. Open `.env`
 2. Add malformed line: `BROKEN KEY=value`
 3. Save file
 
 **Expected**:
+
 - Status bar shows ❌ error
 - Click to see parse error details
 - Other valid files still compared
@@ -307,10 +333,12 @@ ENABLE_FEATURES=true
 **Goal**: Verify debounce prevents excessive checks  
 **Settings**: `envsync-le.debounceMs: 1000` (default)  
 **Steps**:
+
 1. Rapidly make multiple edits to `.env`
 2. Observe status bar
 
 **Expected**:
+
 - Sync check waits 1 second after last edit
 - Prevents check on every keystroke
 
@@ -326,20 +354,24 @@ ENABLE_FEATURES=true
 ### Edge Case 2: Duplicate Keys
 
 **Action**: Add duplicate key in `.env`:
+
 ```bash
 PORT=3000
 PORT=4000
 ```
+
 **Expected**: Parse warning, last value wins
 
 ### Edge Case 3: Multiline Values
 
 **Action**: Add multiline value:
+
 ```bash
 PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA...
 -----END RSA PRIVATE KEY-----"
 ```
+
 **Expected**: Handled correctly if properly quoted
 
 ### Edge Case 4: No .env Files
@@ -360,9 +392,11 @@ MIIEpAIBAAKCAQEA...
 ### Edge Case 7: UTF-8 Characters
 
 **Action**: Use unicode in values:
+
 ```bash
 WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ```
+
 **Expected**: Parsed correctly, compared accurately
 
 ### Edge Case 8: Very Large .env File
@@ -405,11 +439,13 @@ WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ### Issue: Status Bar Not Showing
 
 **Possible Causes**:
+
 1. No `.env*` files in workspace
 2. Status bar disabled in settings
 3. Extension not activated
 
 **Solution**:
+
 - Verify `.env*` files exist
 - Check: `envsync-le.statusBar.enabled: true`
 - Check: `envsync-le.enabled: true`
@@ -420,11 +456,13 @@ WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ### Issue: Files Not Being Detected
 
 **Possible Causes**:
+
 1. Files excluded by `excludePatterns`
 2. Files in ignored folders (node_modules)
 3. Watch patterns don't match
 
 **Solution**:
+
 - Check: `envsync-le.watchPatterns` includes your files
 - Check: `envsync-le.excludePatterns` doesn't exclude them
 - Default pattern is `.env*` which should match all
@@ -434,11 +472,13 @@ WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ### Issue: False "Out of Sync" Warnings
 
 **Possible Causes**:
+
 1. Case sensitivity setting
 2. Comments being compared
 3. Extra keys intentional
 
 **Solution**:
+
 - Disable case sensitivity: `envsync-le.caseSensitive: false`
 - Ensure: `envsync-le.ignoreComments: true`
 - Use ignore feature for intentional differences
@@ -448,11 +488,13 @@ WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ### Issue: Performance Issues
 
 **Possible Causes**:
+
 1. Too many .env files
 2. Debounce too short
 3. Large .env files
 
 **Solution**:
+
 - Increase debounce: `envsync-le.debounceMs: 2000`
 - Use `excludePatterns` to filter unnecessary files
 - Use `temporaryIgnore` for large files
@@ -578,4 +620,3 @@ WELCOME_MESSAGE=¡Bienvenido! 欢迎 مرحبا
 ---
 
 Copyright © 2025 @nolindnaidoo. All rights reserved.
-
