@@ -1,20 +1,22 @@
-import * as vscode from 'vscode'
-import type { Notifier } from '../interfaces/notifier'
-import type { StatusBar } from '../interfaces/statusBar'
-import type { Telemetry } from '../interfaces/telemetry'
+import * as vscode from 'vscode';
+import type { Notifier } from '../interfaces/notifier';
+import type { StatusBar } from '../interfaces/statusBar';
+import type { Telemetry } from '../interfaces/telemetry';
 
 export function registerHelpCommand(
-  context: vscode.ExtensionContext,
-  deps: Readonly<{
-    telemetry: Telemetry
-    notifier: Notifier
-    statusBar: StatusBar
-  }>,
+	context: vscode.ExtensionContext,
+	deps: Readonly<{
+		telemetry: Telemetry;
+		notifier: Notifier;
+		statusBar: StatusBar;
+	}>,
 ): void {
-  const command = vscode.commands.registerCommand('envsync-le.help', async () => {
-    deps.telemetry.event('command-help')
+	const command = vscode.commands.registerCommand(
+		'envsync-le.help',
+		async () => {
+			deps.telemetry.event('command-help');
 
-    const helpText = `
+			const helpText = `
 # EnvSync-LE Help & Troubleshooting
 
 ## Commands
@@ -132,14 +134,15 @@ Key settings:
 ## Support
 - GitHub Issues: https://github.com/nolindnaidoo/envsync-le/issues
 - Documentation: https://github.com/nolindnaidoo/envsync-le#readme
-		`.trim()
+		`.trim();
 
-    const doc = await vscode.workspace.openTextDocument({
-      content: helpText,
-      language: 'markdown',
-    })
-    await vscode.window.showTextDocument(doc)
-  })
+			const doc = await vscode.workspace.openTextDocument({
+				content: helpText,
+				language: 'markdown',
+			});
+			await vscode.window.showTextDocument(doc);
+		},
+	);
 
-  context.subscriptions.push(command)
+	context.subscriptions.push(command);
 }
