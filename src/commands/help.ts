@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import type { Telemetry } from '../interfaces/telemetry';
 import type { Notifier } from '../interfaces/notifier';
 import type { StatusBar } from '../interfaces/statusBar';
+import type { Telemetry } from '../interfaces/telemetry';
 
 export function registerHelpCommand(
 	context: vscode.ExtensionContext,
@@ -146,4 +146,3 @@ Key settings:
 
 	context.subscriptions.push(command);
 }
-
