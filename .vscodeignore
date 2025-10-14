@@ -22,3 +22,5 @@ dist/__mocks__/
 .env.example
 .env.local
 .env.production
+**/*.env
+sample/
