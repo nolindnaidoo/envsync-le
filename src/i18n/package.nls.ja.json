@@ -1,7 +1,7 @@
 {
 	"manifest.ext.name": "envsync-le",
 	"manifest.ext.desc": ".env ファイルの検出と同期",
-	"manifest.command.category": "envsync-le",
+	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.settings.title": "設定を開く",
 	"manifest.command.compare-selected.title": "ファイルを比較",
 	"manifest.command.set-template.title": "テンプレートを設定",

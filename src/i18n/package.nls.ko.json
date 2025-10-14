@@ -1,7 +1,7 @@
 {
 	"manifest.ext.name": "envsync-le",
 	"manifest.ext.desc": ".env 파일 감지 및 동기화",
-	"manifest.command.category": "envsync-le",
+	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.settings.title": "설정 열기",
 	"manifest.command.compare-selected.title": "파일 비교",
 	"manifest.command.set-template.title": "템플릿 설정",

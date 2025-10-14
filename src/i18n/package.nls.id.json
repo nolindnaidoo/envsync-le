@@ -1,7 +1,7 @@
 {
 	"manifest.ext.name": "envsync-le",
 	"manifest.ext.desc": "Deteksi dan sinkronkan berkas .env",
-	"manifest.command.category": "envsync-le",
+	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.settings.title": "Buka Pengaturan",
 	"manifest.command.compare-selected.title": "Bandingkan Berkas",
 	"manifest.command.set-template.title": "Tetapkan Template",

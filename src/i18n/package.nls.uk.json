@@ -1,7 +1,7 @@
 {
 	"manifest.ext.name": "envsync-le",
 	"manifest.ext.desc": "Виявлення та синхронізація файлів .env",
-	"manifest.command.category": "envsync-le",
+	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.settings.title": "Відкрити налаштування",
 	"manifest.command.compare-selected.title": "Порівняти файли",
 	"manifest.command.set-template.title": "Встановити шаблон",

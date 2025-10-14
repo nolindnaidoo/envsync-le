@@ -1,7 +1,7 @@
 {
 	"manifest.ext.name": "envsync-le",
 	"manifest.ext.desc": "Rileva e sincronizza i file .env",
-	"manifest.command.category": "envsync-le",
+	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.settings.title": "Apri impostazioni",
 	"manifest.command.compare-selected.title": "Confronta file",
 	"manifest.command.set-template.title": "Imposta modello",
