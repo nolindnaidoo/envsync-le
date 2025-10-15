@@ -48,7 +48,10 @@ export function createVSCodeStatusBar(
 		switch (status) {
 			case 'in-sync':
 				// Minimal: file icon + 0 count for in-sync
-				statusBarItem.text = '$(file) 0';
+				statusBarItem.text = localize(
+					'runtime.statusbar.text.in-sync',
+					'$(file) 0',
+				);
 				statusBarItem.tooltip = localize(
 					'runtime.tooltip.in-sync',
 					'All dotenv files are in sync',
@@ -60,7 +63,11 @@ export function createVSCodeStatusBar(
 			case 'missing-keys':
 			case 'extra-keys':
 				// Minimal: file icon + count, warning background indicates severity
-				statusBarItem.text = `$(file) ${issueCount}`;
+				statusBarItem.text = localize(
+					'runtime.statusbar.text.out-of-sync',
+					'$(file) {0}',
+					issueCount,
+				);
 				statusBarItem.tooltip = localize(
 					'runtime.tooltip.out-of-sync',
 					'Dotenv files out of sync - click for details',
@@ -73,8 +80,11 @@ export function createVSCodeStatusBar(
 
 			case 'parse-error':
 				// Minimal: file icon + count, error background indicates severity
-				statusBarItem.text =
-					`$(file) ${issueCount > 0 ? issueCount : ''}`.trim();
+				statusBarItem.text = localize(
+					'runtime.statusbar.text.error',
+					'$(file) {0}',
+					issueCount > 0 ? issueCount : '',
+				);
 				statusBarItem.tooltip = localize(
 					'runtime.tooltip.error',
 					'Error checking dotenv files - click for settings',

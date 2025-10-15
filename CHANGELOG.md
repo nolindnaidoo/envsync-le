@@ -5,6 +5,19 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2025-01-27
+
+### Added
+
+- **Portuguese (Brazil) localization** - Added complete pt-br language support for all user interface elements
+- **Enhanced internationalization** - Expanded language coverage to include Brazilian Portuguese for better accessibility
+
+### Technical
+
+- Added comprehensive Portuguese (Brazil) localization file with 105+ translated strings
+- All commands, settings, notifications, and help content now available in Portuguese (Brazil)
+- Maintained 100% backward compatibility with existing functionality
+
 ## [1.4.0] - 2025-10-14
 
 ### Added
