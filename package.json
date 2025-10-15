@@ -3,7 +3,7 @@
 	"publisher": "nolindnaidoo",
 	"displayName": "EnvSync-LE",
 	"description": "Zero Hassle .env Sync- Effortlessly detect, compare, and synchronize .env files across your workspace with visual diff.",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"license": "MIT",
 	"author": {
 		"name": "Nolin D Naidoo",
@@ -117,8 +117,8 @@
 		"keybindings": [
 			{
 				"command": "envsync-le.showIssues",
-				"key": "ctrl+alt+e",
-				"mac": "cmd+alt+e",
+				"key": "ctrl+alt+s",
+				"mac": "cmd+alt+s",
 				"when": "editorTextFocus"
 			}
 		],

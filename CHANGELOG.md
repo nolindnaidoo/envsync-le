@@ -5,6 +5,18 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] - 2025-01-27
+
+### Fixed
+
+- **Keyboard shortcut conflict** - Changed from `Ctrl+Alt+E` to `Ctrl+Alt+S` to avoid conflict with Strings-LE
+- **User experience** - Improved keyboard shortcut consistency across LE family extensions
+
+### Technical
+
+- Resolved keyboard shortcut collision with Strings-LE extension
+- Maintained 100% backward compatibility with existing installations
+
 ## [1.4.1] - 2025-01-27
 
 ### Added
