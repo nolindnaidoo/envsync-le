@@ -5,6 +5,15 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2025-10-15
+
+### Changed
+
+- **Documentation streamlined** - Reduced from 14 to 4 core docs (Architecture, Commands, I18N, Performance) for easier maintenance
+- **Performance transparency** - Added verified benchmarks (2.5K+ vars/sec) with real test environment details
+- **Language visibility** - Enhanced README to clearly show all 13 supported languages with flags and native names
+- **Governance compliance** - Implemented FALSE_CLAIMS_GOVERNANCE and CHANGELOG_GOVERNANCE for accuracy and consistency
+
 ## [1.4.2] - 2025-01-27
 
 ### Fixed

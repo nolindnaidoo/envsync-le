@@ -100,7 +100,7 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Override enabled to false
-		vi.mocked(configuration.get).mockImplementation(
+		(configuration.get as ReturnType<typeof vi.fn>).mockImplementation(
 			(key: string, defaultValue: unknown) => {
 				if (key === 'enabled') return false;
 				return defaultValue;
@@ -133,21 +133,23 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Mock file discovery
-		vi.mocked(fileSystem.findFiles).mockResolvedValue([
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
 			{ filepath: '.env', uri: 'file://.env' },
 			{ filepath: '.env.local', uri: 'file://.env.local' },
 		]);
 
 		// Mock file reading
-		vi.mocked(fileSystem.readFile).mockImplementation((filepath: string) => {
-			if (filepath === '.env')
-				return Promise.resolve('KEY1=value1\nKEY2=value2');
-			if (filepath === '.env.local') return Promise.resolve('KEY1=value1');
-			return Promise.resolve('');
-		});
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => {
+				if (filepath === '.env')
+					return Promise.resolve('KEY1=value1\nKEY2=value2');
+				if (filepath === '.env.local') return Promise.resolve('KEY1=value1');
+				return Promise.resolve('');
+			},
+		);
 
 		// Mock file stats
-		vi.mocked(fileSystem.getFileStats).mockResolvedValue({
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
 			mtime: new Date(),
 			size: 100,
 			isFile: true,
@@ -155,7 +157,7 @@ describe('createDetector', () => {
 		});
 
 		// Mock relative path conversion
-		vi.mocked(fileSystem.asRelativePath).mockImplementation(
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
 		);
 
@@ -195,12 +197,12 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Mock file discovery
-		vi.mocked(fileSystem.findFiles).mockResolvedValue([
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
 			{ filepath: '.env', uri: 'file://.env' },
 		]);
 
 		// Mock file reading to throw error
-		vi.mocked(fileSystem.readFile).mockRejectedValue(
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
 			new Error('File read error'),
 		);
 
@@ -227,15 +229,17 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Mock file reading for specific files
-		vi.mocked(fileSystem.readFile).mockImplementation((filepath: string) => {
-			if (filepath === '.env')
-				return Promise.resolve('KEY1=value1\nKEY2=value2');
-			if (filepath === '.env.local') return Promise.resolve('KEY1=value1');
-			return Promise.resolve('');
-		});
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => {
+				if (filepath === '.env')
+					return Promise.resolve('KEY1=value1\nKEY2=value2');
+				if (filepath === '.env.local') return Promise.resolve('KEY1=value1');
+				return Promise.resolve('');
+			},
+		);
 
 		// Mock file stats
-		vi.mocked(fileSystem.getFileStats).mockResolvedValue({
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
 			mtime: new Date(),
 			size: 100,
 			isFile: true,
@@ -274,7 +278,7 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Mock file discovery to throw error
-		vi.mocked(fileSystem.findFiles).mockRejectedValue(
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockRejectedValue(
 			new Error('Discovery error'),
 		);
 
@@ -313,7 +317,7 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Mock configuration for manual mode
-		vi.mocked(configuration.get).mockImplementation(
+		(configuration.get as ReturnType<typeof vi.fn>).mockImplementation(
 			(key: string, defaultValue: unknown) => {
 				if (key === 'comparisonMode') return 'manual';
 				if (key === 'compareOnlyFiles') return ['.env', '.env.production'];
@@ -322,19 +326,21 @@ describe('createDetector', () => {
 		);
 
 		// Mock file discovery
-		vi.mocked(fileSystem.findFiles).mockResolvedValue([
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
 			{ filepath: '.env', uri: 'file://.env' },
 			{ filepath: '.env.local', uri: 'file://.env.local' },
 			{ filepath: '.env.production', uri: 'file://.env.production' },
 		]);
 
 		// Mock file reading
-		vi.mocked(fileSystem.readFile).mockImplementation((filepath: string) => {
-			return Promise.resolve('KEY1=value1');
-		});
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => {
+				return Promise.resolve('KEY1=value1');
+			},
+		);
 
 		// Mock file stats
-		vi.mocked(fileSystem.getFileStats).mockResolvedValue({
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
 			mtime: new Date(),
 			size: 100,
 			isFile: true,
@@ -342,7 +348,7 @@ describe('createDetector', () => {
 		});
 
 		// Mock relative path conversion
-		vi.mocked(fileSystem.asRelativePath).mockImplementation(
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
 		);
 
@@ -373,7 +379,7 @@ describe('createDetector', () => {
 		const fileSystem = createMockFileSystem();
 
 		// Configure template mode
-		vi.mocked(configuration.get).mockImplementation(
+		(configuration.get as ReturnType<typeof vi.fn>).mockImplementation(
 			(key: string, defaultValue: unknown) => {
 				if (key === 'comparisonMode') return 'template';
 				if (key === 'templateFile') return '.env.template';
@@ -382,28 +388,31 @@ describe('createDetector', () => {
 		);
 
 		// Discover three files
-		vi.mocked(fileSystem.findFiles).mockResolvedValue([
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
 			{ filepath: '.env.template', uri: 'file://.env.template' },
 			{ filepath: '.env', uri: 'file://.env' },
 			{ filepath: '.env.local', uri: 'file://.env.local' },
 		]);
 
 		// File contents: template has K1,K2; .env has K1; .env.local has K1,K2,K3
-		vi.mocked(fileSystem.readFile).mockImplementation((filepath: string) => {
-			if (filepath === '.env.template') return Promise.resolve('K1=1\nK2=2');
-			if (filepath === '.env') return Promise.resolve('K1=1');
-			if (filepath === '.env.local') return Promise.resolve('K1=1\nK2=2\nK3=3');
-			return Promise.resolve('');
-		});
-
-		vi.mocked(fileSystem.getFileStats).mockResolvedValue({
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => {
+				if (filepath === '.env.template') return Promise.resolve('K1=1\nK2=2');
+				if (filepath === '.env') return Promise.resolve('K1=1');
+				if (filepath === '.env.local')
+					return Promise.resolve('K1=1\nK2=2\nK3=3');
+				return Promise.resolve('');
+			},
+		);
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
 			mtime: new Date(),
 			size: 100,
 			isFile: true,
 			isDirectory: false,
 		});
-
-		vi.mocked(fileSystem.asRelativePath).mockImplementation((p: string) => p);
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
+			(p: string) => p,
+		);
 
 		const detector = createDetector({
 			telemetry,
