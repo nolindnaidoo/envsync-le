@@ -350,7 +350,7 @@ A: EnvSync-LE can monitor up to 10,000 .env files efficiently. For larger worksp
 ## 📊 Test Coverage
 
 - 45 passing unit tests across 5 test suites
-- **97.33% function coverage, 89.53% line coverage**
+- **66.66% function coverage, 17.05% line coverage**
 - Tests powered by Vitest with V8 coverage
 - Runs quickly and locally: `bun test` or `bun test --coverage`
 - Coverage reports output to `coverage/` (HTML summary at `coverage/index.html`)
