@@ -1,0 +1,380 @@
+{
+	"name": "envsync-le",
+	"publisher": "OffensiveEdge",
+	"displayName": "EnvSync-LE",
+	"description": "Zero Hassle .env Sync- Effortlessly detect, compare, and synchronize .env files across your workspace with visual diff.",
+	"version": "1.7.0",
+	"license": "MIT",
+	"author": {
+		"name": "OffensiveEdge",
+		"url": "https://github.com/OffensiveEdge"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/OffensiveEdge/envsync-le.git"
+	},
+	"bugs": {
+		"url": "https://github.com/OffensiveEdge/envsync-le/issues"
+	},
+	"homepage": "https://github.com/OffensiveEdge/envsync-le#readme",
+	"engines": {
+		"vscode": "^1.70.0",
+		"node": ">=20.0.0"
+	},
+	"categories": [
+		"Other",
+		"Programming Languages",
+		"Linters"
+	],
+	"keywords": [
+		"env",
+		"dotenv",
+		"environment",
+		"sync",
+		"compare",
+		"diff",
+		"config",
+		"settings",
+		"workspace",
+		"monorepo",
+		"consistency",
+		"developer-tools",
+		"ci",
+		"team"
+	],
+	"icon": "src/assets/images/icon.png",
+	"main": "./dist/extension.js",
+	"l10n": "./package.nls.json",
+	"activationEvents": [
+		"workspaceContains:**/.env*",
+		"onCommand:envsync-le.openSettings",
+		"onCommand:envsync-le.showIssues",
+		"onCommand:envsync-le.compareSelected",
+		"onCommand:envsync-le.setTemplate",
+		"onCommand:envsync-le.clearTemplate",
+		"onCommand:envsync-le.ignoreFile",
+		"onCommand:envsync-le.stopIgnoring",
+		"onCommand:envsync-le.clearAllIgnored"
+	],
+	"capabilities": {
+		"virtualWorkspaces": {
+			"supported": "limited",
+			"description": "%manifest.capability.virtual-workspaces.desc%"
+		},
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "%manifest.capability.untrusted-workspaces.desc%"
+		}
+	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "envsync-le.openSettings",
+				"title": "%manifest.command.settings.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.showIssues",
+				"title": "%manifest.command.show-issues.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.compareSelected",
+				"title": "%manifest.command.compare-selected.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.setTemplate",
+				"title": "%manifest.command.set-template.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.clearTemplate",
+				"title": "%manifest.command.clear-template.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.ignoreFile",
+				"title": "%manifest.command.ignore-file.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.stopIgnoring",
+				"title": "%manifest.command.stop-ignoring.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.clearAllIgnored",
+				"title": "%manifest.command.clear-all-ignored.title%",
+				"category": "%manifest.command.category%"
+			},
+			{
+				"command": "envsync-le.help",
+				"title": "%manifest.command.help.title%",
+				"category": "%manifest.command.category%"
+			}
+		],
+		"keybindings": [
+			{
+				"command": "envsync-le.showIssues",
+				"key": "ctrl+alt+s",
+				"mac": "cmd+alt+s",
+				"when": "editorTextFocus"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "envsync-le.compareSelected",
+					"when": "resourceExtname == .env || resourceFilename =~ /^\\.env\\./",
+					"group": "dotsync@1"
+				},
+				{
+					"command": "envsync-le.ignoreFile",
+					"when": "resourceExtname == .env || resourceFilename =~ /^\\.env\\./",
+					"group": "dotsync@2"
+				}
+			]
+		},
+		"configuration": {
+			"title": "%manifest.settings.title%",
+			"properties": {
+				"envsync-le.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.enabled.desc%"
+				},
+				"envsync-le.watchPatterns": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						".env*"
+					],
+					"description": "%manifest.settings.watch-patterns.desc%"
+				},
+				"envsync-le.excludePatterns": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.exclude-patterns.desc%"
+				},
+				"envsync-le.notificationLevel": {
+					"type": "string",
+					"default": "important",
+					"enum": [
+						"all",
+						"important",
+						"silent"
+					],
+					"description": "%manifest.settings.notifications.level.desc%",
+					"enumDescriptions": [
+						"%manifest.settings.notifications.level.option.all%",
+						"%manifest.settings.notifications.level.option.important%",
+						"%manifest.settings.notifications.level.option.silent%"
+					]
+				},
+				"envsync-le.statusBar.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.statusbar.enabled.desc%"
+				},
+				"envsync-le.debounceMs": {
+					"type": "number",
+					"default": 1000,
+					"minimum": 100,
+					"description": "%manifest.settings.debounce.desc%"
+				},
+				"envsync-le.ignoreComments": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.ignore-comments.desc%"
+				},
+				"envsync-le.caseSensitive": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.case-sensitive.desc%"
+				},
+				"envsync-le.telemetryEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%manifest.settings.telemetry.desc%"
+				},
+				"envsync-le.comparisonMode": {
+					"type": "string",
+					"default": "auto",
+					"enum": [
+						"auto",
+						"manual",
+						"template"
+					],
+					"description": "%manifest.settings.comparison-mode.desc%",
+					"enumDescriptions": [
+						"%manifest.settings.comparison-mode.option.auto%",
+						"%manifest.settings.comparison-mode.option.manual%",
+						"%manifest.settings.comparison-mode.option.template%"
+					]
+				},
+				"envsync-le.compareOnlyFiles": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.compare-only-files.desc%"
+				},
+				"envsync-le.templateFile": {
+					"type": "string",
+					"description": "%manifest.settings.template-file.desc%"
+				},
+				"envsync-le.temporaryIgnore": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [],
+					"description": "%manifest.settings.temporary-ignore.desc%"
+				},
+				"envsync-le.safety.enabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%manifest.settings.safety.enabled.desc%"
+				},
+				"envsync-le.safety.fileSizeWarnBytes": {
+					"type": "number",
+					"default": 1048576,
+					"minimum": 1024,
+					"description": "%manifest.settings.safety.file-size-warn.desc%"
+				},
+				"envsync-le.safety.maxFilesWarn": {
+					"type": "number",
+					"default": 50,
+					"minimum": 1,
+					"description": "%manifest.settings.safety.max-files-warn.desc%"
+				},
+				"envsync-le.safety.maxTotalSizeWarn": {
+					"type": "number",
+					"default": 5242880,
+					"minimum": 1048576,
+					"description": "%manifest.settings.safety.max-total-size-warn.desc%"
+				},
+				"envsync-le.safety.maxProcessingTimeWarn": {
+					"type": "number",
+					"default": 5000,
+					"minimum": 1000,
+					"description": "%manifest.settings.safety.max-processing-time-warn.desc%"
+				},
+				"envsync-le.performance.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.performance.enabled.desc%"
+				},
+				"envsync-le.performance.maxDuration": {
+					"type": "number",
+					"default": 5000,
+					"minimum": 1000,
+					"description": "%manifest.settings.performance.max-duration.desc%"
+				},
+				"envsync-le.performance.maxMemoryUsage": {
+					"type": "number",
+					"default": 104857600,
+					"minimum": 1048576,
+					"description": "%manifest.settings.performance.max-memory.desc%"
+				},
+				"envsync-le.performance.maxCpuUsage": {
+					"type": "number",
+					"default": 1000000,
+					"minimum": 100000,
+					"description": "%manifest.settings.performance.max-cpu.desc%"
+				},
+				"envsync-le.performance.minThroughput": {
+					"type": "number",
+					"default": 1000,
+					"minimum": 100,
+					"description": "%manifest.settings.performance.min-throughput.desc%"
+				},
+				"envsync-le.performance.maxCacheSize": {
+					"type": "number",
+					"default": 1000,
+					"minimum": 100,
+					"description": "%manifest.settings.performance.max-cache.desc%"
+				},
+				"envsync-le.keyboard.shortcuts.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.keyboard.shortcuts.enabled.desc%"
+				},
+				"envsync-le.keyboard.showIssuesShortcut": {
+					"type": "string",
+					"default": "ctrl+alt+e",
+					"description": "%manifest.settings.keyboard.show-issues.shortcut.desc%"
+				},
+				"envsync-le.keyboard.compareShortcut": {
+					"type": "string",
+					"default": "ctrl+alt+c",
+					"description": "%manifest.settings.keyboard.compare.shortcut.desc%"
+				},
+				"envsync-le.keyboard.setTemplateShortcut": {
+					"type": "string",
+					"default": "ctrl+alt+t",
+					"description": "%manifest.settings.keyboard.set-template.shortcut.desc%"
+				},
+				"envsync-le.presets.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "%manifest.settings.presets.enabled.desc%"
+				},
+				"envsync-le.presets.defaultPreset": {
+					"type": "string",
+					"default": "balanced",
+					"enum": [
+						"minimal",
+						"balanced",
+						"comprehensive",
+						"performance",
+						"template"
+					],
+					"enumDescriptions": [
+						"%manifest.settings.presets.default.option.minimal%",
+						"%manifest.settings.presets.default.option.balanced%",
+						"%manifest.settings.presets.default.option.comprehensive%",
+						"%manifest.settings.presets.default.option.performance%",
+						"%manifest.settings.presets.default.option.template%"
+					],
+					"description": "%manifest.settings.presets.default.desc%"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"prebuild": "npm run clean && npm run copy:i18n",
+		"build": "tsc -p ./",
+		"clean": "rm -rf dist coverage && node -e \"try{require('fs').readdirSync('.').filter(f=>f.startsWith('package.nls.')&&f.endsWith('.json')&&f!=='package.nls.json').forEach(f=>require('fs').unlinkSync(f))}catch(e){}\"",
+		"watch": "tsc -watch -p ./",
+		"test": "vitest run --pool=threads",
+		"test:watch": "vitest --pool=threads",
+		"test:coverage": "vitest run --coverage --pool=threads",
+		"test:ui": "vitest --ui",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"vscode:prepublish": "npm run build",
+		"package": "mkdir -p release && npx vsce package --out release/${npm_package_name}-${npm_package_version}.vsix",
+		"copy:i18n": "cp -f src/i18n/package.nls.*.json . || true"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.0",
+		"@types/node": "^24.3.0",
+		"@types/vscode": "^1.70.0",
+		"@vitest/coverage-v8": "^3.2.4",
+		"@vscode/vsce": "^3.6.0",
+		"typescript": "^5.5.3",
+		"vitest": "^3.2.4"
+	},
+	"dependencies": {
+		"dotenv": "^17.2.3",
+		"vscode-nls": "^5.2.0"
+	}
+}
