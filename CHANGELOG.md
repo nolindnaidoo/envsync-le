@@ -9,6 +9,19 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
+## [Unreleased]
+
+### Fixed
+
+- **Dotted keys are compared.** `spring.datasource.url` and other dotted
+  names, which the `dotenv` loader reads, were reported as parse errors
+  and left out of every comparison. A key may now contain `.` after its
+  first character.
+- **Exclude globs read braces and character classes.** `.env.{local,test}`,
+  `apps/{web,api}/.env`, `.env.[!p]*` and `.env.[a-c]` were matched as
+  literal text, so they excluded nothing. Braces nest, a class never
+  matches `/`, and an unclosed `{` or `[` is still read literally.
+
 ## [2.2.6] - 2026-08-16
 
 ### Changed

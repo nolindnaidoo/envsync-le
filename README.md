@@ -195,7 +195,8 @@ reported, and three separate checks enforce that rather than a promise.
 
 ## Parsing notes
 
-- Keys must match `[A-Za-z_][A-Za-z0-9_-]*`; anything else left of `=` is
+- Keys must match `[A-Za-z_][A-Za-z0-9_.-]*`, so dotted names such as
+  `spring.datasource.url` count; anything else left of `=` is
   reported as a parse error for that line (the rest of the file still counts).
 - `export KEY=value` is accepted; duplicate keys count once.
 - Values quoted with `"`, `'`, or `` ` `` may span multiple lines; an
@@ -257,12 +258,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 89.95% |
-| Branches | 84.00% |
-| Functions | 93.24% |
-| Lines | 90.28% |
+| Statements | 90.22% |
+| Branches | 85.24% |
+| Functions | 93.36% |
+| Lines | 90.45% |
 
-185 test cases across 14 files, plus an integration suite that runs
+201 test cases across 15 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

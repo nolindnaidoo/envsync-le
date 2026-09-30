@@ -4,6 +4,7 @@
 //! source the extension's parser, watcher and commands share — they used
 //! to each carry their own copy and disagree.
 
+use std::fmt::Write as _;
 use std::sync::LazyLock;
 
 use regex::Regex;
@@ -84,28 +85,122 @@ pub(crate) fn should_exclude(filepath: &str, patterns: &[String]) -> bool {
 }
 
 fn glob_to_regex(pattern: &str) -> Regex {
-    // `**/` first, so it can match zero directories as well as many;
-    // translating it after `*` would leave a `/` that must be there.
-    let mut source = String::from("^");
-    let mut chars = pattern.chars().peekable();
-    while let Some(character) = chars.next() {
-        match character {
-            '*' if chars.peek() == Some(&'*') => {
-                chars.next();
-                if chars.peek() == Some(&'/') {
-                    chars.next();
-                    source.push_str("(?:.*/)?");
-                } else {
-                    source.push_str(".*");
-                }
-            }
-            '*' => source.push_str("[^/]*"),
-            '?' => source.push_str("[^/]"),
-            other => source.push_str(&regex::escape(&other.to_string())),
+    let source = format!("^{}$", translate_glob(pattern));
+    Regex::new(&source).unwrap_or_else(|_| EVERYTHING.clone())
+}
+
+/// A glob as a regex source, as the extension's `translateGlob` builds
+/// it: `**/` spans zero or more directories, `**` any run, `*` and `?`
+/// stay inside one segment, `{a,b}` is either branch (and nests), and
+/// `[abc]`, `[a-z]` and `[!abc]` are one character that is not `/`. An
+/// unclosed `{` or `[` is a literal.
+fn translate_glob(pattern: &str) -> String {
+    let chars: Vec<char> = pattern.chars().collect();
+    let mut out = String::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let c = chars[i];
+        let next = chars.get(i + 1).copied();
+        if c == '*' && next == Some('*') && chars.get(i + 2) == Some(&'/') {
+            // First, so it can match zero directories as well as many.
+            out.push_str("(?:.*/)?");
+            i += 3;
+        } else if c == '*' && next == Some('*') {
+            out.push_str(".*");
+            i += 2;
+        } else if c == '*' {
+            out.push_str("[^/]*");
+            i += 1;
+        } else if c == '?' {
+            out.push_str("[^/]");
+            i += 1;
+        } else if let Some(end) = (c == '{').then(|| closing_brace(&chars, i)).flatten() {
+            let body: String = chars[i + 1..end].iter().collect();
+            let branches: Vec<String> = split_branches(&body)
+                .iter()
+                .map(|branch| translate_glob(branch))
+                .collect();
+            let _ = write!(out, "(?:{})", branches.join("|"));
+            i = end + 1;
+        } else if let Some(end) = (c == '[').then(|| closing_bracket(&chars, i)).flatten() {
+            let body: String = chars[i + 1..end].iter().collect();
+            out.push_str(&character_class(&body));
+            i = end + 1;
+        } else {
+            out.push_str(&regex::escape(&c.to_string()));
+            i += 1;
         }
     }
-    source.push('$');
-    Regex::new(&source).unwrap_or_else(|_| EVERYTHING.clone())
+    out
+}
+
+fn closing_brace(chars: &[char], open: usize) -> Option<usize> {
+    let mut depth = 0_usize;
+    for (index, c) in chars.iter().enumerate().skip(open) {
+        match c {
+            '{' => depth += 1,
+            '}' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(index);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+/// Top-level comma-separated branches, leaving nested braces whole.
+fn split_branches(body: &str) -> Vec<String> {
+    let mut branches = Vec::new();
+    let mut depth = 0_i32;
+    let mut current = String::new();
+    for c in body.chars() {
+        match c {
+            '{' => depth += 1,
+            '}' => depth -= 1,
+            ',' if depth == 0 => {
+                branches.push(std::mem::take(&mut current));
+                continue;
+            }
+            _ => {}
+        }
+        current.push(c);
+    }
+    branches.push(current);
+    branches
+}
+
+/// The `]` closing the `[` at `open`; a `]` first in the class is literal.
+fn closing_bracket(chars: &[char], open: usize) -> Option<usize> {
+    let mut i = open + 1;
+    if matches!(chars.get(i), Some('!' | '^')) {
+        i += 1;
+    }
+    if chars.get(i) == Some(&']') {
+        i += 1;
+    }
+    (i..chars.len()).find(|&index| chars[index] == ']')
+}
+
+/// The extension writes a positive class as `(?![/])[…]`; this engine has
+/// no lookahead, and intersecting with `[^/]` says the same thing.
+fn character_class(body: &str) -> String {
+    let negated = body.starts_with(['!', '^']);
+    let members: String = body
+        .chars()
+        .skip(usize::from(negated))
+        .map(|c| match c {
+            '\\' | ']' | '[' | '^' | '&' | '~' => format!("\\{c}"),
+            other => other.to_string(),
+        })
+        .collect();
+    if negated {
+        format!("[^/{members}]")
+    } else {
+        format!("[{members}&&[^/]]")
+    }
 }
 
 /// A pattern that cannot be compiled excludes nothing rather than
@@ -117,6 +212,35 @@ static EVERYTHING: LazyLock<Regex> =
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Braces and classes, as the extension reads them; `glob.test.ts`
+    /// there holds the same table.
+    #[test]
+    fn braces_and_classes_match_as_the_extension_matches() {
+        for (pattern, file, expected) in [
+            (".env.{local,test}", ".env.local", true),
+            (".env.{local,test}", ".env.prod", false),
+            (".env.{a,{b,c}}", ".env.c", true),
+            (".env.[pd]*", ".env.prod", true),
+            (".env.[pd]*", ".env.local", false),
+            (".env.[!p]*", ".env.prod", false),
+            (".env.[!p]*", ".env.local", true),
+            (".env.[a-c]", ".env.b", true),
+            ("apps/{web,api}/.env", "apps/api/.env", true),
+            ("apps/{web,api}/.env", "apps/cli/.env", false),
+            (".env.{local", ".env.{local", true),
+            (".env.[x", ".env.[x", true),
+            ("**/.env.{dev,prod}", "a/b/.env.dev", true),
+            ("a[/]b", "a/b", false),
+            (".env.[]]", ".env.]", true),
+        ] {
+            assert_eq!(
+                should_exclude(file, &[pattern.to_string()]),
+                expected,
+                "{pattern} against {file}"
+            );
+        }
+    }
 
     #[test]
     fn the_dotenv_names_are_recognised() {

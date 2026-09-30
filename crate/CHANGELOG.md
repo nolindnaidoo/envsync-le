@@ -7,6 +7,19 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **Dotted keys are compared.** `spring.datasource.url` and other dotted
+  names, which the `dotenv` loader reads, were reported as parse errors
+  and left out of every comparison. A key may now contain `.` after its
+  first character.
+- **Exclude globs read braces and character classes.** `.env.{local,test}`,
+  `apps/{web,api}/.env`, `.env.[!p]*` and `.env.[a-c]` were matched as
+  literal text, so they excluded nothing. Braces nest, a class never
+  matches `/`, and an unclosed `{` or `[` is still read literally.
+
 ## [0.2.1] - 2026-08-16
 
 ### Fixed

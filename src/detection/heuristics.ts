@@ -62,43 +62,91 @@ export function shouldExcludeFile(
 }
 
 /**
- * Translate the token at `index`, returning its regex and how much it consumed.
- *
- * The longest form is matched first, which is what the nested branches this
- * replaced were expressing: `**\/` before `**`, `**` before `*`.
+ * A glob as a regex source: `**\/` spans zero or more directories, `**` any
+ * run, `*` and `?` stay inside one segment, `{a,b}` is either branch (and
+ * nests), `[abc]`, `[a-z]` and `[!abc]` are one character that is not `/`.
+ * An unclosed `{` or `[` is a literal.
  */
-function translateGlobToken(
-	pattern: string,
-	index: number,
-): readonly [string, number] {
-	const c = pattern[index] as string;
+function translateGlob(pattern: string): string {
+	let out = '';
+	let i = 0;
+	while (i < pattern.length) {
+		const c = pattern[i] as string;
+		if (c === '*' && pattern[i + 1] === '*' && pattern[i + 2] === '/') {
+			out += '(?:.*/)?';
+			i += 3;
+		} else if (c === '*' && pattern[i + 1] === '*') {
+			out += '.*';
+			i += 2;
+		} else if (c === '*') {
+			out += '[^/]*';
+			i += 1;
+		} else if (c === '?') {
+			out += '[^/]';
+			i += 1;
+		} else if (c === '{' && closingBrace(pattern, i) !== -1) {
+			const end = closingBrace(pattern, i);
+			const branches = splitBranches(pattern.slice(i + 1, end));
+			out += `(?:${branches.map(translateGlob).join('|')})`;
+			i = end + 1;
+		} else if (c === '[' && closingBracket(pattern, i) !== -1) {
+			const end = closingBracket(pattern, i);
+			out += characterClass(pattern.slice(i + 1, end));
+			i = end + 1;
+		} else {
+			out += escapeRegexChar(c);
+			i += 1;
+		}
+	}
+	return out;
+}
 
-	if (c === '*' && pattern[index + 1] === '*' && pattern[index + 2] === '/') {
-		return ['(?:.*/)?', 3]; // '**/' spans zero or more directories
+/** The index of the `}` closing the `{` at `open`, or -1. */
+function closingBrace(pattern: string, open: number): number {
+	let depth = 0;
+	for (let i = open; i < pattern.length; i++) {
+		if (pattern[i] === '{') depth++;
+		else if (pattern[i] === '}' && --depth === 0) return i;
 	}
-	if (c === '*' && pattern[index + 1] === '*') {
-		return ['.*', 2];
+	return -1;
+}
+
+/** Top-level comma-separated branches, leaving nested braces whole. */
+function splitBranches(body: string): string[] {
+	const branches: string[] = [];
+	let depth = 0;
+	let start = 0;
+	for (let i = 0; i < body.length; i++) {
+		if (body[i] === '{') depth++;
+		else if (body[i] === '}') depth--;
+		else if (body[i] === ',' && depth === 0) {
+			branches.push(body.slice(start, i));
+			start = i + 1;
+		}
 	}
-	if (c === '*') {
-		return ['[^/]*', 1];
+	branches.push(body.slice(start));
+	return branches;
+}
+
+/** The `]` closing the `[` at `open`; a `]` first in the class is literal. */
+function closingBracket(pattern: string, open: number): number {
+	let i = open + 1;
+	if (pattern[i] === '!' || pattern[i] === '^') i++;
+	if (pattern[i] === ']') i++;
+	for (; i < pattern.length; i++) {
+		if (pattern[i] === ']') return i;
 	}
-	if (c === '?') {
-		return ['[^/]', 1];
-	}
-	return [escapeRegexChar(c), 1];
+	return -1;
+}
+
+function characterClass(body: string): string {
+	const negated = body.startsWith('!') || body.startsWith('^');
+	const members = (negated ? body.slice(1) : body).replace(/[\\\]^]/g, '\\$&');
+	return negated ? `[^/${members}]` : `(?![/])[${members}]`;
 }
 
 function globToRegex(pattern: string): RegExp {
-	let out = '';
-	let i = 0;
-
-	while (i < pattern.length) {
-		const [translated, consumed] = translateGlobToken(pattern, i);
-		out += translated;
-		i += consumed;
-	}
-
-	return new RegExp(`^${out}$`);
+	return new RegExp(`^${translateGlob(pattern)}$`);
 }
 
 function escapeRegexChar(c: string): string {
