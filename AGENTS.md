@@ -337,8 +337,8 @@ Order matters beyond this repo: npm must be published *before* any Zed registry 
 
 ## Known limitations (documented, not bugs)
 
-- Keys must match `[A-Za-z_][A-Za-z0-9_-]*`; exotic keys (dots, unicode) are reported as parse errors rather than compared.
+- Keys must match `[A-Za-z_][A-Za-z0-9_.-]*`, the `dotenv` loader's own charset; non-ASCII keys, which `dotenv` does not read either, are reported as parse errors rather than compared.
 - An unterminated quoted value swallows the remainder of the file (dotenv itself behaves this way); it is reported as a parse error.
 - Values are never parsed beyond quote tracking — inline `#` comments, escapes, and interpolation are irrelevant to key comparison and ignored.
-- Glob support is `*`, `**`, `?` only — no braces, no character classes.
+- Exclude globs support `*`, `**`, `?`, `{a,b}` (nesting) and `[abc]`/`[a-z]`/`[!abc]`; a class never matches `/`, and an unclosed `{` or `[` is literal. The crate's `translate_glob` and `glob.test.ts` hold the two sides to one table.
 - `watchPatterns` are passed directly to `createFileSystemWatcher`; bare patterns like `.env*` watch workspace roots, `**/.env*` watches subdirectories (at more cost).

@@ -122,7 +122,14 @@ function generate(seeded: Seeded): Document {
 				lines.push(`JUST_A_WORD_${index}`);
 				break;
 			case 3:
-				lines.push(`2BAD_${index}=${value}`);
+				// An invalid name, a dotted one, and one that starts with a dot.
+				lines.push(
+					seeded.pick([
+						`2BAD_${index}=${value}`,
+						`app.key_${index}.url=${value}`,
+						`.hidden_${index}=${value}`,
+					]),
+				);
 				break;
 			case 4:
 				lines.push(`export ${key}=${value}`);

@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 /// A key must look like an environment variable. Anything else to the
 /// left of `=` is a parse error naming its line rather than a key.
 static KEY: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_-]*$").expect("a constant pattern compiles")
+    Regex::new(r"^[a-zA-Z_][a-zA-Z0-9_.-]*$").expect("a constant pattern compiles")
 });
 
 /// The characters JavaScript's `String.prototype.trim` removes, which is
@@ -225,6 +225,19 @@ mod tests {
         assert_eq!(parsed.errors.len(), 2);
         assert!(parsed.errors[0].message.contains("Invalid key format"));
         assert!(parsed.errors[1].message.contains("Empty key"));
+    }
+
+    /// Dotted names are what Spring and other Java stacks put in a `.env`,
+    /// and the `dotenv` reference loader reads them.
+    #[test]
+    fn a_dotted_key_is_a_key() {
+        let parsed = parse("spring.datasource.url=x\nlogging.level.root=INFO\n");
+        assert_eq!(parsed.keys, ["spring.datasource.url", "logging.level.root"]);
+        assert!(parsed.errors.is_empty());
+        assert!(
+            !parse(".hidden=1").errors.is_empty(),
+            "a key still starts with a letter or _"
+        );
     }
 
     #[test]

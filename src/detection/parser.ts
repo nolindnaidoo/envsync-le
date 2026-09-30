@@ -16,7 +16,7 @@ import type { ParseError, ParseResult } from '../types';
  *   swallows the remainder of the file (matching dotenv's behavior).
  */
 
-const KEY_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_-]*$/;
+const KEY_PATTERN = /^[a-zA-Z_][a-zA-Z0-9_.-]*$/;
 
 export function parseDotenvFile(
 	content: string,

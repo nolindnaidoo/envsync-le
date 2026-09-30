@@ -42,6 +42,19 @@ describe('parseDotenvFile', () => {
 		expect(result.errors).toHaveLength(1);
 	});
 
+	it('should accept a dotted key, as the dotenv loader does', () => {
+		const result = parseDotenvFile(
+			'spring.datasource.url=x\nlogging.level.root=INFO\n',
+			'test.env',
+		);
+		expect(result.keys).toEqual([
+			'spring.datasource.url',
+			'logging.level.root',
+		]);
+		expect(result.errors).toEqual([]);
+		expect(parseDotenvFile('.hidden=1', 'test.env').errors).not.toEqual([]);
+	});
+
 	it('should accept an export prefix', () => {
 		const result = parseDotenvFile('export API_KEY=abc', 'test.env');
 
