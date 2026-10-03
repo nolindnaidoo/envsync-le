@@ -94,7 +94,7 @@ Most hosts read a JSON config. Add one entry:
 }
 ```
 
-`-y` skips the install prompt on first run. Pin a version if you would rather not track releases — `envsync-le-mcp@2.2.7`.
+`-y` skips the install prompt on first run. Pin a version if you would rather not track releases — `envsync-le-mcp@2.2.8`.
 
 Prefer not to go through `npx` on every launch? Install it once and point at the binary instead:
 
