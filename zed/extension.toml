@@ -1,7 +1,7 @@
 id = "envsync-le"
 name = "EnvSync-LE"
 description = "Compare dotenv files and report which keys are missing or extra, by name only."
-version = "2.2.7"
+version = "2.2.8"
 schema_version = 1
 authors = ["nolindnaidoo"]
 repository = "https://github.com/nolindnaidoo/envsync-le"

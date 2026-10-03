@@ -17,13 +17,13 @@
 		"url": "https://github.com/nolindnaidoo/envsync-le",
 		"source": "github"
 	},
-	"version": "2.2.7",
+	"version": "2.2.8",
 	"packages": [
 		{
 			"registryType": "npm",
 			"registryBaseUrl": "https://registry.npmjs.org",
 			"identifier": "envsync-le-mcp",
-			"version": "2.2.7",
+			"version": "2.2.8",
 			"runtimeHint": "npx",
 			"transport": {
 				"type": "stdio"
