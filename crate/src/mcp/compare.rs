@@ -76,7 +76,7 @@ pub(crate) fn definition() -> Value {
                     "maximum": MAX_MAX_RESULTS,
                     "default": DEFAULT_MAX_RESULTS,
                     "description": format!(
-                        "Cap on returned mismatches (default {DEFAULT_MAX_RESULTS}). \
+                        "Cap on returned key mismatches (default {DEFAULT_MAX_RESULTS}). \
                          meta.truncated reports whether any were dropped."
                     ),
                 },
