@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "Sélectionnez le fichier .env à utiliser comme modèle",
+	"Enjoying {0}? A rating helps other developers find it.": "Vous appréciez {0} ? Une note aide d’autres développeurs à le trouver.",
+	"Rate": "Noter",
+	"Later": "Plus tard",
+	"Don't Ask Again": "Ne plus demander",
 	"Select .env file to ignore": "Sélectionnez le fichier .env à ignorer",
 	"Currently ignored": "Actuellement ignoré",
 	"Select file to stop ignoring": "Sélectionnez le fichier pour ne plus l'ignorer",

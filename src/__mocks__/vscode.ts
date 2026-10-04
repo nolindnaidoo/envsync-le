@@ -416,6 +416,10 @@ export const executedBuiltins: Array<{ id: string; args: unknown[] }> = [];
 
 // ------------------------------------------------- extension context
 
+export const env = {
+	openExternal: async (_uri: unknown) => true,
+};
+
 export function _createExtensionContext() {
 	const globalStateStore = new Map<string, unknown>();
 	return {
@@ -428,6 +432,11 @@ export function _createExtensionContext() {
 			update: async (key: string, value: unknown) => {
 				globalStateStore.set(key, value);
 			},
+			setKeysForSync: (_keys: readonly string[]) => {},
+		},
+		extension: {
+			id: 'nolindnaidoo.envsync-le',
+			packageJSON: { displayName: 'EnvSync-LE' },
 		},
 	};
 }

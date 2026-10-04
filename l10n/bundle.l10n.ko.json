@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "템플릿으로 사용할 .env 파일을 선택하세요",
+	"Enjoying {0}? A rating helps other developers find it.": "{0}이(가) 마음에 드시나요? 평점을 남기면 다른 개발자가 찾는 데 도움이 됩니다.",
+	"Rate": "평가하기",
+	"Later": "나중에",
+	"Don't Ask Again": "다시 묻지 않기",
 	"Select .env file to ignore": "무시할 .env 파일을 선택하세요",
 	"Currently ignored": "현재 무시됨",
 	"Select file to stop ignoring": "무시하지 않도록 할 파일을 선택하세요",

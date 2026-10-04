@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "Chọn tệp .env để sử dụng làm mẫu",
+	"Enjoying {0}? A rating helps other developers find it.": "Bạn thích {0}? Một lượt đánh giá giúp các nhà phát triển khác tìm thấy tiện ích này.",
+	"Rate": "Đánh giá",
+	"Later": "Để sau",
+	"Don't Ask Again": "Không hỏi lại",
 	"Select .env file to ignore": "Chọn tệp .env cần bỏ qua",
 	"Currently ignored": "Hiện đang bị bỏ qua",
 	"Select file to stop ignoring": "Chọn tệp để ngừng bỏ qua",

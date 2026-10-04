@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import type { Detector } from '../detection/detector';
 import type { FileSystem, UserInterface } from '../interfaces';
 import type { Telemetry } from '../interfaces/telemetry';
+import type { RatingPrompt } from '../ui/ratingPrompt';
 import { errorMessage } from '../utils/errors';
 
 export function registerShowIssuesCommand(
@@ -11,9 +12,10 @@ export function registerShowIssuesCommand(
 		detector: Detector;
 		fileSystem: FileSystem;
 		ui: UserInterface;
+		ratingPrompt: RatingPrompt;
 	}>,
 ): void {
-	const { telemetry, detector, fileSystem, ui } = deps;
+	const { telemetry, detector, fileSystem, ui, ratingPrompt } = deps;
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('envsync-le.showIssues', async () => {
@@ -28,10 +30,13 @@ export function registerShowIssuesCommand(
 
 			if (shouldShowInSyncMessage(report)) {
 				showInSyncMessage();
+				// Not awaited: it resolves when the toast is answered, and a command that
+				// waited on that would stay pending for as long as the toast is ignored.
+				void ratingPrompt.recordSuccess();
 				return;
 			}
 
-			await displayIssuesReport(report, fileSystem, ui);
+			await displayIssuesReport(report, fileSystem, ui, ratingPrompt);
 		}),
 	);
 }
@@ -65,11 +70,13 @@ async function displayIssuesReport(
 	},
 	fileSystem: FileSystem,
 	ui: UserInterface,
+	ratingPrompt: RatingPrompt,
 ): Promise<void> {
 	const content = buildReportContent(report, fileSystem);
 
 	try {
 		await showMarkdownDocument(content);
+		void ratingPrompt.recordSuccess();
 	} catch (error) {
 		showDisplayError(error, ui);
 	}
