@@ -1,6 +1,6 @@
 {
 	"name": "envsync-le-mcp",
-	"version": "2.2.8",
+	"version": "2.2.9",
 	"mcpName": "io.github.nolindnaidoo/envsync-le",
 	"description": "Compare dotenv files and report which keys are missing or extra, by name only.",
 	"keywords": [
