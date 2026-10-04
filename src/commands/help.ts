@@ -75,7 +75,7 @@ status bar toggle, debounce delay, and comparison mode.
 
 Enjoying it? A rating helps more than you'd think:
 - Rate on VS Code Marketplace: https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le&ssr=false#review-details
-- Rate on Open VSX: https://open-vsx.org/extension/OffensiveEdge/envsync-le/reviews
+- Rate on Open VSX: https://open-vsx.org/extension/nolindnaidoo/envsync-le/reviews
 
 Built by nolindnaidoo (https://github.com/nolindnaidoo) — MIT licensed.
 		`.trim();
