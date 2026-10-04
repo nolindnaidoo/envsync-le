@@ -2,6 +2,7 @@ import type * as vscode from 'vscode';
 import type { Detector } from '../detection/detector';
 import type { Configuration, FileSystem, UserInterface } from '../interfaces';
 import type { Telemetry } from '../interfaces/telemetry';
+import type { RatingPrompt } from '../ui/ratingPrompt';
 import { registerCompareSelectedCommand } from './compareSelected';
 import { registerHelpCommand } from './help';
 import { registerIgnoreFileCommand } from './ignoreFile';
@@ -18,6 +19,7 @@ export function registerAllCommands(
 		fileSystem: FileSystem;
 		ui: UserInterface;
 		configuration: Configuration;
+		ratingPrompt: RatingPrompt;
 	}>,
 ): void {
 	registerCompareSelectedCommand(context, deps);

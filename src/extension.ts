@@ -14,6 +14,7 @@ import { readConfig } from './config/config';
 import { registerOpenSettingsCommand } from './config/settings';
 import { createDetector } from './detection/detector';
 import { registerMcpProvider } from './mcp/provider';
+import { createRatingPromptFor } from './ui/ratingPrompt';
 
 export function activate(context: vscode.ExtensionContext): void {
 	// Create core services using factory pattern
@@ -59,6 +60,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		fileSystem,
 		ui: createVSCodeUserInterface(),
 		configuration,
+		ratingPrompt: createRatingPromptFor(context, telemetry.event),
 	});
 
 	// Setup file watching (honors patterns/excludes)

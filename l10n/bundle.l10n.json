@@ -1,5 +1,9 @@
 {
   "Failed to check dotenv sync: {0}": "Failed to check dotenv sync: {0}",
+  "Enjoying {0}? A rating helps other developers find it.": "Enjoying {0}? A rating helps other developers find it.",
+  "Rate": "Rate",
+  "Later": "Later",
+  "Don't Ask Again": "Don't Ask Again",
   "Failed to show issues: {0}": "Failed to show issues: {0}",
   "No .env files found in workspace": "No .env files found in workspace",
   "Select .env file to use as template": "Select .env file to use as template",

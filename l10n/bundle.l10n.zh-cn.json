@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "选择要作为模板使用的 .env 文件",
+	"Enjoying {0}? A rating helps other developers find it.": "喜欢 {0} 吗？评分可以帮助其他开发者发现它。",
+	"Rate": "评分",
+	"Later": "稍后",
+	"Don't Ask Again": "不再询问",
 	"Select .env file to ignore": "选择要忽略的 .env 文件",
 	"Currently ignored": "当前被忽略",
 	"Select file to stop ignoring": "选择要停止忽略的文件",

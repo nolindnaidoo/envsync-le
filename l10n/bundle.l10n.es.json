@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "Selecciona el archivo .env que quieras utilizar como plantilla",
+	"Enjoying {0}? A rating helps other developers find it.": "¿Te gusta {0}? Una valoración ayuda a otros desarrolladores a encontrarlo.",
+	"Rate": "Valorar",
+	"Later": "Más tarde",
+	"Don't Ask Again": "No volver a preguntar",
 	"Select .env file to ignore": "Selecciona el archivo .env que deseas ignorar",
 	"Currently ignored": "Actualmente ignorado",
 	"Select file to stop ignoring": "Selecciona el archivo para dejar de ignorarlo",

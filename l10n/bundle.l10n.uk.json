@@ -1,5 +1,9 @@
 {
 	"Select .env file to use as template": "Виберіть файл .env, який потрібно використовувати як шаблон",
+	"Enjoying {0}? A rating helps other developers find it.": "Подобається {0}? Оцінка допомагає іншим розробникам знайти це розширення.",
+	"Rate": "Оцінити",
+	"Later": "Пізніше",
+	"Don't Ask Again": "Більше не питати",
 	"Select .env file to ignore": "Виберіть файл .env, який потрібно проігнорувати",
 	"Currently ignored": "Наразі ігнорується",
 	"Select file to stop ignoring": "Виберіть файл, який більше не слід ігнорувати",
