@@ -182,7 +182,7 @@ Two tools, both returning `{ ok, data, diagnostics, meta }`:
 | Where | What you get | Install |
 |---|---|---|
 | **VS Code** | The same comparison, live, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le) |
-| **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/OffensiveEdge/envsync-le) |
+| **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/nolindnaidoo/envsync-le) |
 | **Any MCP agent, via Node** | `compare_env_files` over stdio | `npx envsync-le-mcp` · [npm](https://www.npmjs.com/package/envsync-le-mcp) |
 | **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
 

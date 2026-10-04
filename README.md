@@ -11,8 +11,8 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le">
     <img src="https://img.shields.io/badge/Install%20from-VS%20Code-blue?style=for-the-badge&logo=visualstudiocode" alt="Install from VS Code Marketplace" />
   </a>
-  <a href="https://open-vsx.org/extension/OffensiveEdge/envsync-le">
-    <img src="https://img.shields.io/open-vsx/dt/OffensiveEdge/envsync-le?style=for-the-badge&label=Open%20VSX&color=blue" alt="Open VSX downloads" />
+  <a href="https://open-vsx.org/extension/nolindnaidoo/envsync-le">
+    <img src="https://img.shields.io/open-vsx/dt/nolindnaidoo/envsync-le?style=for-the-badge&label=Open%20VSX&color=blue" alt="Open VSX downloads" />
   </a>
   <a href="https://www.npmjs.com/package/envsync-le-mcp">
     <img src="https://img.shields.io/npm/v/envsync-le-mcp?style=for-the-badge&label=MCP%20server&color=blue&logo=npm" alt="envsync-le-mcp on npm" />
@@ -33,7 +33,7 @@
 
 > **Useful?** A star or rating is how other developers find it —
 > [★ GitHub](https://github.com/nolindnaidoo/envsync-le) ·
-> [★ Open VSX](https://open-vsx.org/extension/OffensiveEdge/envsync-le/reviews) ·
+> [★ Open VSX](https://open-vsx.org/extension/nolindnaidoo/envsync-le/reviews) ·
 > [★ Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le&ssr=false#review-details)
 
 ## What it does
@@ -54,7 +54,7 @@ in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 | Where | What you get | Install |
 |---|---|---|
 | **VS Code** | The same comparison, live, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le) |
-| **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/OffensiveEdge/envsync-le) |
+| **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/nolindnaidoo/envsync-le) |
 | **A terminal or a CI step** | The same run over a whole tree, with exit codes | `cargo install envsync-le` · [crates.io](https://crates.io/crates/envsync-le) |
 | **Any MCP agent, via Node** | `compare_env_files` over stdio | `npx envsync-le-mcp` · [npm](https://www.npmjs.com/package/envsync-le-mcp) |
 | **Zed** | The MCP server as a context server | [add it by hand](https://zed.dev/docs/ai/mcp) *(no listing yet)* |
