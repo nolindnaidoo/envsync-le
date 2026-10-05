@@ -122,8 +122,6 @@ benchmark-results.json
 !samples/.env.example
 !samples/.env.production
 
-# Zed extension build output (Cargo.lock IS committed — it pins the wasm build)
-zed/target/
 mcp/server.js
 mcp/LICENSE
 
