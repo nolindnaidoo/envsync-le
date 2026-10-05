@@ -95,14 +95,6 @@
 				"category": "%manifest.command.category%"
 			}
 		],
-		"keybindings": [
-			{
-				"command": "envsync-le.showIssues",
-				"key": "ctrl+alt+s",
-				"mac": "cmd+alt+s",
-				"when": "editorTextFocus"
-			}
-		],
 		"menus": {
 			"explorer/context": [
 				{

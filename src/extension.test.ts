@@ -89,7 +89,7 @@ describe('commands (through the real wiring)', () => {
 		const doc = _openedDocuments().at(-1);
 		expect(doc?.languageId).toBe('markdown');
 		expect(doc?.getText()).toContain('EnvSync-LE Help');
-		expect(doc?.getText()).toContain('Ctrl+Alt+S');
+		expect(doc?.getText()).toContain('Show Details');
 	});
 
 	it('showIssues reports when no env files exist', async () => {
