@@ -45,7 +45,7 @@ in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 
 - **Automatic checks** — a debounced sync check runs whenever a watched `.env` file changes
 - **Status bar counter** — the current issue count, one click away from the full report
-- **Markdown report** — `Show Details` (`Ctrl+Alt+S` / `Cmd+Alt+S`) lists every missing key per file
+- **Markdown report** — `Show Details` lists every missing key per file
 - **Three comparison modes** — `auto` (union of all keys), `manual` (only the files you list), `template` (validate everything against one reference file; also reports keys a file has that the template lacks)
 - **Ignore list** — temporarily exclude files (e.g. `.env.example`) from checking
 
@@ -164,7 +164,7 @@ reported, and three separate checks enforce that rather than a promise.
 
 | Command | Description |
 |---|---|
-| `EnvSync-LE: Show Details` (`Ctrl+Alt+S` / `Cmd+Alt+S`) | Run a sync check and open the markdown report |
+| `EnvSync-LE: Show Details` | Run a sync check and open the markdown report |
 | `EnvSync-LE: Compare Files` | Compare the key sets of two or more selected `.env` files |
 | `EnvSync-LE: Set Template` | Mark a `.env` file as the reference template |
 | `EnvSync-LE: Clear Template` | Return to automatic comparison |
@@ -173,6 +173,8 @@ reported, and three separate checks enforce that rather than a promise.
 | `EnvSync-LE: Clear Ignored Files` | Empty the ignore list |
 | `EnvSync-LE: Open Settings` | Open VS Code settings filtered to EnvSync-LE |
 | `EnvSync-LE: Help & Troubleshooting` | Built-in documentation |
+
+No command is bound to a key by default. Give any of them one under **Keyboard Shortcuts** in the editor.
 
 ## Settings
 

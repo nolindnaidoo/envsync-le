@@ -16,7 +16,7 @@ export function registerHelpCommand(
 # EnvSync-LE Help
 
 ## Commands
-- **Show Details** (Ctrl+Alt+S / Cmd+Alt+S): Run a sync check and open a markdown report of missing keys and parse errors
+- **Show Details**: Run a sync check and open a markdown report of missing keys and parse errors
 - **Compare Files**: Compare the key sets of two or more selected .env files
 - **Set Template**: Mark a .env file as the reference template; all files are compared against it
 - **Clear Template**: Remove the template and return to automatic comparison
@@ -38,7 +38,7 @@ does not read or compare values.
 
 ## Quick Start
 1. Open a workspace containing more than one .env file (.env, .env.local, ...)
-2. Press **Ctrl+Alt+S** (Mac: **Cmd+Alt+S**) or run "EnvSync-LE: Show Details"
+2. Run "EnvSync-LE: Show Details"
 3. Review the report of missing keys per file
 4. Optionally set a template file as the source of truth
 
