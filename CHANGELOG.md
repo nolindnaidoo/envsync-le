@@ -9,7 +9,7 @@ This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
 separate product on its own cadence and keeps its own
 [CHANGELOG](crate/CHANGELOG.md).
 
-## [Unreleased]
+## [2.3.0] - 2026-10-07
 
 ### Added
 
@@ -21,6 +21,7 @@ separate product on its own cadence and keeps its own
   after a failed run, and it is never shown if you have set
   `notificationsLevel` to `important` or `silent` yourself. The answer
   follows you through Settings Sync. Translated into all 12 locales.
+
 ### Changed
 
 - No command is bound to a key by default any more. The one default this
@@ -37,6 +38,7 @@ separate product on its own cadence and keeps its own
   description or any part of its schema. Six of the ten had drifted.
 - The npm README test also checks that every value an argument offers is
   named in that argument's row.
+
 ### Fixed
 
 - The Open VSX links and the Open VSX downloads badge in the README, the npm
