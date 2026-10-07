@@ -16,7 +16,7 @@ with its own `CLAUDE.md`.
   lint, or add a commented relaxation to `[lints.clippy]` in
   `Cargo.toml`. One is there already, with its reason.
 - New logic goes in `detect/` when it is pure (it must then be
-  unit-tested, 75% module coverage floor), and in `discover.rs` /
+  unit-tested, 70% module coverage floor), and in `discover.rs` /
   `scan.rs` only when it needs the filesystem. A `std::fs` call in
   `detect/` fails a CI job.
 - **It never reads a value.** Only key names are parsed, compared or
