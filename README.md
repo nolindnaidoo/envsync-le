@@ -225,7 +225,7 @@ setting of its own.
 - **Values are never read, displayed, or logged** — only key names are compared.
 - **The MCP server returns key names, never values.** A dotenv file is where credentials live, so the server reports which keys are missing or extra and nothing about what they contain. It takes file contents as an argument rather than paths, so it reads no files and makes no network calls; the bundle gate asserts a known value is absent from its response.
 - Error notifications redact home directories and credential-shaped fragments.
-- **One rating prompt, at most twice.** After 3 successful uses, on at least the second day you use it, the extension asks once whether you would rate it, and once more on the 25th use if you chose *Later* or dismissed it. *Don't Ask Again* ends it. Setting `notificationLevel` to `important` or `silent` yourself turns it off. The counts are kept in VS Code's extension storage and nothing is sent anywhere; *Rate* opens the listing you installed from — the VS Code Marketplace or Open VSX — in your browser.
+- **One rating prompt, at most twice.** On the 3rd successful use the extension asks once whether you would rate it, and once more on the 20th if you chose *Later* or dismissed it. *Don't Ask Again* ends it. Setting `notificationLevel` to `important` or `silent` yourself turns it off. The counts are kept in VS Code's extension storage and nothing is sent anywhere; *Rate* opens the listing you installed from — the VS Code Marketplace or Open VSX — in your browser.
 
 ## Documentation
 
@@ -259,12 +259,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 90.76% |
-| Branches | 86.17% |
-| Functions | 93.79% |
-| Lines | 90.92% |
+| Statements | 90.73% |
+| Branches | 86.00% |
+| Functions | 93.77% |
+| Lines | 90.89% |
 
-244 test cases across 19 files, plus an integration suite that runs
+242 test cases across 19 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 
