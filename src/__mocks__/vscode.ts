@@ -417,6 +417,8 @@ export const executedBuiltins: Array<{ id: string; args: unknown[] }> = [];
 // ------------------------------------------------- extension context
 
 export const env = {
+	/** What `vscode.env.appName` reports; `_setAppName` makes it another host. */
+	appName: 'Visual Studio Code',
 	openExternal: async (_uri: unknown) => true,
 };
 
@@ -454,6 +456,7 @@ export const FileType = {
 
 /** Reset all mutable mock state between tests. */
 export function _resetMockState(): void {
+	env.appName = 'Visual Studio Code';
 	findFilesError = undefined;
 	configReadError = undefined;
 	configStore.clear();
@@ -485,3 +488,7 @@ export const l10n = {
 		});
 	},
 };
+
+export function _setAppName(name: string): void {
+	env.appName = name;
+}
