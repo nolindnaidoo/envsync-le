@@ -28,7 +28,7 @@
 ---
 
 <p align="center">
-  <img src="src/assets/images/demo.gif" alt="EnvSync-LE Demo" style="max-width: 100%; height: auto;" />
+  <img src="assets/demos/editor.gif" alt="EnvSync-LE in VS Code" style="max-width: 100%; height: auto;" />
 </p>
 
 > **Useful?** A star or rating is how other developers find it —
@@ -67,6 +67,10 @@ The same engine runs as an [MCP](https://modelcontextprotocol.io) server, so an 
 | **VS Code** 1.101+ | Nothing to install — the extension registers `compare_env_files` with agent mode |
 | **Claude Code** | `claude mcp add envsync-le -- npx -y envsync-le-mcp` |
 | **Cursor, Windsurf, anything else** | point it at `npx envsync-le-mcp` |
+
+<p align="center">
+  <img src="assets/demos/mcp.gif" alt="An agent in Claude Code calling the envsync-le MCP server" style="max-width: 100%; height: auto;" />
+</p>
 
 ```
 compare_env_files(files[], mode?, templatePath?, caseSensitive?, maxResults?)
@@ -145,6 +149,10 @@ envsync-le .                            # have these environments drifted?
 envsync-le --template .env.example .    # will this deploy break?
 envsync-le mcp                          # the same comparison over MCP on stdio
 ```
+
+<p align="center">
+  <img src="assets/demos/cli.gif" alt="envsync-le in a terminal" style="max-width: 100%; height: auto;" />
+</p>
 
 ```
 .env: missing STRIPE_KEY, SENTRY_DSN (in .env.example)
