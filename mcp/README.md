@@ -15,6 +15,8 @@
   </a>
 </p>
 
+![An agent in Claude Code calling the envsync-le MCP server](https://raw.githubusercontent.com/nolindnaidoo/envsync-le/main/assets/demos/mcp.gif)
+
 An [MCP](https://modelcontextprotocol.io) server that compares dotenv files and reports
 which keys are missing from which — names only, never values — the comparison
 engine behind the

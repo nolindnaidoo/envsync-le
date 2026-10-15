@@ -1,0 +1,27 @@
+{
+  "files": [
+    {
+      "from": "env.staging",
+      "to": ".env.staging"
+    },
+    {
+      "from": "env.production",
+      "to": ".env.production"
+    },
+    {
+      "from": "env.example",
+      "to": ".env.example"
+    }
+  ],
+  "steps": [
+    {
+      "wait": 2500
+    },
+    {
+      "command": "EnvSync-LE: Show Details"
+    },
+    {
+      "wait": 5000
+    }
+  ]
+}
