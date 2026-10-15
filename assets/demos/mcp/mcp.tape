@@ -19,7 +19,7 @@ Type `unset CLAUDECODE CLAUDE_CODE_CHILD_SESSION CLAUDE_CODE_ENTRYPOINT CLAUDE_C
 Enter
 Type `D=$PWD; cd "$(mktemp -d /tmp/envsync-le.XXXX)" && cp -R "$D/../cli/input/." . && for f in env.*; do mv "$f" ".$f"; done && printf '{"mcpServers":{"envsync-le":{"command":"node","args":["%s"]}}}' "$D/../../../mcp/server.js" > mcp.json && PS1="$ " && clear`
 Enter
-Type `clear && claude --mcp-config mcp.json --strict-mcp-config --allowedTools "mcp__envsync-le" --disallowedTools Bash Read`
+Type `clear && claude --mcp-config mcp.json --strict-mcp-config --allowedTools "mcp__envsync-le" --disallowedTools Bash Read WebFetch WebSearch Agent`
 Enter
 Sleep 6s
 # The folder-trust prompt opens on "No, exit".
