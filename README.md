@@ -145,7 +145,7 @@ The same comparison runs from a terminal or a CI step: a Rust CLI in
 dotenv file differently.
 
 ```bash
-envsync-le .                            # have these environments drifted?
+envsync-le .                            # have these environments drifted? JSON on stdout when piped
 envsync-le --template .env.example .    # will this deploy break?
 envsync-le mcp                          # the same comparison over MCP on stdio
 ```
