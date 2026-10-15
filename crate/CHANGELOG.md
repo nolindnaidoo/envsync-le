@@ -7,7 +7,7 @@ this repository release on their own cadence.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.5] - 2026-10-15
 
 ### Changed
 
@@ -229,6 +229,7 @@ classification reads them.
   vanish from the report entirely, which reads to whoever ran it as
   "that file was clean".
 
+[0.2.5]: https://crates.io/crates/envsync-le/0.2.5
 [0.2.4]: https://crates.io/crates/envsync-le/0.2.4
 [0.2.3]: https://crates.io/crates/envsync-le/0.2.3
 [0.2.2]: https://crates.io/crates/envsync-le/0.2.2
