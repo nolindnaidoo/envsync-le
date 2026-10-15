@@ -105,7 +105,9 @@ crate/src/
   and nothing holding this code equal to the similar files in the
   sibling repos.
 - **stdout is one report for the whole run**, not one line per file,
-  because the answer is about the set of files.
+  because the answer is about the set of files. It stays silent when it
+  is a terminal, because the stderr summary already covers a person
+  reading it. Anything that can parse gets the report.
 - **Parity scope is detection** — `src/detection/**`.
 
 ## Control-flow style

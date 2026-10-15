@@ -1,13 +1,13 @@
 //! The terminal surface.
 //!
 //! stdout is protocol — **one JSON report for the whole run**, not one
-//! line per file, because the answer is about the set of files. stderr
-//! is for the human and is a projection of the same report.
+//! line per file, because the answer is about the set of files. It is
+//! silent when it is a terminal. stderr is for the human and is a
+//! projection of the same report.
 
+use std::io::{IsTerminal, Write};
 use std::path::PathBuf;
 use std::process::ExitCode;
-
-use std::io::Write;
 
 use crate::detect::compare::Status;
 use crate::scan::{self, Report, ScanOptions};
@@ -26,6 +26,9 @@ the union of every key found, so a key present anywhere must be present
 everywhere and nothing can be extra. With one, that file is the contract
 and a key it does not have IS extra — which is the question a deploy
 actually asks.
+
+One JSON report on stdout when it is piped or redirected, human summary
+on stderr.
 
 Options:
   --template <path>    compare every file against this one
@@ -102,12 +105,26 @@ fn execute(args: &[String]) -> Result<u8, String> {
         scan::scan_paths(&options.files, &options.root, &options.scan)
     };
 
-    let line = serde_json::to_string(&report).expect("a report serializes");
-    writeln!(std::io::stdout().lock(), "{line}")
+    let stdout = std::io::stdout();
+    let terminal = stdout.is_terminal();
+    write_report(&mut stdout.lock(), &report, terminal)
         .map_err(|error| format!("could not write the report: {error}"))?;
 
     summarise(&report);
     Ok(scan::exit_code(&report, options.strict))
+}
+
+/// A terminal gets nothing here. The stderr summary already says every
+/// mismatch a person reads, and the JSON beside it on the same screen is
+/// the same answer a second time in a form nobody reads by eye. Anything
+/// that can parse — a pipe, a file, a subprocess — still gets the
+/// report, so no script sees a difference.
+fn write_report(out: &mut impl Write, report: &Report, terminal: bool) -> std::io::Result<()> {
+    if terminal {
+        return Ok(());
+    }
+    let line = serde_json::to_string(report).expect("a report serializes");
+    writeln!(out, "{line}")
 }
 
 fn parse(args: &[String]) -> Result<Cli, String> {
@@ -241,6 +258,40 @@ fn plural(count: usize, one: &str, many: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::testing::TempTree;
+
+    fn sample_report() -> Report {
+        let tree = TempTree::new("cli-report");
+        tree.write(".env.example", "A=1\nB=2\n");
+        tree.write(".env.staging", "A=1\n");
+        let options = parse(&[
+            "--template".into(),
+            ".env.example".into(),
+            "--hidden".into(),
+            tree.path().to_string_lossy().into_owned(),
+        ])
+        .expect("a valid command line");
+        scan::scan(&options.root, &options.scan).expect("a scan")
+    }
+
+    #[test]
+    fn a_pipe_gets_the_report_on_one_line() {
+        let report = sample_report();
+        let mut out = Vec::new();
+        write_report(&mut out, &report, false).expect("a write");
+        let text = String::from_utf8(out).expect("utf-8");
+        assert_eq!(text.lines().count(), 1, "{text}");
+        assert!(text.starts_with('{'), "{text}");
+    }
+
+    /// The summary on stderr already covers a person at a terminal.
+    #[test]
+    fn a_terminal_gets_no_json() {
+        let report = sample_report();
+        let mut out = Vec::new();
+        write_report(&mut out, &report, true).expect("a write");
+        assert!(out.is_empty());
+    }
 
     #[test]
     fn every_documented_flag_is_parsed_and_the_reverse() {

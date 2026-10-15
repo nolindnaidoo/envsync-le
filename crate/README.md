@@ -53,6 +53,9 @@ out of sync — 3 files with mismatches across 3 files
 
 Exit code 1. The build stops before the deploy does.
 
+The report is JSON on stdout, printed when stdout is piped or redirected
+and left out at a terminal. The listing above is stderr.
+
 ## This one has a verdict
 
 The other tools in this family extract; they report what is there and
