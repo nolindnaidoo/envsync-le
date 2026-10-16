@@ -205,7 +205,8 @@ describe('scan', () => {
 		);
 		expect(report.diagnostics.map((found) => found.message)).toEqual([
 			'not UTF-8 text',
-			'No such file or directory (os error 2)',
+			// The errno is the platform's: libuv reports ENOENT as 4058 on Windows.
+			expect.stringMatching(/^No such file or directory \(os error \d+\)$/),
 		]);
 		expect(exitCode(report, false)).toBe(0);
 		expect(exitCode(report, true)).toBe(2);
