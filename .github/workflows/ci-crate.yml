@@ -461,12 +461,24 @@ jobs:
   # `envsync-le mcp` serves.
   # This is a different contract from the detection parity above, which
   # holds the extension's engine equal and leaves the surfaces alone.
+  #
+  # All three platforms, Windows above all: that is where the two runtimes
+  # word an OS error differently. Rust prints Windows' own code and
+  # sentence, and Node hands over libuv's POSIX name for it.
   cli-parity:
     needs: changes
     if: needs.changes.outputs.code == 'true'
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, windows-2025, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # The package runs under Node wherever npx runs it, so the check does.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.14.0
       - uses: dtolnay/rust-toolchain@02cb101ec7c40f2c49e1d9714d64511d8e1b74de # master
         with:
           toolchain: stable

@@ -10,16 +10,25 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.4.0 every surface carries one
 version and releases from one tag.
 
-## [Unreleased]
+## [2.4.1] - 2026-10-16
+
+2.4.0 was tagged but never published, so this is the first release to
+carry it as well.
 
 ### Fixed
 
+- **The npm command line words an OS error as the Rust one does on
+  Windows.** It said `No such file or directory (os error 4058)` where the
+  crate said `The system cannot find the file specified. (os error 2)`.
+  It now recovers Windows' code and sentence from libuv's name for the
+  error, and on Linux words `EBUSY` as glibc does.
 - **An exclude pattern that does not compile no longer stops the
   comparison.** A glob such as `.env.[z-a]` in `envsync-le.excludePatterns`
   threw, and every file went unchecked. It now excludes nothing and the
   other patterns still apply, as in the Rust CLI.
-- The npm command line's `envsync_le_check` tool and a file named in place
-  of a directory, both fixed with the Rust CLI below.
+- The npm command line's `envsync_le_check` tool now compares a
+  git-ignored `.env`, and a file named in place of a directory keeps its
+  name. Both are fixed in the Rust CLI too, see its CHANGELOG.
 
 ## [2.4.0] - 2026-10-16
 
