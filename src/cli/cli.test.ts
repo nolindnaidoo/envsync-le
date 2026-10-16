@@ -151,7 +151,9 @@ describe('discover', () => {
 
 	it('names a missing root', () => {
 		expect(() => discover('no/such/dir', DEFAULT_SCAN.discover)).toThrow(
-			'no/such/dir: No such file or directory',
+			process.platform === 'win32'
+				? 'no/such/dir: The system cannot find the path specified. (os error 3)'
+				: 'no/such/dir: No such file or directory (os error 2)',
 		);
 	});
 });
