@@ -179,6 +179,16 @@ A dotenv file is hidden by definition, so `--hidden` here controls
 **directories**, not the `.env` files themselves. Getting that wrong
 would make the default find nothing.
 
+**Held equal: this surface and the npm one.** The npm package
+`envsync-le` installs a command of the same name, built from the
+extension's `src/cli/` over the extension's detection engine, and nobody
+running `envsync-le` can tell which one they have. It is held to
+everything in this section byte for byte — flags, walk, template
+matching, exit codes, stdout, stderr, and both tools `envsync-le mcp`
+serves — by `scripts/check-cli-parity.ts`, with no exception. A change to
+this surface changes `src/cli/` in the same commit. That includes
+`--version`: every surface in the repository carries one version.
+
 ## The MCP surface
 
 - **`compare_env_files` belongs to both servers**: same schema, same

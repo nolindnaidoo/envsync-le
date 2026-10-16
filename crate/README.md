@@ -112,9 +112,11 @@ Use both. They are not competing for the same job.
 | Route | Command | Worth knowing |
 |---|---|---|
 | **cargo** | `cargo install envsync-le` | Any platform, needs **Rust 1.88+**. |
+| **npm** | `npm install -g envsync-le` or `npx envsync-le` | Needs **Node 20+**. The same command, held to this one byte for byte. |
 | **From source** | `git clone https://github.com/nolindnaidoo/envsync-le`<br>`cd envsync-le/crate && cargo build --release` | The same build CI runs. |
 
-No runtime, no network, nothing written.
+The cargo build needs no runtime. Neither one touches the network or
+writes a file.
 
 ## Parsing, including the awkward parts
 
