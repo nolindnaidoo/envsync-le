@@ -11,6 +11,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { parse } from './args';
 import { CHECK_TOOL } from './checkTool';
 import { discover, forwardSlashes, relativePath } from './discover';
+import { rustIoMessage } from './ioError';
 import { run } from './run';
 import { DEFAULT_SCAN, exitCode, scan, scanPaths } from './scan';
 import { FLAGS, USAGE } from './usage';
@@ -212,8 +213,9 @@ describe('scan', () => {
 		);
 		expect(report.diagnostics.map((found) => found.message)).toEqual([
 			'not UTF-8 text',
-			// The errno is the platform's: libuv reports ENOENT as 4058 on Windows.
-			expect.stringMatching(/^No such file or directory \(os error \d+\)$/),
+			process.platform === 'win32'
+				? 'The system cannot find the file specified. (os error 2)'
+				: 'No such file or directory (os error 2)',
 		]);
 		expect(exitCode(report, false)).toBe(0);
 		expect(exitCode(report, true)).toBe(2);
@@ -314,5 +316,45 @@ describe('envsync_le_check', () => {
 		await expect(CHECK_TOOL.handler({})).rejects.toThrow(
 			'no directory was supplied to compare',
 		);
+	});
+});
+
+describe('rustIoMessage', () => {
+	const failure = (code: string, errno: number, path?: string) =>
+		Object.assign(new Error(`${code}: failed`), { code, errno, path });
+
+	it('words an error as Rust does on each platform', () => {
+		expect(rustIoMessage(failure('ENOENT', -2), 'darwin')).toBe(
+			'No such file or directory (os error 2)',
+		);
+		expect(rustIoMessage(failure('EBUSY', -16), 'darwin')).toBe(
+			'Resource busy (os error 16)',
+		);
+		expect(rustIoMessage(failure('EBUSY', -16), 'linux')).toBe(
+			'Device or resource busy (os error 16)',
+		);
+		expect(rustIoMessage(failure('EPERM', -4048), 'win32')).toBe(
+			'Access is denied. (os error 5)',
+		);
+	});
+
+	/** libuv folds both Windows codes into ENOENT, numbered -4058. */
+	it('tells a missing file from a missing directory on Windows', () => {
+		const root = tree({ '.env': 'A=1' });
+		expect(
+			rustIoMessage(failure('ENOENT', -4058, join(root, 'gone')), 'win32'),
+		).toBe('The system cannot find the file specified. (os error 2)');
+		expect(
+			rustIoMessage(
+				failure('ENOENT', -4058, join(root, 'no', 'gone')),
+				'win32',
+			),
+		).toBe('The system cannot find the path specified. (os error 3)');
+		expect(
+			rustIoMessage(
+				failure('ENOENT', -4058, join(root, '.env', 'gone')),
+				'win32',
+			),
+		).toBe('The system cannot find the path specified. (os error 3)');
 	});
 });

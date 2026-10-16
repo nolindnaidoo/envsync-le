@@ -33,8 +33,13 @@ import { join } from 'node:path';
 const ROOT = join(import.meta.dir, '..');
 const RUST =
 	process.env.ENVSYNC_LE_BIN ??
-	join(ROOT, 'crate', 'target', 'debug', 'envsync-le');
+	join(ROOT, 'crate', 'target', 'debug', `envsync-le${process.platform === 'win32' ? '.exe' : ''}`);
 const NODE_CLI = join(ROOT, 'cli', 'cli.js');
+/**
+ * Node, by name, not `process.execPath`: this script runs under Bun, and the
+ * package is run by Node wherever `npx` runs it. Bun's errors are not Node's.
+ */
+const NODE = process.env.NODE_BIN ?? 'node';
 
 interface Case {
 	readonly args: readonly string[];
@@ -102,8 +107,13 @@ function build(): void {
 	file('repo/a.b/.env', 'API_URL=x\nDB_HOST=x\n');
 	dir('repo/.hidden');
 	file('repo/.hidden/.env.staging', 'API_URL=x\nSTAGING=x\n');
-	symlinkSync(join(tree, 'repo', '.env'), join(tree, 'repo', '.env.link'));
-	created.push(join(tree, 'repo', '.env.link'));
+	// Windows grants symlinks to administrators and developer mode only.
+	try {
+		symlinkSync(join(tree, 'repo', '.env'), join(tree, 'repo', '.env.link'));
+		created.push(join(tree, 'repo', '.env.link'));
+	} catch {
+		file('repo/.env.link', 'API_URL=x\n');
+	}
 
 	dir('flat');
 	file('flat/.env', 'A=1\nB=2\n');
@@ -210,7 +220,7 @@ function compareCli(): string[] {
 	const failures: string[] = [];
 	for (const testCase of cases()) {
 		const rust = run([RUST], testCase);
-		const node = run([process.execPath, NODE_CLI], testCase);
+		const node = run([NODE, NODE_CLI], testCase);
 		for (const field of ['status', 'stdout', 'stderr'] as const) {
 			if (rust[field] === node[field]) continue;
 			failures.push(
@@ -295,7 +305,7 @@ function compareMcp(): string[] {
 	const list = { jsonrpc: '2.0', id: 0, method: 'tools/list', params: {} };
 	const requests = [list, ...mcpRequests()];
 	const rust = serve([RUST], requests);
-	const node = serve([process.execPath, NODE_CLI], requests);
+	const node = serve([NODE, NODE_CLI], requests);
 	// By id, not by line: the npm server answers each call as it finishes,
 	// which JSON-RPC allows, so its replies need not arrive in request order.
 	const byId = (replies: Record<string, unknown>[], id: unknown) =>
