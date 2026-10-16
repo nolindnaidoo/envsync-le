@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parse } from './args';
 import { CHECK_TOOL } from './checkTool';
-import { discover, forwardSlashes, relativePath } from './discover';
+import { discover, display, forwardSlashes, relativePath } from './discover';
 import { run } from './run';
 import { DEFAULT_SCAN, exitCode, scan, scanPaths } from './scan';
 import { FLAGS, USAGE } from './usage';
@@ -191,7 +191,9 @@ describe('scan', () => {
 		const root = tree({ '.env.production': 'A=1' });
 		const file = join(root, '.env.production');
 		const report = scan(file, DEFAULT_SCAN);
-		expect(report.files).toEqual([{ path: file, type: 'production', keys: 1 }]);
+		expect(report.files).toEqual([
+			{ path: display(file), type: 'production', keys: 1 },
+		]);
 	});
 
 	it('falls back to the union for a template that is not there', () => {
