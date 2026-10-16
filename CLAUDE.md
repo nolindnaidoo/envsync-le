@@ -61,6 +61,14 @@ artifact users actually install.
   the workspace's env files, discovered and watched as a set — this is the one extension with no `activeTextEditor` at all, because a drift check is about a file set and never about one buffer. The CLI is terminal-first: a tree walk,
   exit codes and JSON Lines, none of which has an editor equivalent. That
   is not drift, and nothing holds them equal — see `crate/SPEC.md`.
+- **The npm command line is the crate's surface, not the extension's.**
+  `src/cli/` builds the npm package `envsync-le`, which installs the same
+  command the crate does, so it is held to the Rust CLI byte for byte by
+  `bun run check:cli-parity` (after `bun run build:cli` and a `cargo build`
+  in `crate/`). A change to the crate's flags, walk, template matching,
+  exit codes or output changes `src/cli/` in the same commit. `--version`
+  is compared too, because every surface carries one version. See
+  AGENTS.md, Release.
 - **No value ever reaches an answer.** Only key names are parsed, compared or
   reported. The parity script greps the corpus for a value and fails if it
   finds one; the crate does the same to its embedded copy.

@@ -55,7 +55,7 @@ in VS Code–based editors like Cursor and VSCodium (installable from Open VSX).
 |---|---|---|
 | **VS Code** | The same comparison, live, in your editor | [Marketplace](https://marketplace.visualstudio.com/items?itemName=nolindnaidoo.envsync-le) |
 | **Cursor, VSCodium, Windsurf** | The same extension | [Open VSX](https://open-vsx.org/extension/nolindnaidoo/envsync-le) |
-| **A terminal or a CI step** | The same run over a whole tree, with exit codes | `cargo install envsync-le` · [crates.io](https://crates.io/crates/envsync-le) |
+| **A terminal or a CI step** | The same run over a whole tree, with exit codes | `npx envsync-le` · [npm](https://www.npmjs.com/package/envsync-le) or `cargo install envsync-le` · [crates.io](https://crates.io/crates/envsync-le) |
 | **Any MCP agent, via Node** | `compare_env_files` over stdio | `npx envsync-le-mcp` · [npm](https://www.npmjs.com/package/envsync-le-mcp) |
 
 ## Use it from an AI agent
@@ -143,6 +143,9 @@ The same comparison runs from a terminal or a CI step: a Rust CLI in
 [`crate/`](crate/README.md), sharing one corpus with the extension —
 [`crate/fixtures/`](crate/fixtures/) — so the two can never read a
 dotenv file differently.
+Install it from npm with `npm install -g envsync-le` (or run it with
+`npx envsync-le`) or from crates.io with `cargo install envsync-le`. Both
+install the same command and are held to the same output byte for byte.
 
 ```bash
 envsync-le .                            # have these environments drifted? JSON on stdout when piped
@@ -267,12 +270,12 @@ a build only tells you how busy the runner was.
 <!-- coverage:start -->
 | Metric | Coverage |
 | --- | --- |
-| Statements | 90.73% |
-| Branches | 86.00% |
-| Functions | 93.77% |
-| Lines | 90.89% |
+| Statements | 89.44% |
+| Branches | 83.96% |
+| Functions | 90.93% |
+| Lines | 90.63% |
 
-242 test cases across 19 files, plus an integration suite that runs
+269 test cases across 20 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 

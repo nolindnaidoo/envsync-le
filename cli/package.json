@@ -1,0 +1,47 @@
+{
+	"name": "envsync-le",
+	"version": "2.4.0",
+	"description": "Compare the dotenv files in a tree and say which keys are missing from which.",
+	"keywords": [
+		"dotenv",
+		"env",
+		"environment",
+		"config",
+		"ci",
+		"lint",
+		"cli",
+		"envsync-le",
+		"nolindnaidoo",
+		"letools"
+	],
+	"license": "MIT",
+	"author": {
+		"name": "Nolin Naidoo",
+		"url": "https://nolindnaidoo.com"
+	},
+	"homepage": "https://letools.dev/tools/envsync-le",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nolindnaidoo/envsync-le.git",
+		"directory": "cli"
+	},
+	"bugs": {
+		"url": "https://github.com/nolindnaidoo/envsync-le/issues"
+	},
+	"type": "commonjs",
+	"bin": {
+		"envsync-le": "cli.js"
+	},
+	"files": [
+		"cli.js",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=20"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	}
+}

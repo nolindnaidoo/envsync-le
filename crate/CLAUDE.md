@@ -24,6 +24,12 @@ with its own `CLAUDE.md`.
   crate test over the embedded corpus, and a contract test over a real
   run's stdout and stderr. A change that made a value reachable is the
   one change this crate cannot take.
+- **The command line has a twin.** The npm package `envsync-le`, built
+  from the extension's `src/cli/`, mirrors `cli.rs`, `scan.rs`,
+  `discover.rs`, the template matching in `detect/compare.rs` and
+  `mcp/mod.rs` byte for byte, and `bun ../scripts/check-cli-parity.ts`
+  fails on any difference. A change to a flag, a message, the walk or an
+  exit code changes `src/cli/` in the same commit.
 - **The exit code is the product.** 0 in sync, 1 out of sync, 2 could not
   answer, and no dotenv files is 0. Do not "improve" that last one into
   a failure.

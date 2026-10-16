@@ -5,11 +5,29 @@ All notable changes to EnvSync-LE will be documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-This file covers the **VS Code extension**. The Rust CLI in `crate/` is a
-separate product on its own cadence and keeps its own
-[CHANGELOG](crate/CHANGELOG.md).
+This file covers the **VS Code extension**, the npm MCP server and the
+npm command line. The Rust CLI in `crate/` keeps its own
+[CHANGELOG](crate/CHANGELOG.md). From 2.4.0 every surface carries one
+version and releases from one tag.
 
-## [Unreleased]
+## [2.4.0] - 2026-10-16
+
+### Changed
+
+- **One version for every surface.** The extension, the MCP server on
+  npm, the new npm command line and the Rust crate all release as 2.4.0
+  from the tag `v2.4.0`. The crate jumps from 0.2.5 to join them, and CI
+  now fails a commit where any of them disagree.
+
+### Added
+
+- An npm command line, `envsync-le`, built in `cli/` from `src/cli/`. It
+  is the Rust CLI's surface over this extension's detection engine: the
+  same flags, walk, template matching, exit codes, JSON report and stderr
+  summary, and `envsync-le mcp` serves the same two tools.
+  `scripts/check-cli-parity.ts` runs both binaries over one tree and fails
+  on any byte of difference. It is published as `envsync-le` on npm,
+  beside `envsync-le-mcp`.
 
 ### Fixed
 

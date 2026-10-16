@@ -1,6 +1,6 @@
 {
 	"name": "envsync-le",
-	"version": "2.3.0",
+	"version": "2.4.0",
 	"author": {
 		"name": "nolindnaidoo",
 		"url": "https://nolindnaidoo.com"
@@ -21,6 +21,7 @@
 		"@vscode/test-electron": "^3.1.0",
 		"@vscode/vsce": "^4.0.0",
 		"esbuild": "^0.28.2",
+		"ignore": "^7.0.5",
 		"mocha": "^12.0.3",
 		"ovsx": "^1.2.0",
 		"typescript": "^7.0.2",
@@ -271,6 +272,10 @@
 		"check:mcp-bundle": "node scripts/check-mcp-bundle.js",
 		"build:npm": "node scripts/build-npm.js",
 		"check:npm-package": "node scripts/check-npm-package.js",
+		"build:cli": "node scripts/build-cli.js",
+		"build:cli:prod": "node scripts/build-cli.js --prod",
+		"check:cli-parity": "bun scripts/check-cli-parity.ts",
+		"check:cli-package": "node scripts/check-cli-package.js",
 		"test": "vitest run --pool=threads",
 		"test:watch": "vitest --pool=threads",
 		"test:coverage": "vitest run --coverage --pool=threads --reporter=default --reporter=json --outputFile.json=coverage/test-results.json",
