@@ -8,6 +8,21 @@ in this repository carries one version and releases from one tag.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`envsync_le_check` compared a git-ignored `.env` against nothing.** It
+  honoured `.gitignore` by default, so in the usual repository, with
+  `.env.example` committed and `.env` ignored, it found only the example
+  and answered `in-sync`. It never applies the ignore rules now, as the
+  command line has not since `--no-ignore` became its default, and
+  `ignored` is accepted and changes nothing.
+- **A file named in place of a directory was reported as `""`.**
+  `envsync-le .env.production` named the file relative to itself, so the
+  report listed an empty path and no template could match it. It is named
+  as `--file` names it.
+
 ## [2.4.0] - 2026-10-16
 
 ### Changed

@@ -233,6 +233,8 @@ mod tests {
             ("**/.env.{dev,prod}", "a/b/.env.dev", true),
             ("a[/]b", "a/b", false),
             (".env.[]]", ".env.]", true),
+            // A range that does not compile excludes nothing.
+            (".env.[z-a]", ".env.b", false),
         ] {
             assert_eq!(
                 should_exclude(file, &[pattern.to_string()]),

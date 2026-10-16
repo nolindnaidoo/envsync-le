@@ -19,10 +19,19 @@ const CASES: readonly (readonly [string, string, boolean])[] = [
 	['**/.env.{dev,prod}', 'a/b/.env.dev', true],
 	['a[/]b', 'a/b', false],
 	['.env.[]]', '.env.]', true],
+	// A range that does not compile excludes nothing.
+	['.env.[z-a]', '.env.b', false],
 ];
 
 describe('exclude globs', () => {
 	it.each(CASES)('%s against %s is %s', (pattern, file, expected) => {
 		expect(shouldExcludeFile(file, [pattern])).toBe(expected);
+	});
+});
+
+describe('a pattern that does not compile', () => {
+	it('excludes nothing and leaves the other patterns working', () => {
+		expect(shouldExcludeFile('.env.local', ['[z-a]', '*.local'])).toBe(true);
+		expect(shouldExcludeFile('.env', ['[z-a]', '*.local'])).toBe(false);
 	});
 });

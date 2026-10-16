@@ -122,8 +122,10 @@ fn tool_definitions() -> Value {
                     },
                     "ignored": {
                         "type": "boolean",
-                        "default": false,
-                        "description": "Walk files excluded by .gitignore too.",
+                        "default": true,
+                        "description": "Accepted and always on: a dotenv file is git-ignored \
+                                        by design, so honouring the ignore rules would compare \
+                                        the committed example against nothing.",
                     },
                 },
                 "required": ["path"],
@@ -186,7 +188,11 @@ fn check_tool(arguments: &Value) -> Result<Value, String> {
             .is_some_and(|sensitive| !sensitive),
         discover: DiscoverOptions {
             hidden: flag("hidden"),
-            respect_ignore: !flag("ignored"),
+            // Never the ignore rules, whatever `ignored` says. Honouring them
+            // found only the committed `.env.example` in the usual repository
+            // and answered `in-sync` — the command line's old bug, left here
+            // after `--no-ignore` became its default.
+            respect_ignore: false,
             exclude: arguments
                 .get("exclude")
                 .and_then(Value::as_array)
@@ -414,6 +420,29 @@ mod tests {
         assert_eq!(response["result"]["isError"], false);
         assert_eq!(envelope["data"]["status"], "missing-keys");
         assert_eq!(envelope["data"]["summary"]["files"], 2);
+    }
+
+    /// **Regression.** The usual repository: `.env.example` committed,
+    /// `.env` git-ignored. Honouring the ignore rules here compared the
+    /// example against nothing and answered `in-sync`.
+    #[test]
+    fn the_check_tool_compares_a_gitignored_dotenv() {
+        let tree = TempTree::new("mcp-gitignored");
+        tree.mkdir(".git");
+        tree.write(".gitignore", ".env\n");
+        tree.write(".env.example", "A=\nB=");
+        tree.write(".env", "A=1");
+        let path = tree.path().to_string_lossy().to_string();
+        for arguments in [
+            json!({ "path": path }),
+            json!({ "path": path, "ignored": false }),
+            json!({ "path": path, "ignored": true }),
+        ] {
+            let response = call("envsync_le_check", &arguments);
+            let data = &response["result"]["structuredContent"]["data"];
+            assert_eq!(data["summary"]["files"], 2, "{arguments}");
+            assert_eq!(data["status"], "missing-keys", "{arguments}");
+        }
     }
 
     /// A template is what makes an extra key possible at all.

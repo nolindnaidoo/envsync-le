@@ -144,25 +144,12 @@ function visitEntry(
 		return;
 	}
 	const relative = relativePath(shown, walk.root);
-	if (!isEnvFileName(relative) || excluded(relative, walk.options.exclude))
+	if (
+		!isEnvFileName(relative) ||
+		shouldExcludeFile(relative, walk.options.exclude)
+	)
 		return;
 	walk.files.push(shown);
-}
-
-/**
- * One pattern at a time, because the crate compiles each on its own and a
- * pattern that does not compile excludes nothing there. The extension's
- * matcher throws on one instead, and a typo in `--exclude` must not end the
- * run or hide the files the tool exists to compare.
- */
-function excluded(relative: string, patterns: readonly string[]): boolean {
-	return patterns.some((pattern) => {
-		try {
-			return shouldExcludeFile(relative, [pattern]);
-		} catch {
-			return false;
-		}
-	});
 }
 
 function entriesOf(

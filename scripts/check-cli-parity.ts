@@ -159,6 +159,8 @@ function cases(): readonly Case[] {
 		{ args: ['repo', '--exclude', '[z-a]'] },
 		{ args: ['repo', '--exclude', '.env.?ase'] },
 		{ args: ['repo/.env.example'] },
+		{ args: ['./repo/.env.example', '--template', '.env.example'] },
+		{ args: [`${tree}/repo/.env.production`] },
 		{ args: ['repo/README.md'] },
 		{ args: ['empty'] },
 		{ args: ['missing'] },
@@ -251,6 +253,7 @@ function mcpRequests(): readonly Record<string, unknown>[] {
 	return [
 		call(1, 'envsync_le_check', { path: repo }),
 		call(2, 'envsync_le_check', { path: repo, ignored: true }),
+		call(12, 'envsync_le_check', { path: repo, ignored: false }),
 		call(3, 'envsync_le_check', {
 			path: repo,
 			ignored: true,
