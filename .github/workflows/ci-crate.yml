@@ -462,9 +462,9 @@ jobs:
   # This is a different contract from the detection parity above, which
   # holds the extension's engine equal and leaves the surfaces alone.
   #
-  # All three platforms. Windows above all, because that is where the two runtimes word an OS error
-  # differently: Rust prints Windows' own code and sentence, and Node
-  # hands over libuv's POSIX name for it.
+  # All three platforms, Windows above all: that is where the two runtimes
+  # word an OS error differently. Rust prints Windows' own code and
+  # sentence, and Node hands over libuv's POSIX name for it.
   cli-parity:
     needs: changes
     if: needs.changes.outputs.code == 'true'
