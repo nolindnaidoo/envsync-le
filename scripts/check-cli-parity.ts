@@ -178,6 +178,7 @@ function cases(): readonly Case[] {
 		{ args: ['--file', './repo/.env', '--file', 'repo//.env.production', '--template', 'repo/.env.production'] },
 		{ args: ['--file', 'repo/.env', '--file', 'repo/.env', '--template', 'repo/.env'] },
 		{ args: ['--file', 'repo/.env.example', '--file', 'missing.env'] },
+		{ args: ['--file', 'no/such/.env', '--file', 'repo/.env/below'] },
 		{ args: ['--strict', '--file', 'repo/.env.example', '--file', 'missing.env'] },
 		{ args: ['--file', 'repo'] },
 		{ args: ['--file', 'repo/.env.latin1', '--file', 'repo/.env.bom'] },
