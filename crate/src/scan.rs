@@ -52,6 +52,12 @@ pub(crate) struct ScanOptions {
 /// Compare the dotenv files under `root`.
 pub(crate) fn scan(root: &StdPath, options: &ScanOptions) -> Result<Report, String> {
     let paths = discover::discover(root, &options.discover)?;
+    // A file named in place of a directory is named the way `--file` names
+    // one. Relative to itself it was the empty path, so the report listed a
+    // file called `""` and no template could match it.
+    if root.is_file() {
+        return Ok(scan_paths(&paths, StdPath::new("."), options));
+    }
     Ok(scan_paths(&paths, root, options))
 }
 
@@ -258,6 +264,19 @@ mod tests {
         assert_eq!(report.diagnostics[0].severity, "warning");
         assert_eq!(report.diagnostics[0].file, ".env");
         assert_eq!(report.status, Status::InSync, "GOOD is in both");
+    }
+
+    /// **Regression.** A file given as the root reported its path as `""`.
+    #[test]
+    fn a_file_given_as_the_root_keeps_its_name() {
+        let tree = tree_with("scan-file-root", &[(".env.production", "A=1")]);
+        let file = tree.path().join(".env.production");
+        let report = scan(&file, &ScanOptions::default()).expect("scans");
+        assert_eq!(report.files[0].path, discover::display(&file));
+        assert_eq!(
+            report.files[0].kind,
+            crate::detect::heuristics::FileType::Production
+        );
     }
 
     #[test]

@@ -145,9 +145,20 @@ function characterClass(body: string): string {
 	return negated ? `[^/${members}]` : `(?![/])[${members}]`;
 }
 
+/**
+ * A pattern that does not compile, such as `[z-a]`, matches nothing rather
+ * than throwing: a typo in the exclude setting must not stop the comparison
+ * or hide the files it exists to compare. The crate answers the same way.
+ */
 function globToRegex(pattern: string): RegExp {
-	return new RegExp(`^${translateGlob(pattern)}$`);
+	try {
+		return new RegExp(`^${translateGlob(pattern)}$`);
+	} catch {
+		return MATCHES_NOTHING;
+	}
 }
+
+const MATCHES_NOTHING = /(?!)/;
 
 function escapeRegexChar(c: string): string {
 	return /[.+^${}()|[\]\\]/.test(c) ? `\\${c}` : c;

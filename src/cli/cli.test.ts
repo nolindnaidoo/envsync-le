@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parse } from './args';
 import { CHECK_TOOL } from './checkTool';
-import { discover, forwardSlashes, relativePath } from './discover';
+import { discover, display, forwardSlashes, relativePath } from './discover';
 import { run } from './run';
 import { DEFAULT_SCAN, exitCode, scan, scanPaths } from './scan';
 import { FLAGS, USAGE } from './usage';
@@ -187,6 +187,15 @@ describe('scan', () => {
 		}
 	});
 
+	it('names a file given as the root the way --file names it', () => {
+		const root = tree({ '.env.production': 'A=1' });
+		const file = join(root, '.env.production');
+		const report = scan(file, DEFAULT_SCAN);
+		expect(report.files).toEqual([
+			{ path: display(file), type: 'production', keys: 1 },
+		]);
+	});
+
 	it('falls back to the union for a template that is not there', () => {
 		const root = tree({ '.env.example': 'A=\n', '.env': 'A=1\nLOCAL=2\n' });
 		const report = scan(root, { ...DEFAULT_SCAN, template: 'nowhere' });
@@ -285,6 +294,22 @@ describe('envsync_le_check', () => {
 				message: '.env: Line 2: Invalid key format',
 			},
 		]);
+	});
+
+	it('compares a git-ignored dotenv whatever `ignored` says', async () => {
+		const root = tree({
+			'.git/HEAD': '',
+			'.gitignore': '.env\n',
+			'.env.example': 'A=\nB=',
+			'.env': 'A=1',
+		});
+		for (const ignored of [undefined, false, true]) {
+			const result = (await CHECK_TOOL.handler({ path: root, ignored })) as {
+				data: { status: string; summary: { files: number } };
+			};
+			expect(result.data.summary.files, String(ignored)).toBe(2);
+			expect(result.data.status, String(ignored)).toBe('missing-keys');
+		}
 	});
 
 	it('refuses a call with no directory', async () => {

@@ -22,15 +22,15 @@ async function check(args: Record<string, unknown>): Promise<unknown> {
 		? args.exclude.filter((item): item is string => typeof item === 'string')
 		: [];
 
-	// The walk honours the ignore rules here unless `ignored` is set, where
-	// the command line never does. That is the crate's behaviour, held as is.
+	// Never the ignore rules, whatever `ignored` says: a dotenv file is
+	// git-ignored by design, and honouring them compared the committed
+	// example against nothing and answered in sync.
 	const report = scan(args.path, {
 		template: typeof args.template === 'string' ? args.template : null,
 		ignoreCase: args.caseSensitive === false,
 		discover: {
 			...DEFAULT_DISCOVER,
 			hidden: flag('hidden'),
-			respectIgnore: !flag('ignored'),
 			exclude,
 		},
 	});
@@ -78,8 +78,10 @@ export const CHECK_TOOL: ToolDefinition = Object.freeze({
 			},
 			ignored: {
 				type: 'boolean',
-				default: false,
-				description: 'Walk files excluded by .gitignore too.',
+				default: true,
+				description:
+					'Accepted and always on: a dotenv file is git-ignored by design, so honouring the ' +
+					'ignore rules would compare the committed example against nothing.',
 			},
 		},
 		required: ['path'],

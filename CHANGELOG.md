@@ -10,6 +10,17 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.4.0 every surface carries one
 version and releases from one tag.
 
+## [Unreleased]
+
+### Fixed
+
+- **An exclude pattern that does not compile no longer stops the
+  comparison.** A glob such as `.env.[z-a]` in `envsync-le.excludePatterns`
+  threw, and every file went unchecked. It now excludes nothing and the
+  other patterns still apply, as in the Rust CLI.
+- The npm command line's `envsync_le_check` tool and a file named in place
+  of a directory, both fixed with the Rust CLI below.
+
 ## [2.4.0] - 2026-10-16
 
 ### Changed

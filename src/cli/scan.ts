@@ -4,6 +4,7 @@
  * crate's. The report is one object for the whole run, because the answer is
  * about the set of files.
  */
+import { statSync } from 'node:fs';
 import { compareFiles } from '../detection/comparator';
 import type { KeyMismatch, SyncStatus } from '../types';
 import {
@@ -56,7 +57,11 @@ export interface Report {
 
 /** Compare the dotenv files under `root`. Throws when the root cannot be walked. */
 export function scan(root: string, options: ScanOptions): Report {
-	return scanPaths(discover(root, options.discover), root, options);
+	const paths = discover(root, options.discover);
+	// A file named in place of a directory is named the way `--file` names
+	// one. Relative to itself it was the empty path.
+	if (statSync(root).isFile()) return scanPaths(paths, '.', options);
+	return scanPaths(paths, root, options);
 }
 
 /**
