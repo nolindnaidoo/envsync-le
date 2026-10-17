@@ -17,6 +17,9 @@
   <a href="https://www.npmjs.com/package/envsync-le-mcp">
     <img src="https://img.shields.io/npm/v/envsync-le-mcp?style=for-the-badge&label=MCP%20server&color=blue&logo=npm" alt="envsync-le-mcp on npm" />
   </a>
+  <a href="https://www.npmjs.com/package/envsync-le">
+    <img src="https://img.shields.io/npm/v/envsync-le?style=for-the-badge&label=npm%20CLI&color=blue&logo=npm" alt="envsync-le on npm" />
+  </a>
   <a href="https://crates.io/crates/envsync-le">
     <img src="https://img.shields.io/crates/v/envsync-le?style=for-the-badge&label=Rust%20CLI&color=blue&logo=rust" alt="envsync-le on crates.io" />
   </a>
@@ -156,6 +159,22 @@ envsync-le mcp                          # the same comparison over MCP on stdio
 <p align="center">
   <img src="assets/demos/cli.gif" alt="envsync-le in a terminal" style="max-width: 100%; height: auto;" />
 </p>
+
+**Install it from npm** ([`envsync-le`](https://www.npmjs.com/package/envsync-le)) **or from crates.io** ([`envsync-le`](https://crates.io/crates/envsync-le)). Both install the same `envsync-le` command.
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/envsync-le">
+    <img src="https://img.shields.io/npm/v/envsync-le?style=for-the-badge&label=npm%20CLI&color=blue&logo=npm" alt="envsync-le on npm" />
+  </a>
+  <a href="https://crates.io/crates/envsync-le">
+    <img src="https://img.shields.io/crates/v/envsync-le?style=for-the-badge&label=Rust%20CLI&color=blue&logo=rust" alt="envsync-le on crates.io" />
+  </a>
+</p>
+
+```bash
+npm install -g envsync-le   # or run it once: npx envsync-le
+cargo install envsync-le
+```
 
 ```
 .env: missing STRIPE_KEY, SENTRY_DSN (in .env.example)
