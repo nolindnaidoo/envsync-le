@@ -8,6 +8,13 @@ in this repository carries one version and releases from one tag.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.2] - 2026-10-17
+
+### Changed
+
+- No change to the crate. The version moves with the npm command line,
+  which now waits for stderr to drain before it exits.
+
 ## [2.4.1] - 2026-10-16
 
 ### Fixed
