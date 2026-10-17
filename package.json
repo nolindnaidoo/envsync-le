@@ -1,6 +1,6 @@
 {
 	"name": "envsync-le",
-	"version": "2.4.2",
+	"version": "2.4.3",
 	"author": {
 		"name": "nolindnaidoo",
 		"url": "https://nolindnaidoo.com"
@@ -275,6 +275,7 @@
 		"build:cli": "node scripts/build-cli.js",
 		"build:cli:prod": "node scripts/build-cli.js --prod",
 		"check:cli-parity": "bun scripts/check-cli-parity.ts",
+		"check:cli-pipes": "bun scripts/check-cli-pipes.ts",
 		"check:cli-package": "node scripts/check-cli-package.js",
 		"test": "vitest run --pool=threads",
 		"test:watch": "vitest --pool=threads",
