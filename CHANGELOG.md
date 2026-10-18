@@ -10,6 +10,18 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.4.0 every surface carries one
 version and releases from one tag.
 
+## [Unreleased]
+
+### Changed
+
+- **The listing carries the words people search for.** Open VSX ranks a
+  match in the name five times a match in the description, and "EnvSync-LE"
+  holds neither "env" nor "dotenv" as a word, so a search for "env" put it
+  25th and "dotenv" 42nd. The name is "EnvSync-LE: .env Sync & Dotenv
+  Checker", the description opens with "Env sync and check for .env and
+  dotenv files", where a card has room for about forty characters, and the
+  keywords are cut from 30 to 15 phrases someone would search for.
+
 ## [2.4.4] - 2026-10-17
 
 ### Fixed
