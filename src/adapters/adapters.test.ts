@@ -62,7 +62,12 @@ describe('vscodeConfiguration', () => {
 describe('vscodeCommand', () => {
 	it('registers commands into subscriptions and executes them', async () => {
 		const context = _createExtensionContext();
-		const adapter = createVSCodeCommandAdapter(context as never);
+		const adapter = createVSCodeCommandAdapter(
+			context as never,
+			{
+				showError: () => {},
+			} as never,
+		);
 
 		const seen: unknown[] = [];
 		adapter.registerCommand('envsync-le.testCmd', async (...args) => {

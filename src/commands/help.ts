@@ -1,15 +1,18 @@
 import * as vscode from 'vscode';
+import type { Notifier } from '../interfaces/notifier';
 import type { Telemetry } from '../interfaces/telemetry';
+import { guarded } from './guard';
 
 export function registerHelpCommand(
 	context: vscode.ExtensionContext,
 	deps: Readonly<{
 		telemetry: Telemetry;
+		notifier: Notifier;
 	}>,
 ): void {
 	const command = vscode.commands.registerCommand(
 		'envsync-le.help',
-		async () => {
+		guarded(deps.notifier, async () => {
 			deps.telemetry.event('command-help');
 
 			const helpText = `
@@ -88,7 +91,7 @@ Built by nolindnaidoo (https://github.com/nolindnaidoo) — MIT licensed.
 				preview: false,
 				viewColumn: vscode.ViewColumn.Beside,
 			});
-		},
+		}),
 	);
 
 	context.subscriptions.push(command);

@@ -2,13 +2,16 @@ import * as vscode from 'vscode';
 import type { Detector } from '../detection/detector';
 import { isEnvFileName } from '../detection/heuristics';
 import type { FileSystem, UserInterface } from '../interfaces';
+import type { Notifier } from '../interfaces/notifier';
 import type { Telemetry } from '../interfaces/telemetry';
 import { errorMessage } from '../utils/errors';
+import { guarded } from './guard';
 
 export function registerCompareSelectedCommand(
 	context: vscode.ExtensionContext,
 	deps: Readonly<{
 		telemetry: Telemetry;
+		notifier: Notifier;
 		detector: Detector;
 		fileSystem: FileSystem;
 		ui: UserInterface;
@@ -19,7 +22,7 @@ export function registerCompareSelectedCommand(
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			'envsync-le.compareSelected',
-			async (uri?: vscode.Uri, uris?: vscode.Uri[]) => {
+			guarded(deps.notifier, async (uri?: vscode.Uri, uris?: vscode.Uri[]) => {
 				telemetry.event('command', { name: 'compareSelected' });
 
 				const selectedFiles = await resolveSelectedFiles(
@@ -46,7 +49,7 @@ export function registerCompareSelectedCommand(
 				}
 
 				await compareFiles(envFiles, detector, ui);
-			},
+			}),
 		),
 	);
 }

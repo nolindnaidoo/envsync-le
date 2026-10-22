@@ -33,5 +33,6 @@
   "Error checking dotenv files - click for settings": "Error checking dotenv files - click for settings",
   "Missing keys in {0}: {1}": "Missing keys in {0}: {1}",
   "Extra keys in {0}: {1}": "Extra keys in {0}: {1}",
-  "Failed to parse {0}: {1}": "Failed to parse {0}: {1}"
+  "Failed to parse {0}: {1}": "Failed to parse {0}: {1}",
+  "EnvSync-LE could not finish: {0}": "EnvSync-LE could not finish: {0}"
 }

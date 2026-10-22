@@ -50,12 +50,13 @@ export function activate(context: vscode.ExtensionContext): void {
 		configuration,
 		fileSystem,
 	});
-	const commandAdapter = createVSCodeCommandAdapter(context);
+	const commandAdapter = createVSCodeCommandAdapter(context, notifier);
 
 	// Register commands
 	registerOpenSettingsCommand(commandAdapter, telemetry);
 	registerAllCommands(context, {
 		telemetry,
+		notifier,
 		detector,
 		fileSystem,
 		ui: createVSCodeUserInterface(),
