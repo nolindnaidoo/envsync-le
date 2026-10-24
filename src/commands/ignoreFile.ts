@@ -3,8 +3,10 @@ import { readConfig } from '../config/config';
 import type { Detector } from '../detection/detector';
 import { isEnvFileName } from '../detection/heuristics';
 import type { Configuration, FileSystem, UserInterface } from '../interfaces';
+import type { Notifier } from '../interfaces/notifier';
 import type { Telemetry } from '../interfaces/telemetry';
 import { errorMessage } from '../utils/errors';
+import { guarded } from './guard';
 
 /** Ask which ignored file to act on; null when the picker is dismissed. */
 async function pickIgnoredFile(
@@ -29,6 +31,7 @@ export function registerIgnoreFileCommand(
 	context: vscode.ExtensionContext,
 	deps: Readonly<{
 		telemetry: Telemetry;
+		notifier: Notifier;
 		detector: Detector;
 		configuration: Configuration;
 		fileSystem: FileSystem;
@@ -40,7 +43,7 @@ export function registerIgnoreFileCommand(
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			'envsync-le.ignoreFile',
-			async (uri?: vscode.Uri) => {
+			guarded(deps.notifier, async (uri?: vscode.Uri) => {
 				telemetry.event('command', { name: 'ignoreFile' });
 
 				let targetFile: vscode.Uri | undefined = uri;
@@ -106,7 +109,7 @@ export function registerIgnoreFileCommand(
 						vscode.l10n.t('Failed to ignore file: {0}', errorMessage(error)),
 					);
 				}
-			},
+			}),
 		),
 	);
 
@@ -114,7 +117,7 @@ export function registerIgnoreFileCommand(
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			'envsync-le.stopIgnoring',
-			async (uri?: vscode.Uri) => {
+			guarded(deps.notifier, async (uri?: vscode.Uri) => {
 				telemetry.event('command', { name: 'stopIgnoring' });
 
 				const config = vscode.workspace.getConfiguration('envsync-le');
@@ -162,52 +165,55 @@ export function registerIgnoreFileCommand(
 						`Failed to stop ignoring file: ${errorMessage(error)}`,
 					);
 				}
-			},
+			}),
 		),
 	);
 
 	// Command to clear all ignored files
 	context.subscriptions.push(
-		vscode.commands.registerCommand('envsync-le.clearAllIgnored', async () => {
-			telemetry.event('command', { name: 'clearAllIgnored' });
+		vscode.commands.registerCommand(
+			'envsync-le.clearAllIgnored',
+			guarded(deps.notifier, async () => {
+				telemetry.event('command', { name: 'clearAllIgnored' });
 
-			const currentIgnored = readConfig(configuration).temporaryIgnore;
+				const currentIgnored = readConfig(configuration).temporaryIgnore;
 
-			if (currentIgnored.length === 0) {
-				ui.showInformationMessage(
-					vscode.l10n.t('No files are currently being ignored'),
-				);
-				return;
-			}
+				if (currentIgnored.length === 0) {
+					ui.showInformationMessage(
+						vscode.l10n.t('No files are currently being ignored'),
+					);
+					return;
+				}
 
-			const confirmed = await ui.showWarningMessage(
-				vscode.l10n.t('Stop ignoring all {0} files?', currentIgnored.length),
-				'Yes',
-				'No',
-			);
-
-			if (confirmed !== 'Yes') return;
-
-			try {
-				const config = vscode.workspace.getConfiguration('envsync-le');
-				await config.update(
-					'temporaryIgnore',
-					[],
-					vscode.ConfigurationTarget.Workspace,
+				const confirmed = await ui.showWarningMessage(
+					vscode.l10n.t('Stop ignoring all {0} files?', currentIgnored.length),
+					'Yes',
+					'No',
 				);
 
-				await detector.checkSync();
+				if (confirmed !== 'Yes') return;
 
-				ui.showInformationMessage(
-					vscode.l10n.t(
-						'Cleared ignore list. All .env files will be checked again.',
-					),
-				);
-			} catch (error) {
-				ui.showErrorMessage(
-					`Failed to clear ignore list: ${errorMessage(error)}`,
-				);
-			}
-		}),
+				try {
+					const config = vscode.workspace.getConfiguration('envsync-le');
+					await config.update(
+						'temporaryIgnore',
+						[],
+						vscode.ConfigurationTarget.Workspace,
+					);
+
+					await detector.checkSync();
+
+					ui.showInformationMessage(
+						vscode.l10n.t(
+							'Cleared ignore list. All .env files will be checked again.',
+						),
+					);
+				} catch (error) {
+					ui.showErrorMessage(
+						`Failed to clear ignore list: ${errorMessage(error)}`,
+					);
+				}
+			}),
+		),
 	);
 }

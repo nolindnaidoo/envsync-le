@@ -10,6 +10,7 @@ import {
 import type { Detector } from '../detection/detector';
 import type { Configuration } from '../interfaces/configuration';
 import type { FileSystem } from '../interfaces/fileSystem';
+import type { Notifier } from '../interfaces/notifier';
 import type { UserInterface } from '../interfaces/userInterface';
 import type { SyncReport } from '../types';
 import { registerCompareSelectedCommand } from './compareSelected';
@@ -37,6 +38,7 @@ interface Harness {
 	readonly configWrites: Array<{ key: string; value: unknown }>;
 	readonly deps: {
 		telemetry: Telemetry;
+		notifier: Notifier;
 		detector: Detector;
 		configuration: Configuration;
 		fileSystem: FileSystem;
@@ -119,6 +121,7 @@ function harness(
 				event: (name: string) => events.push(name),
 				dispose: () => {},
 			},
+			notifier: { showError: (m: string) => errors.push(m) } as never,
 			detector,
 			configuration,
 			fileSystem,

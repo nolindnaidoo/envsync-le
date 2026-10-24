@@ -33,5 +33,6 @@
 	"Failed to show issues: {0}": "Fehler bei der Anzeige der Probleme: {0}",
 	"No longer ignoring {0}": "{0} nicht länger ignorieren",
 	"Set {0} as template. All .env files will be compared against it.": "Legen Sie „{0}“ als Vorlage fest. Alle .env-Dateien werden mit dieser Datei abgeglichen.",
-	"Stop ignoring all {0} files?": "Soll man die Dateien unter „{0}“ nicht mehr ignorieren?"
+	"Stop ignoring all {0} files?": "Soll man die Dateien unter „{0}“ nicht mehr ignorieren?",
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE konnte nicht abschließen: {0}"
 }

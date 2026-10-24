@@ -33,5 +33,6 @@
 	"Failed to show issues: {0}": "Gagal menampilkan masalah: {0}",
 	"No longer ignoring {0}": "Tidak lagi mengabaik{0}",
 	"Set {0} as template. All .env files will be compared against it.": "Tetapkan `{0}` sebagai templat. Semua berkas `.env` akan dibandingkan dengan berkas tersebut.",
-	"Stop ignoring all {0} files?": "Berhenti mengabaikan semua berkas {0}?"
+	"Stop ignoring all {0} files?": "Berhenti mengabaikan semua berkas {0}?",
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE tidak dapat menyelesaikan: {0}"
 }

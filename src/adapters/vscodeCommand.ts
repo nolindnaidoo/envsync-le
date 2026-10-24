@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
+import { guarded } from '../commands/guard';
 import type { CommandAdapter } from '../interfaces/command';
+import type { Notifier } from '../interfaces/notifier';
 
 /**
  * The VS Code command surface, as a frozen object.
@@ -10,6 +12,7 @@ import type { CommandAdapter } from '../interfaces/command';
  */
 export function createVSCodeCommandAdapter(
 	context: vscode.ExtensionContext,
+	notifier: Notifier,
 ): CommandAdapter {
 	return Object.freeze({
 		registerCommand(
@@ -17,8 +20,11 @@ export function createVSCodeCommandAdapter(
 			callback: (...args: unknown[]) => unknown | undefined,
 		): void {
 			context.subscriptions.push(
-				vscode.commands.registerCommand(command, (...args: unknown[]) =>
-					callback(...args),
+				vscode.commands.registerCommand(
+					command,
+					guarded(notifier, async (...args: unknown[]) => {
+						await callback(...args);
+					}),
 				),
 			);
 		},

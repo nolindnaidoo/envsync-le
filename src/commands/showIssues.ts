@@ -1,14 +1,17 @@
 import * as vscode from 'vscode';
 import type { Detector } from '../detection/detector';
 import type { FileSystem, UserInterface } from '../interfaces';
+import type { Notifier } from '../interfaces/notifier';
 import type { Telemetry } from '../interfaces/telemetry';
 import type { RatingPrompt } from '../ui/ratingPrompt';
 import { errorMessage } from '../utils/errors';
+import { guarded } from './guard';
 
 export function registerShowIssuesCommand(
 	context: vscode.ExtensionContext,
 	deps: Readonly<{
 		telemetry: Telemetry;
+		notifier: Notifier;
 		detector: Detector;
 		fileSystem: FileSystem;
 		ui: UserInterface;
@@ -18,26 +21,29 @@ export function registerShowIssuesCommand(
 	const { telemetry, detector, fileSystem, ui, ratingPrompt } = deps;
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('envsync-le.showIssues', async () => {
-			telemetry.event('command', { name: 'showIssues' });
+		vscode.commands.registerCommand(
+			'envsync-le.showIssues',
+			guarded(deps.notifier, async () => {
+				telemetry.event('command', { name: 'showIssues' });
 
-			const report = await detector.checkSync();
+				const report = await detector.checkSync();
 
-			if (shouldShowNoFilesMessage(report)) {
-				showNoFilesMessage();
-				return;
-			}
+				if (shouldShowNoFilesMessage(report)) {
+					showNoFilesMessage();
+					return;
+				}
 
-			if (shouldShowInSyncMessage(report)) {
-				showInSyncMessage();
-				// Not awaited: it resolves when the toast is answered, and a command that
-				// waited on that would stay pending for as long as the toast is ignored.
-				void ratingPrompt.recordSuccess();
-				return;
-			}
+				if (shouldShowInSyncMessage(report)) {
+					showInSyncMessage();
+					// Not awaited: it resolves when the toast is answered, and a command that
+					// waited on that would stay pending for as long as the toast is ignored.
+					void ratingPrompt.recordSuccess();
+					return;
+				}
 
-			await displayIssuesReport(report, fileSystem, ui, ratingPrompt);
-		}),
+				await displayIssuesReport(report, fileSystem, ui, ratingPrompt);
+			}),
+		),
 	);
 }
 
