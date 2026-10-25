@@ -2,8 +2,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
 	_createExtensionContext,
 	_getConfigUpdates,
+	_holdConfigUpdates,
 	_openedDocuments,
 	_registeredCommands,
+	_releaseConfigUpdates,
 	_resetMockState,
 	_respondToQuickPick,
 	_respondToWarning,
@@ -328,6 +330,53 @@ describe('commands (through the real wiring)', () => {
 		await commands.executeCommand('envsync-le.clearAllIgnored');
 
 		expect(_getConfigUpdates()).toHaveLength(0);
+	});
+
+	describe('two ignore commands started within one host write', () => {
+		// The host lands a configuration write after the call returns. Each of
+		// these commands reads the list and writes it back, so two started
+		// together would each read the list from before the other's write, and
+		// the last write would drop the first. The mock holds every write until
+		// released, as the host holds it until it lands.
+		const ignoreList = () =>
+			_getConfigUpdates()
+				.filter((update) => update.key === 'envsync-le.temporaryIgnore')
+				.at(-1)?.value;
+
+		it('ignoreFile twice: both files end up ignored', async () => {
+			_holdConfigUpdates();
+			const first = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.local'),
+			);
+			const second = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.test'),
+			);
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			_releaseConfigUpdates();
+			await Promise.all([first, second]);
+
+			expect(ignoreList()).toEqual(['ws/.env.local', 'ws/.env.test']);
+		});
+
+		it('ignoreFile beside stopIgnoring: the add survives the removal', async () => {
+			_setConfig('envsync-le.temporaryIgnore', ['ws/.env.local']);
+			_holdConfigUpdates();
+			const add = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.test'),
+			);
+			const remove = commands.executeCommand(
+				'envsync-le.stopIgnoring',
+				Uri.file('/ws/.env.local'),
+			);
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			_releaseConfigUpdates();
+			await Promise.all([add, remove]);
+
+			expect(ignoreList()).toEqual(['ws/.env.test']);
+		});
 	});
 });
 

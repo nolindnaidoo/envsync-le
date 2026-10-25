@@ -131,6 +131,24 @@ let findFilesError: Error | undefined;
 /** Make configuration reads throw, for error-path tests. */
 let configReadError: Error | undefined;
 
+/**
+ * Hold every configuration write until `_releaseConfigUpdates()`, landing it
+ * then, as a host lands a write after the call returns. Two commands that
+ * each read a list and write it back can both be made to read it before
+ * either write has landed.
+ */
+let heldUpdates: Array<() => void> | undefined;
+
+export function _holdConfigUpdates(): void {
+	heldUpdates = [];
+}
+
+export function _releaseConfigUpdates(): void {
+	const held = heldUpdates ?? [];
+	heldUpdates = undefined;
+	for (const land of held) land();
+}
+
 /** Make workspace.openTextDocument reject, so a command's report path can fail. */
 let openDocumentError: Error | undefined;
 
@@ -235,8 +253,21 @@ export const workspace = {
 			},
 			update: async (key: string, value: unknown, target?: unknown) => {
 				const full = section ? `${section}.${key}` : key;
-				configStore.set(full, value);
-				configUpdates.push({ key: full, value, target });
+				const land = () => {
+					configStore.set(full, value);
+					configUpdates.push({ key: full, value, target });
+				};
+				const held = heldUpdates;
+				if (held === undefined) {
+					land();
+					return;
+				}
+				await new Promise<void>((resolve) => {
+					held.push(() => {
+						land();
+						resolve();
+					});
+				});
 			},
 		};
 	},
@@ -571,6 +602,7 @@ export function _resetMockState(): void {
 	env.appName = 'Visual Studio Code';
 	findFilesError = undefined;
 	configReadError = undefined;
+	heldUpdates = undefined;
 	openDocumentError = undefined;
 	outputChannels.length = 0;
 	mcpProviders.length = 0;

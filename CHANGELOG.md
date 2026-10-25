@@ -21,6 +21,11 @@ version and releases from one tag.
 
 ### Fixed
 
+- **Two ignore commands run at once could lose one.** `Ignore File`, `Unignore
+  File` and `Clear Ignored Files` each read the ignore list and wrote it back,
+  and the host lands a write after the call returns, so two started together
+  each read the list from before the other's write and the last one won. The
+  three now take turns at the list.
 - **A setting changed while the extension was running did not take effect
   until the window was reloaded.** The configuration was read once, at
   activation, from an object VS Code hands out as a snapshot, so toggling the

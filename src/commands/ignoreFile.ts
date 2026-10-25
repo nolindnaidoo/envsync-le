@@ -40,6 +40,33 @@ export function registerIgnoreFileCommand(
 ): void {
 	const { telemetry, detector, configuration, fileSystem, ui } = deps;
 
+	// The three commands read the ignore list and write it back, and the host
+	// lands a write after the call returns. Two started within one write would
+	// each read the list from before the other's write, and the second write
+	// would drop the first. Every read-and-write runs after the one before it
+	// has landed, whether that one succeeded or not.
+	let queue: Promise<unknown> = Promise.resolve();
+	const withIgnoreList = <T>(
+		run: (
+			current: readonly string[],
+			write: (next: readonly string[]) => Thenable<void>,
+		) => Promise<T>,
+	): Promise<T> => {
+		const step = () => {
+			const config = vscode.workspace.getConfiguration('envsync-le');
+			return run(readConfig(configuration).temporaryIgnore, (next) =>
+				config.update(
+					'temporaryIgnore',
+					next,
+					vscode.ConfigurationTarget.Workspace,
+				),
+			);
+		};
+		const next = queue.then(step, step);
+		queue = next.catch(() => undefined);
+		return next;
+	};
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
 			'envsync-le.ignoreFile',
@@ -79,24 +106,19 @@ export function registerIgnoreFileCommand(
 				}
 
 				try {
-					const config = vscode.workspace.getConfiguration('envsync-le');
-					const currentIgnored = readConfig(configuration).temporaryIgnore;
 					const relativePath = vscode.workspace.asRelativePath(targetFile);
+					const added = await withIgnoreList(async (current, write) => {
+						if (current.includes(relativePath)) return false;
+						await write([...current, relativePath]);
+						return true;
+					});
 
-					if (currentIgnored.includes(relativePath)) {
+					if (!added) {
 						ui.showInformationMessage(
 							vscode.l10n.t('{0} is already being ignored', relativePath),
 						);
 						return;
 					}
-
-					// Add to temporary ignore list
-					const newIgnored = [...currentIgnored, relativePath];
-					await config.update(
-						'temporaryIgnore',
-						newIgnored,
-						vscode.ConfigurationTarget.Workspace,
-					);
 
 					// Trigger immediate comparison
 					await detector.checkSync();
@@ -123,7 +145,6 @@ export function registerIgnoreFileCommand(
 			guarded(deps.notifier, async (uri?: vscode.Uri) => {
 				telemetry.event('command', { name: 'stopIgnoring' });
 
-				const config = vscode.workspace.getConfiguration('envsync-le');
 				const currentIgnored = readConfig(configuration).temporaryIgnore;
 
 				if (currentIgnored.length === 0) {
@@ -147,15 +168,20 @@ export function registerIgnoreFileCommand(
 				}
 
 				try {
-					// Remove from ignore list
-					const newIgnored = currentIgnored.filter(
-						(path) => path !== targetPath,
-					);
-					await config.update(
-						'temporaryIgnore',
-						newIgnored,
-						vscode.ConfigurationTarget.Workspace,
-					);
+					// The list is read again inside the queue: another command may
+					// have written it since the picker was shown.
+					const removed = await withIgnoreList(async (current, write) => {
+						if (!current.includes(targetPath)) return false;
+						await write(current.filter((path) => path !== targetPath));
+						return true;
+					});
+
+					if (!removed) {
+						ui.showInformationMessage(
+							vscode.l10n.t('{0} is not currently being ignored', targetPath),
+						);
+						return;
+					}
 
 					// Trigger immediate comparison
 					await detector.checkSync();
@@ -204,12 +230,9 @@ export function registerIgnoreFileCommand(
 				if (confirmed !== yes) return;
 
 				try {
-					const config = vscode.workspace.getConfiguration('envsync-le');
-					await config.update(
-						'temporaryIgnore',
-						[],
-						vscode.ConfigurationTarget.Workspace,
-					);
+					await withIgnoreList(async (_current, write) => {
+						await write([]);
+					});
 
 					await detector.checkSync();
 
