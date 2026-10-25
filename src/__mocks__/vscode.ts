@@ -193,28 +193,33 @@ export const workspace = {
 		const path = typeof pathOrUri === 'string' ? pathOrUri : pathOrUri.fsPath;
 		return path.replace(/^\//, '');
 	},
-	getConfiguration: (section?: string) => ({
-		get: <T>(key: string, defaultValue?: T): T | undefined => {
-			// Reading configuration can genuinely fail — a corrupt settings file,
-			// a workspace that has gone away. Several call sites read config
-			// outside their own try, so this is the only way to reach their
-			// callers' error handling.
-			if (configReadError) throw configReadError;
-			const full = section ? `${section}.${key}` : key;
-			return configStore.has(full)
-				? (configStore.get(full) as T)
-				: defaultValue;
-		},
-		has: (key: string): boolean => {
-			const full = section ? `${section}.${key}` : key;
-			return configStore.has(full);
-		},
-		update: async (key: string, value: unknown, target?: unknown) => {
-			const full = section ? `${section}.${key}` : key;
-			configStore.set(full, value);
-			configUpdates.push({ key: full, value, target });
-		},
-	}),
+	// A snapshot, as the real API returns one: the values at the moment of
+	// the call, which a later change does not reach. A mock that read live
+	// let an adapter holding the object it was given at activation pass every
+	// test and read every setting from that moment for the whole session.
+	getConfiguration: (section?: string) => {
+		const snapshot = new Map(configStore);
+		return {
+			get: <T>(key: string, defaultValue?: T): T | undefined => {
+				// Reading configuration can genuinely fail — a corrupt settings file,
+				// a workspace that has gone away. Several call sites read config
+				// outside their own try, so this is the only way to reach their
+				// callers' error handling.
+				if (configReadError) throw configReadError;
+				const full = section ? `${section}.${key}` : key;
+				return snapshot.has(full) ? (snapshot.get(full) as T) : defaultValue;
+			},
+			has: (key: string): boolean => {
+				const full = section ? `${section}.${key}` : key;
+				return snapshot.has(full);
+			},
+			update: async (key: string, value: unknown, target?: unknown) => {
+				const full = section ? `${section}.${key}` : key;
+				configStore.set(full, value);
+				configUpdates.push({ key: full, value, target });
+			},
+		};
+	},
 	onDidChangeConfiguration: (listener: ConfigListener) => {
 		configListeners.push(listener);
 		return {

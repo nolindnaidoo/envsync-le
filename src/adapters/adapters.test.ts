@@ -57,6 +57,18 @@ describe('vscodeConfiguration', () => {
 		expect(configuration.has('debounceMs')).toBe(true);
 		expect(configuration.has('missing')).toBe(false);
 	});
+
+	it('reads a value changed after it was created', () => {
+		// The host hands out a snapshot, so an adapter that kept the object it
+		// was given at activation read every setting from that moment for the
+		// life of the session: nothing took effect without a reload.
+		const configuration = makeConfiguration();
+		expect(configuration.get('debounceMs', 1000)).toBe(1000);
+
+		_setConfig('envsync-le.debounceMs', 250);
+		expect(configuration.get('debounceMs', 1000)).toBe(250);
+		expect(configuration.has('debounceMs')).toBe(true);
+	});
 });
 
 describe('vscodeCommand', () => {

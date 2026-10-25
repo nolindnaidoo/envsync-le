@@ -14,6 +14,12 @@ version and releases from one tag.
 
 ### Fixed
 
+- **A setting changed while the extension was running did not take effect
+  until the window was reloaded.** The configuration was read once, at
+  activation, from an object VS Code hands out as a snapshot, so toggling the
+  status bar, changing the watch patterns or the notification level did
+  nothing, and `Unignore File` and `Clear Ignored Files` read the ignore list
+  as it was at activation. Every read now asks the host for the current value.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error
