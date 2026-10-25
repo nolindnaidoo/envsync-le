@@ -81,9 +81,9 @@ the answer does not need the values, so the parser never keeps one.
 Ported from `parser.ts`, including the parts that look like bugs and are
 not:
 
-- A key must match `^[a-zA-Z_][a-zA-Z0-9_-]*$`. Anything else to the left
-  of `=` is a parse error naming that line **by number, never by
-  quoting it** — a line with no `=` is often the continuation of a
+- A key must match `^[a-zA-Z_][a-zA-Z0-9_.-]*$`, so dotted names such as
+  `spring.datasource.url` count. Anything else to the left of `=` is a
+  parse error naming that line **by number, never by quoting it** — a line with no `=` is often the continuation of a
   multi-line certificate, and a line with one inside a query string is
   often a whole connection URL.
 - A leading `export ` is accepted and stripped.
@@ -172,7 +172,9 @@ Options:
   --ignore-case        compare key names case-insensitively
   --exclude <glob>     skip files matching this pattern; repeatable
   --hidden             walk hidden directories too
-  --no-ignore          walk files that .gitignore excludes
+  --no-ignore          accepted and now the default: a dotenv file is
+                       git-ignored by design, so honouring the ignore
+                       rules found nothing and reported it as in sync
 ```
 
 A dotenv file is hidden by definition, so `--hidden` here controls
@@ -205,8 +207,9 @@ in an editor. The CLI is **terminal-first**: whole trees, exit codes,
 piping, automation. Each works the way its own use case expects, so the
 list below is design rather than drift.
 
-- **Discovery.** The CLI walks a tree and honours `.gitignore`; the
-  extension answers about the workspace the editor already has open.
+- **Discovery.** The CLI walks a tree, the git-ignored dotenv files
+  included, because a dotenv file is ignored by design; the extension
+  answers about the workspace the editor already has open.
 - **`--template`, `--strict`, `--exclude`, `--hidden`, `--no-ignore`**
   and the exit codes are terminal-side only. There is nothing for an
   editor to branch on.

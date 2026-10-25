@@ -243,7 +243,8 @@ Portuguese (Brazil) · Russian · Ukrainian · Vietnamese · Chinese (Simplified
 
 Both halves are covered — the manifest (command titles, setting names and
 descriptions) and everything shown while the extension runs (notifications,
-the status bar, quick-picks and prompts). The extension follows VS Code's
+the status bar, quick-picks and prompts). The markdown report and the help
+page are written in English. The extension follows VS Code's
 display language, so it matches whatever the editor is already set to; no
 setting of its own.
 
