@@ -12,6 +12,13 @@ version and releases from one tag.
 
 ## [Unreleased]
 
+### Changed
+
+- **A file's modification time is no longer read.** Every file the extension
+  compared was also stat'ed, for a `lastModified` field nothing displayed or
+  compared, and a file that vanished between the read and the stat was dropped
+  with an error for it. The field and the stat are gone; the goldens lose it.
+
 ### Fixed
 
 - **A setting changed while the extension was running did not take effect

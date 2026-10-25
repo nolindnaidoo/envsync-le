@@ -63,7 +63,6 @@ const configuration = {
 const fileSystem = {
 	findFiles: async () => [],
 	readFile: async () => '',
-	getFileStats: async () => ({ size: 0, mtime: 0 }),
 	asRelativePath: (p: string) => p,
 } as unknown as FileSystem;
 

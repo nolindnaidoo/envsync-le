@@ -19,7 +19,6 @@ export interface DotenvFile {
 	readonly path: string;
 	readonly type: DotenvFileType;
 	readonly keys: readonly string[];
-	readonly lastModified: number;
 }
 
 export interface ParseResult {

@@ -202,29 +202,20 @@ async function parseAndAddFile(
 		// still contributes its parseable keys AND its errors.
 		errors.push(...parseResult.errors);
 
-		const dotenvFile = await createDotenvFile(
-			filepath,
-			parseResult,
-			fileSystem,
-		);
-		files.push(dotenvFile);
+		files.push(createDotenvFile(filepath, parseResult));
 	} catch (error) {
 		errors.push(createFileReadError(filepath, error));
 	}
 }
 
-async function createDotenvFile(
+function createDotenvFile(
 	filepath: string,
 	parseResult: ParseResult,
-	fileSystem: FileSystem,
-): Promise<DotenvFile> {
-	const stat = await fileSystem.getFileStats(filepath);
-
+): DotenvFile {
 	return {
 		path: filepath,
 		type: detectFileType(filepath),
 		keys: parseResult.keys,
-		lastModified: stat.mtime.getTime(),
 	};
 }
 

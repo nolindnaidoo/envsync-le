@@ -3,13 +3,6 @@ export interface FileInfo {
 	readonly uri: string;
 }
 
-export interface FileStats {
-	readonly mtime: Date;
-	readonly size: number;
-	readonly isFile: boolean;
-	readonly isDirectory: boolean;
-}
-
 export interface FileSystem {
 	/**
 	 * Find files matching a pattern in the workspace
@@ -24,11 +17,6 @@ export interface FileSystem {
 	 * Read file contents as text
 	 */
 	readFile(filepath: string): Promise<string>;
-
-	/**
-	 * Get file metadata
-	 */
-	getFileStats(filepath: string): Promise<FileStats>;
 
 	/**
 	 * Convert absolute path to workspace-relative path

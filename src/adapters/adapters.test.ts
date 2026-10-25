@@ -96,15 +96,11 @@ describe('vscodeCommand', () => {
 });
 
 describe('vscodeFileSystem', () => {
-	it('reads files, stats, and existence from workspace.fs', async () => {
+	it('reads and finds files through workspace.fs', async () => {
 		_setFile('/ws/.env', 'A=1');
 		const fileSystem = makeFileSystem();
 
 		expect(await fileSystem.readFile('/ws/.env')).toBe('A=1');
-
-		const stats = await fileSystem.getFileStats('/ws/.env');
-		expect(stats.isFile).toBe(true);
-		expect(stats.size).toBe(3);
 
 		const found = await fileSystem.findFiles('**/.env*');
 		expect(found).toEqual([{ filepath: '/ws/.env', uri: 'file:///ws/.env' }]);
