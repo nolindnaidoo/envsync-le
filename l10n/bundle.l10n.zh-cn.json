@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "无法清空忽略列表：{0}",
 	"Yes": "是",
 	"No": "否",
-	"Failed to check selected files: {0}": "无法检查选定的文件：{0}"
+	"Failed to check selected files: {0}": "无法检查选定的文件：{0}",
+	"envsync-le Sync Report": "envsync-le 同步报告",
+	"Checked files: {0}": "已检查的文件：{0}",
+	"Status: {0}": "状态：{0}",
+	"Missing Keys": "缺少的键",
+	"Compared to: {0}": "比较对象：{0}",
+	"other files": "其他文件",
+	"Parse / Read Errors": "解析 / 读取错误"
 }

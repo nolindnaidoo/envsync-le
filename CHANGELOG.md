@@ -14,6 +14,11 @@ version and releases from one tag.
 
 ### Changed
 
+- **The report's headings are in the editor's language.** The title, the
+  checked-file count, the status line, the Missing Keys and Parse / Read
+  Errors headings and the "Compared to" line go through the runtime catalogue
+  like every other string the extension shows. File names, key names and the
+  status code stay as they are. The help page is still English.
 - **A file's modification time is no longer read.** Every file the extension
   compared was also stat'ed, for a `lastModified` field nothing displayed or
   compared, and a file that vanished between the read and the stat was dropped

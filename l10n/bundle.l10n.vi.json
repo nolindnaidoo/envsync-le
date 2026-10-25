@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "Không thể xóa danh sách bỏ qua: {0}",
 	"Yes": "Có",
 	"No": "Không",
-	"Failed to check selected files: {0}": "Không thể kiểm tra các tệp đã chọn: {0}"
+	"Failed to check selected files: {0}": "Không thể kiểm tra các tệp đã chọn: {0}",
+	"envsync-le Sync Report": "Báo cáo đồng bộ envsync-le",
+	"Checked files: {0}": "Tệp đã kiểm tra: {0}",
+	"Status: {0}": "Trạng thái: {0}",
+	"Missing Keys": "Khóa còn thiếu",
+	"Compared to: {0}": "So sánh với: {0}",
+	"other files": "các tệp khác",
+	"Parse / Read Errors": "Lỗi phân tích / đọc"
 }

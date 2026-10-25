@@ -114,10 +114,10 @@ function addReportHeader(
 	lines: string[],
 	report: { files: readonly unknown[]; status: string },
 ): void {
-	lines.push('# envsync-le Sync Report');
+	lines.push(`# ${vscode.l10n.t('envsync-le Sync Report')}`);
 	lines.push('');
-	lines.push(`- Checked files: ${report.files.length}`);
-	lines.push(`- Status: ${report.status}`);
+	lines.push(`- ${vscode.l10n.t('Checked files: {0}', report.files.length)}`);
+	lines.push(`- ${vscode.l10n.t('Status: {0}', report.status)}`);
 	lines.push('');
 }
 
@@ -134,7 +134,7 @@ function addMissingKeysSection(
 		return;
 	}
 
-	lines.push('## Missing Keys');
+	lines.push(`## ${vscode.l10n.t('Missing Keys')}`);
 
 	for (const mismatch of missingKeys) {
 		addMismatchDetails(lines, mismatch, fileSystem);
@@ -147,12 +147,15 @@ function addMismatchDetails(
 	fileSystem: FileSystem,
 ): void {
 	const file = fileSystem.asRelativePath(mismatch.filepath);
-	const reference = mismatch.reference
-		? fileSystem.asRelativePath(mismatch.reference)
-		: 'other files';
+	// The comparator names no single reference as `other files`, a value the
+	// crate and the MCP tool carry verbatim; only the report translates it.
+	const reference =
+		mismatch.reference === 'other files'
+			? vscode.l10n.t('other files')
+			: fileSystem.asRelativePath(mismatch.reference);
 
 	lines.push(`### ${file}`);
-	lines.push(`Compared to: ${reference}`);
+	lines.push(vscode.l10n.t('Compared to: {0}', reference));
 	lines.push('');
 
 	for (const key of mismatch.keys) {
@@ -171,7 +174,7 @@ function addErrorsSection(
 		return;
 	}
 
-	lines.push('## Parse / Read Errors');
+	lines.push(`## ${vscode.l10n.t('Parse / Read Errors')}`);
 
 	for (const error of errors) {
 		const filepath = fileSystem.asRelativePath(error.filepath);
