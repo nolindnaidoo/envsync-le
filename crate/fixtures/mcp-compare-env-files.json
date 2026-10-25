@@ -382,5 +382,110 @@
 			"files": []
 		},
 		"expectedError": "files is required and must be a non-empty array of { path, content }"
+	},
+	{
+		"name": "template mode with no template path is refused",
+		"files": [
+			".env"
+		],
+		"arguments": {
+			"mode": "template"
+		},
+		"expectedError": "templatePath is required when mode is \"template\""
+	},
+	{
+		"name": "a mode the engine does not have is refused",
+		"files": [
+			".env"
+		],
+		"arguments": {
+			"mode": "manual"
+		},
+		"expectedError": "mode must be \"auto\" or \"template\""
+	},
+	{
+		"name": "an entry without content is named",
+		"arguments": {
+			"files": [
+				{
+					"path": ".env"
+				}
+			]
+		},
+		"expectedError": "files[0] must have string `path` and `content`"
+	},
+	{
+		"name": "a caseSensitive that is not true or false is refused",
+		"files": [
+			".env"
+		],
+		"arguments": {
+			"caseSensitive": "no"
+		},
+		"expectedError": "caseSensitive must be true or false"
+	},
+	{
+		"name": "an oversized cap is clamped, not refused",
+		"files": [
+			".env",
+			".env.example",
+			".env.production"
+		],
+		"arguments": {
+			"maxResults": 1e+20
+		},
+		"expected": {
+			"ok": true,
+			"data": {
+				"status": "missing-keys",
+				"files": [
+					{
+						"path": ".env",
+						"type": "base",
+						"keyCount": 4
+					},
+					{
+						"path": ".env.example",
+						"type": "example",
+						"keyCount": 4
+					},
+					{
+						"path": ".env.production",
+						"type": "production",
+						"keyCount": 4
+					}
+				],
+				"missingKeys": [
+					{
+						"filepath": ".env",
+						"keys": [
+							"SENTRY_DSN"
+						],
+						"reference": ".env.example"
+					},
+					{
+						"filepath": ".env.example",
+						"keys": [
+							"LOCAL_ONLY"
+						],
+						"reference": ".env"
+					},
+					{
+						"filepath": ".env.production",
+						"keys": [
+							"LOCAL_ONLY"
+						],
+						"reference": ".env"
+					}
+				],
+				"extraKeys": []
+			},
+			"diagnostics": [],
+			"meta": {
+				"tool": "compare_env_files",
+				"count": 3,
+				"truncated": false
+			}
+		}
 	}
 ]

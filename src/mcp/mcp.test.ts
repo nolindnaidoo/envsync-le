@@ -142,6 +142,14 @@ describe('compare_env_files: arguments', () => {
 		);
 	});
 
+	it('refuses a caseSensitive that is not true or false', async () => {
+		// `"false"` once read as true: the caller asked for a case-insensitive
+		// comparison the wrong way and got a case-sensitive one in silence.
+		await expect(
+			call({ files: [EXAMPLE], caseSensitive: 'false' }),
+		).rejects.toThrow('caseSensitive must be true or false');
+	});
+
 	it('requires a non-empty files array', async () => {
 		await expect(call({})).rejects.toThrow(/files is required/);
 		await expect(call({ files: [] })).rejects.toThrow(/files is required/);

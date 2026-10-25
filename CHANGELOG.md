@@ -49,6 +49,14 @@ version and releases from one tag.
   found no template and fell back to the union, with `extraKeys` emptied and
   nothing said. The two servers now answer identically, held by the shared
   corpus, and the npm command line's template matching is the comparator's.
+- **Both MCP servers refuse a malformed `compare_env_files` call in the same
+  words.** The Rust server fell through to auto mode on `mode: "template"`
+  with no `templatePath` and on a mode the tool does not have, named a
+  malformed file entry with the generic message, and refused a `maxResults`
+  of `1e20` that the npm server clamps. Both now refuse the same shapes
+  with the same messages, and a `caseSensitive` that is not `true` or
+  `false`, which both read as `true`, is refused too. Each shape is pinned
+  in the shared corpus.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,

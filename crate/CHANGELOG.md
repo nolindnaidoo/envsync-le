@@ -10,6 +10,16 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`compare_env_files` refuses a malformed call as the npm server does.**
+  `mode: "template"` with no `templatePath`, and a mode the tool does not
+  have, fell through to auto mode silently; a file entry without `content`
+  got the generic refusal rather than `files[0] must have string \`path\`
+  and \`content\``; a `maxResults` of `1e20`, or `5.0`, was refused where the
+  npm server clamps or accepts it. A `caseSensitive` that is not `true` or
+  `false` is now refused on both servers rather than read as `true`.
+
 ### Changed
 
 - The shared corpus pins that `compare_env_files` matches a template by the
