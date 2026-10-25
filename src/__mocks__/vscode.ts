@@ -131,6 +131,13 @@ let findFilesError: Error | undefined;
 /** Make configuration reads throw, for error-path tests. */
 let configReadError: Error | undefined;
 
+/** Make workspace.openTextDocument reject, so a command's report path can fail. */
+let openDocumentError: Error | undefined;
+
+export function _setOpenDocumentError(error: Error | undefined): void {
+	openDocumentError = error;
+}
+
 export function _setConfigReadError(error: Error | undefined): void {
 	configReadError = error;
 }
@@ -269,14 +276,18 @@ export const workspace = {
 				return { dispose: () => {} };
 			},
 			fireCreate(uri) {
+				if (watcher.disposed) return;
 				for (const l of listeners.create) l(uri);
 			},
 			fireChange(uri) {
+				if (watcher.disposed) return;
 				for (const l of listeners.change) l(uri);
 			},
 			fireDelete(uri) {
+				if (watcher.disposed) return;
 				for (const l of listeners.delete) l(uri);
 			},
+			// Disposing the watcher drops its listeners, as the host's does.
 			dispose() {
 				watcher.disposed = true;
 			},
@@ -288,6 +299,7 @@ export const workspace = {
 		content?: string;
 		language?: string;
 	}) => {
+		if (openDocumentError) throw openDocumentError;
 		const doc = _createDocument({
 			content: options?.content ?? '',
 			languageId: options?.language ?? 'plaintext',
@@ -343,6 +355,7 @@ export interface MockStatusBarItem {
 	command: unknown;
 	backgroundColor: unknown;
 	visible: boolean;
+	disposed: boolean;
 	show(): void;
 	hide(): void;
 	dispose(): void;
@@ -350,8 +363,24 @@ export interface MockStatusBarItem {
 
 const statusBarItems: MockStatusBarItem[] = [];
 
+/** Every status bar item created, disposed or not, in creation order. */
 export function _statusBarItems(): readonly MockStatusBarItem[] {
 	return statusBarItems;
+}
+
+const outputChannels: Array<{
+	name: string;
+	disposed: boolean;
+	_lines: string[];
+}> = [];
+
+/** Every output channel created, disposed or not, in creation order. */
+export function _outputChannels(): ReadonlyArray<{
+	name: string;
+	disposed: boolean;
+	_lines: string[];
+}> {
+	return outputChannels;
 }
 
 export const window = {
@@ -374,13 +403,19 @@ export const window = {
 		dispose: () => {},
 	}),
 	withProgress: async <T>(_options: unknown, task: () => Promise<T>) => task(),
-	createOutputChannel: (_name: string) => {
+	createOutputChannel: (name: string) => {
 		const linesOut: string[] = [];
-		return {
+		const channel = {
+			name,
+			disposed: false,
 			appendLine: (line: string) => linesOut.push(line),
-			dispose: () => {},
+			dispose: () => {
+				channel.disposed = true;
+			},
 			_lines: linesOut,
 		};
+		outputChannels.push(channel);
+		return channel;
 	},
 	createStatusBarItem: (_alignment?: unknown, _priority?: number) => {
 		const item: MockStatusBarItem = {
@@ -389,13 +424,16 @@ export const window = {
 			command: undefined,
 			backgroundColor: undefined,
 			visible: false,
+			disposed: false,
 			show(): void {
 				item.visible = true;
 			},
 			hide(): void {
 				item.visible = false;
 			},
-			dispose: () => {},
+			dispose: () => {
+				item.disposed = true;
+			},
 		};
 		statusBarItems.push(item);
 		return item;
@@ -432,6 +470,61 @@ export const commands = {
 
 export const executedBuiltins: Array<{ id: string; args: unknown[] }> = [];
 
+// ---------------------------------------------------------------- lm
+
+export class McpStdioServerDefinition {
+	constructor(
+		public readonly label: string,
+		public readonly command: string,
+		public readonly args: readonly string[] = [],
+		public readonly env: Record<string, string | number | null> = {},
+		public readonly version?: string,
+	) {}
+}
+
+interface McpProvider {
+	provideMcpServerDefinitions(): unknown;
+}
+
+const mcpProviders: Array<{ id: string; provider: McpProvider }> = [];
+
+/** Every MCP server definition provider registered and not yet disposed. */
+export function _mcpProviders(): ReadonlyArray<{
+	id: string;
+	provider: McpProvider;
+}> {
+	return mcpProviders;
+}
+
+/**
+ * `vscode.lm` as a host without the MCP API presents it: present, and empty.
+ * The extension feature-detects the registration function, so the default
+ * is that fork, and `_setLmApi(true)` gives the host VS Code 1.101's.
+ */
+export const lm: {
+	registerMcpServerDefinitionProvider?: (
+		id: string,
+		provider: McpProvider,
+	) => { dispose(): void };
+} = {};
+
+export function _setLmApi(present: boolean): void {
+	if (!present) {
+		delete lm.registerMcpServerDefinitionProvider;
+		return;
+	}
+	lm.registerMcpServerDefinitionProvider = (id, provider) => {
+		const entry = { id, provider };
+		mcpProviders.push(entry);
+		return {
+			dispose: () => {
+				const index = mcpProviders.indexOf(entry);
+				if (index >= 0) mcpProviders.splice(index, 1);
+			},
+		};
+	};
+}
+
 // ------------------------------------------------- extension context
 
 export const env = {
@@ -456,8 +549,9 @@ export function _createExtensionContext() {
 		},
 		extension: {
 			id: 'nolindnaidoo.envsync-le',
-			packageJSON: { displayName: 'EnvSync-LE' },
+			packageJSON: { displayName: 'EnvSync-LE', version: '0.0.0-mock' },
 		},
+		asAbsolutePath: (relative: string) => `/mock/extension/${relative}`,
 	};
 }
 
@@ -477,6 +571,10 @@ export function _resetMockState(): void {
 	env.appName = 'Visual Studio Code';
 	findFilesError = undefined;
 	configReadError = undefined;
+	openDocumentError = undefined;
+	outputChannels.length = 0;
+	mcpProviders.length = 0;
+	_setLmApi(false);
 	configStore.clear();
 	configUpdates.length = 0;
 	configListeners.length = 0;
@@ -510,4 +608,27 @@ export const l10n = {
 
 export function _setAppName(name: string): void {
 	env.appName = name;
+}
+
+/**
+ * What is still alive: created and not disposed, registered and not removed.
+ * A leak is a count here that does not return to what it was.
+ */
+export function _live(): {
+	statusBarItems: number;
+	outputChannels: number;
+	configListeners: number;
+	watchers: number;
+	commands: number;
+	mcpProviders: number;
+} {
+	return {
+		statusBarItems: statusBarItems.filter((item) => !item.disposed).length,
+		outputChannels: outputChannels.filter((channel) => !channel.disposed)
+			.length,
+		configListeners: configListeners.length,
+		watchers: watchers.filter((watcher) => !watcher.disposed).length,
+		commands: registeredCommands.size,
+		mcpProviders: mcpProviders.length,
+	};
 }

@@ -11,6 +11,7 @@ import {
 	_setFile,
 	_setFileBytes,
 	_setFindFilesError,
+	_setOpenDocumentError,
 	_shownMessages,
 	_statusBarItems,
 	commands,
@@ -132,6 +133,22 @@ describe('commands (through the real wiring)', () => {
 		);
 		expect(_statusBarItems()[0]?.visible).toBe(true);
 		expect(_statusBarItems()[0]?.text).toBe('$(file) 1');
+	});
+
+	it('showIssues reports a report it could not open, in the user language', async () => {
+		// The host can refuse to open a document; the command's catch was
+		// reachable from no test because the mock could not refuse.
+		_setFile('/ws/.env', 'A=1\nB=2');
+		_setFile('/ws/.env.local', 'A=1');
+		_setOpenDocumentError(new Error('no window'));
+
+		await commands.executeCommand('envsync-le.showIssues');
+
+		expect(
+			_shownMessages()
+				.filter((m) => m.kind === 'error')
+				.map((m) => m.message),
+		).toEqual(['Failed to show issues: no window']);
 	});
 
 	it('showIssues names a file that is not UTF-8 text', async () => {
