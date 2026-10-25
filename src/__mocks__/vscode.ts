@@ -156,6 +156,23 @@ export function _setOpenDocumentError(error: Error | undefined): void {
 	openDocumentError = error;
 }
 
+/** Make window.showTextDocument reject once the document exists. */
+let showDocumentError: Error | undefined;
+
+export function _setShowDocumentError(error: Error | undefined): void {
+	showDocumentError = error;
+}
+
+/**
+ * Make every configuration write reject, as the host does when settings.json
+ * cannot be written: read-only, or a workspace that has gone away.
+ */
+let configUpdateError: Error | undefined;
+
+export function _setConfigUpdateError(error: Error | undefined): void {
+	configUpdateError = error;
+}
+
 export function _setConfigReadError(error: Error | undefined): void {
 	configReadError = error;
 }
@@ -252,6 +269,7 @@ export const workspace = {
 				return snapshot.has(full);
 			},
 			update: async (key: string, value: unknown, target?: unknown) => {
+				if (configUpdateError) throw configUpdateError;
 				const full = section ? `${section}.${key}` : key;
 				const land = () => {
 					configStore.set(full, value);
@@ -429,7 +447,10 @@ export const window = {
 	},
 	showQuickPick: async (items: unknown[], _options?: unknown) =>
 		quickPickResponder ? quickPickResponder(items) : undefined,
-	showTextDocument: async (_document: unknown, _column?: unknown) => undefined,
+	showTextDocument: async (_document: unknown, _column?: unknown) => {
+		if (showDocumentError) throw showDocumentError;
+		return undefined;
+	},
 	setStatusBarMessage: (_message: string, _timeout?: number) => ({
 		dispose: () => {},
 	}),
@@ -603,7 +624,9 @@ export function _resetMockState(): void {
 	findFilesError = undefined;
 	configReadError = undefined;
 	heldUpdates = undefined;
+	configUpdateError = undefined;
 	openDocumentError = undefined;
+	showDocumentError = undefined;
 	outputChannels.length = 0;
 	mcpProviders.length = 0;
 	_setLmApi(false);
