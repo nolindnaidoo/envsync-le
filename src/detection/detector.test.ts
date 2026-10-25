@@ -299,6 +299,55 @@ describe('createDetector', () => {
 		expect(statusBar.updateStatus).toHaveBeenCalledWith('missing-keys', 2);
 	});
 
+	it('says so when more files match a pattern than it compares', async () => {
+		const telemetry = createMockTelemetry();
+		const notifier = createMockNotifier();
+		const statusBar = createMockStatusBar();
+		const configuration = createMockConfiguration();
+		const fileSystem = createMockFileSystem();
+
+		// One over the hundred the comparison reads. Before, the hundred were
+		// compared and nothing said the rest existed.
+		const found = Array.from({ length: 101 }, (_, index) => ({
+			filepath: `apps/service-${String(index).padStart(3, '0')}/.env`,
+			uri: `file://apps/service-${index}/.env`,
+		}));
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockImplementation(
+			(_pattern: string, _exclude: unknown, maxResults?: number) =>
+				Promise.resolve(found.slice(0, maxResults)),
+		);
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockResolvedValue('A=1');
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
+			mtime: new Date(),
+			size: 3,
+			isFile: true,
+			isDirectory: false,
+		});
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => filepath,
+		);
+
+		const detector = createDetector({
+			telemetry,
+			notifier,
+			statusBar,
+			configuration,
+			fileSystem,
+		});
+		const result = await detector.checkSync();
+
+		expect(result.files).toHaveLength(100);
+		expect(result.status).toBe('parse-error');
+		expect(result.errors).toEqual([
+			{
+				type: 'read-error',
+				message:
+					'More than 100 files match .env*; only the first 100 were compared',
+				filepath: 'pattern-search',
+			},
+		]);
+	});
+
 	it('reports selected files that could not be read as an error, not as no files', async () => {
 		const telemetry = createMockTelemetry();
 		const notifier = createMockNotifier();

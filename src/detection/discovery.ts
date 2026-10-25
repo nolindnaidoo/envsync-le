@@ -58,6 +58,16 @@ function createErrorLimitExceededError(): ParseError {
 	};
 }
 
+/**
+ * How many files one pattern contributes to a comparison.
+ *
+ * Asked for one more than this, so a match list exactly at the cap is told
+ * apart from one that was cut: the cut is reported, because a comparison
+ * over the first hundred of a monorepo's dotenv files that said nothing
+ * about the rest read as a comparison of all of them.
+ */
+const MAX_FILES_PER_PATTERN = 100;
+
 async function processPattern(
 	pattern: string,
 	fileSystem: FileSystem,
@@ -67,9 +77,16 @@ async function processPattern(
 	errors: ParseError[],
 ): Promise<void> {
 	try {
-		const fileInfos = await fileSystem.findFiles(pattern, null, 100);
+		const found = await fileSystem.findFiles(
+			pattern,
+			null,
+			MAX_FILES_PER_PATTERN + 1,
+		);
+		if (found.length > MAX_FILES_PER_PATTERN) {
+			errors.push(createPatternCapError(pattern));
+		}
 		await processFileInfos(
-			fileInfos,
+			found.slice(0, MAX_FILES_PER_PATTERN),
 			fileSystem,
 			excludePatterns,
 			config,
@@ -79,6 +96,14 @@ async function processPattern(
 	} catch (error) {
 		errors.push(createPatternSearchError(pattern, error));
 	}
+}
+
+function createPatternCapError(pattern: string): ParseError {
+	return {
+		type: 'read-error',
+		message: `More than ${MAX_FILES_PER_PATTERN} files match ${pattern}; only the first ${MAX_FILES_PER_PATTERN} were compared`,
+		filepath: 'pattern-search',
+	};
 }
 
 function createPatternSearchError(pattern: string, error: unknown): ParseError {

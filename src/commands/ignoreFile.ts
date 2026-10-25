@@ -50,7 +50,7 @@ export function registerIgnoreFileCommand(
 
 				if (!targetFile) {
 					// No file context - let user pick
-					const allEnvFiles = await fileSystem.findFiles('**/.env*', null, 50);
+					const allEnvFiles = await fileSystem.findFiles('**/.env*', null);
 					if (allEnvFiles.length === 0) {
 						ui.showInformationMessage(
 							vscode.l10n.t('No .env files found in workspace'),

@@ -5,6 +5,7 @@ import {
 	_openedDocuments,
 	_registeredCommands,
 	_resetMockState,
+	_respondToQuickPick,
 	_respondToWarning,
 	_setConfig,
 	_setFile,
@@ -156,6 +157,25 @@ describe('commands (through the real wiring)', () => {
 				m.message.includes('Some files could not be parsed'),
 			),
 		).toBe(true);
+	});
+
+	it.each([
+		['envsync-le.compareSelected'],
+		['envsync-le.setTemplate'],
+		['envsync-le.ignoreFile'],
+	])('%s offers every env file in the workspace, not the first fifty', async (id) => {
+		for (let index = 0; index < 60; index++) {
+			_setFile(`/ws/service-${String(index).padStart(2, '0')}/.env`, 'A=1');
+		}
+		let offered = 0;
+		_respondToQuickPick((items) => {
+			offered = items.length;
+			return undefined;
+		});
+
+		await commands.executeCommand(id);
+
+		expect(offered).toBe(60);
 	});
 
 	it('compareSelected compares the given uris', async () => {

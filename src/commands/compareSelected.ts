@@ -98,7 +98,7 @@ async function promptUserForFiles(
 async function findAllEnvFiles(
 	fileSystem: FileSystem,
 ): Promise<Array<{ fsPath: string }>> {
-	const fileInfos = await fileSystem.findFiles('**/.env*', null, 50);
+	const fileInfos = await fileSystem.findFiles('**/.env*', null);
 	return fileInfos.map((info) => ({ fsPath: info.filepath }));
 }
 

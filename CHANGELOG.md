@@ -32,6 +32,12 @@ version and releases from one tag.
   leniently, so a Latin-1 or UTF-16 `.env` was read as text full of
   replacement characters and reported, line by line, as keys that would not
   parse. The report now says `not UTF-8 text`, as the command line does.
+- **A comparison that stopped at a hundred files per pattern says so.** It
+  read the first hundred matches and said nothing about the rest, so a
+  monorepo with more dotenv files than that got a report that looked
+  complete. The cut is now an error in the report, and the file pickers
+  behind `Compare Files`, `Set Template` and `Ignore File` offer every env
+  file rather than the first fifty.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error
