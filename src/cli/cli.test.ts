@@ -281,12 +281,16 @@ describe('run', () => {
 	});
 
 	it('names a missing directory called constructor as the crate does', () => {
+		// The crate asks for the root's metadata first, and Windows answers
+		// ERROR_FILE_NOT_FOUND for a missing name whose parent exists, which
+		// `constructor` under the working directory is. ERROR_PATH_NOT_FOUND is
+		// for a missing parent; `names a missing root` above covers that case.
 		expect(capture(['constructor'])).toEqual({
 			code: 2,
 			stdout: '',
 			stderr:
 				process.platform === 'win32'
-					? 'envsync-le: constructor: The system cannot find the path specified. (os error 3)\n'
+					? 'envsync-le: constructor: The system cannot find the file specified. (os error 2)\n'
 					: 'envsync-le: constructor: No such file or directory (os error 2)\n',
 		});
 	});
