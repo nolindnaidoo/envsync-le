@@ -243,15 +243,18 @@ describe('a template named by the name it ends in', () => {
 	});
 	const files = [file('.env.example', ['A']), file('.env', ['A', 'LOCAL'])];
 
-	it.each(['.env.example', './.env.example', 'sub/.env.example', '/abs/.env.example', 'C:\\abs\\.env.example'])(
-		'%s is the template, so LOCAL is extra',
-		(templatePath) => {
-			const result = compareFiles(files, { mode: 'template', templatePath });
-			expect(result.extraKeys).toEqual([
-				{ filepath: '.env', keys: ['LOCAL'], reference: '.env.example' },
-			]);
-		},
-	);
+	it.each([
+		'.env.example',
+		'./.env.example',
+		'sub/.env.example',
+		'/abs/.env.example',
+		'C:\\abs\\.env.example',
+	])('%s is the template, so LOCAL is extra', (templatePath) => {
+		const result = compareFiles(files, { mode: 'template', templatePath });
+		expect(result.extraKeys).toEqual([
+			{ filepath: '.env', keys: ['LOCAL'], reference: '.env.example' },
+		]);
+	});
 
 	it('a partial component is not the same file', () => {
 		for (const [discovered, named] of [

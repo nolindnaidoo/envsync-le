@@ -140,7 +140,10 @@ describe('vscodeFileSystem', () => {
 	});
 
 	it('drops a leading byte order mark and keeps one inside the text', async () => {
-		_setFileBytes('/ws/.env.bom', Uint8Array.from([0xef, 0xbb, 0xbf, 0x41, 0x3d, 0x31]));
+		_setFileBytes(
+			'/ws/.env.bom',
+			Uint8Array.from([0xef, 0xbb, 0xbf, 0x41, 0x3d, 0x31]),
+		);
 		const fileSystem = makeFileSystem();
 		expect(await fileSystem.readFile('/ws/.env.bom')).toBe('A=1');
 	});

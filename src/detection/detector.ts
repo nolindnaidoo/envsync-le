@@ -125,7 +125,9 @@ export function createDetector(
 
 	function updateUI(report: SyncReport): void {
 		const issueCount =
-			report.missingKeys.length + report.extraKeys.length + report.errors.length;
+			report.missingKeys.length +
+			report.extraKeys.length +
+			report.errors.length;
 		statusBar.updateStatus(report.status, issueCount);
 	}
 

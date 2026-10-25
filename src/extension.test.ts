@@ -127,7 +127,9 @@ describe('commands (through the real wiring)', () => {
 		const doc = _openedDocuments().at(-1);
 		expect(doc?.getText()).toContain('Status: parse-error');
 		expect(doc?.getText()).toContain('Parse / Read Errors');
-		expect(doc?.getText()).toContain('ws/.env.local: Line 2: Invalid key format');
+		expect(doc?.getText()).toContain(
+			'ws/.env.local: Line 2: Invalid key format',
+		);
 		expect(_statusBarItems()[0]?.visible).toBe(true);
 		expect(_statusBarItems()[0]?.text).toBe('$(file) 1');
 	});
@@ -163,20 +165,23 @@ describe('commands (through the real wiring)', () => {
 		['envsync-le.compareSelected'],
 		['envsync-le.setTemplate'],
 		['envsync-le.ignoreFile'],
-	])('%s offers every env file in the workspace, not the first fifty', async (id) => {
-		for (let index = 0; index < 60; index++) {
-			_setFile(`/ws/service-${String(index).padStart(2, '0')}/.env`, 'A=1');
-		}
-		let offered = 0;
-		_respondToQuickPick((items) => {
-			offered = items.length;
-			return undefined;
-		});
+	])(
+		'%s offers every env file in the workspace, not the first fifty',
+		async (id) => {
+			for (let index = 0; index < 60; index++) {
+				_setFile(`/ws/service-${String(index).padStart(2, '0')}/.env`, 'A=1');
+			}
+			let offered = 0;
+			_respondToQuickPick((items) => {
+				offered = items.length;
+				return undefined;
+			});
 
-		await commands.executeCommand(id);
+			await commands.executeCommand(id);
 
-		expect(offered).toBe(60);
-	});
+			expect(offered).toBe(60);
+		},
+	);
 
 	it('compareSelected compares the given uris', async () => {
 		_setFile('/ws/.env', 'A=1');

@@ -94,7 +94,12 @@ describe('parse', () => {
 		// object answers, so a lookup table written as a literal read them as
 		// options: `envsync-le constructor` was refused as an option with no
 		// value, where the crate walks the directory and names it missing.
-		for (const name of ['constructor', 'toString', '__proto__', 'hasOwnProperty'])
+		for (const name of [
+			'constructor',
+			'toString',
+			'__proto__',
+			'hasOwnProperty',
+		])
 			expect(parse([name]).root, name).toBe(name);
 	});
 
