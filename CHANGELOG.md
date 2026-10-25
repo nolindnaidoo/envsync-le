@@ -28,6 +28,10 @@ version and releases from one tag.
   now `parse-error`: the bar shows the error count in red, `Show Details`
   opens the report with its "Parse / Read Errors" section, and a mismatch
   found beside an error keeps its own status with the error counted too.
+- **A file that is not UTF-8 text is named as such.** It was decoded
+  leniently, so a Latin-1 or UTF-16 `.env` was read as text full of
+  replacement characters and reported, line by line, as keys that would not
+  parse. The report now says `not UTF-8 text`, as the command line does.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error

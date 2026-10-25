@@ -29,8 +29,7 @@ export function createVSCodeFileSystem(deps: VSCodeDependencies): FileSystem {
 
 		async readFile(filepath: string): Promise<string> {
 			const uri = deps.Uri.file(filepath);
-			const content = await deps.workspaceFs.readFile(uri);
-			return Buffer.from(content).toString('utf8');
+			return decodeUtf8(await deps.workspaceFs.readFile(uri));
 		},
 
 		async getFileStats(filepath: string): Promise<FileStats> {
@@ -58,4 +57,21 @@ export function createVSCodeFileSystem(deps: VSCodeDependencies): FileSystem {
 			}
 		},
 	};
+}
+
+/**
+ * The file as text, or a refusal in the words the CLI uses.
+ *
+ * A lenient decode turned a Latin-1 or UTF-16 file into text full of
+ * replacement characters, which the parser then reported line by line as
+ * keys it could not read, so the user was told a key was malformed in a
+ * file that was never text. The leading byte order mark is dropped, as the
+ * CLI drops it and as the editor does before it shows a document.
+ */
+function decodeUtf8(bytes: Uint8Array): string {
+	try {
+		return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+	} catch {
+		throw new Error('not UTF-8 text');
+	}
 }

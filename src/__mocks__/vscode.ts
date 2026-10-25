@@ -122,6 +122,8 @@ export function _fireConfigChange(section: string): void {
 // -------------------------------------------------------- file system
 
 const fileStore = new Map<string, string>();
+/** Files whose bytes a test chose, for content that is not UTF-8 text. */
+const byteStore = new Map<string, Uint8Array>();
 
 /** Make workspace.findFiles reject, for error-path tests. */
 let findFilesError: Error | undefined;
@@ -139,6 +141,10 @@ export function _setFindFilesError(error: Error | undefined): void {
 
 export function _setFile(path: string, content: string): void {
 	fileStore.set(path, content);
+}
+
+export function _setFileBytes(path: string, bytes: Uint8Array): void {
+	byteStore.set(path, bytes);
 }
 
 export interface MockWatcher {
@@ -162,6 +168,8 @@ export const workspace = {
 	isTrusted: true,
 	fs: {
 		readFile: async (uri: Uri): Promise<Uint8Array> => {
+			const bytes = byteStore.get(uri.fsPath);
+			if (bytes !== undefined) return bytes;
 			const content = fileStore.get(uri.fsPath);
 			if (content === undefined) {
 				throw new Error(`ENOENT: ${uri.fsPath}`);
@@ -172,21 +180,26 @@ export const workspace = {
 			fileStore.set(uri.fsPath, new TextDecoder().decode(content));
 		},
 		stat: async (uri: Uri) => {
-			if (!fileStore.has(uri.fsPath)) {
+			if (!fileStore.has(uri.fsPath) && !byteStore.has(uri.fsPath)) {
 				throw new Error(`ENOENT: ${uri.fsPath}`);
 			}
 			return {
 				type: 1,
 				ctime: 0,
 				mtime: 1700000000000,
-				size: fileStore.get(uri.fsPath)?.length ?? 0,
+				size:
+					byteStore.get(uri.fsPath)?.length ??
+					fileStore.get(uri.fsPath)?.length ??
+					0,
 			};
 		},
 	},
 	findFiles: async (_pattern: string, _exclude?: unknown, max?: number) => {
 		// Lets a test drive the failure path of anything that discovers files.
 		if (findFilesError) throw findFilesError;
-		const uris = [...fileStore.keys()].map((p) => Uri.file(p));
+		const uris = [...fileStore.keys(), ...byteStore.keys()].map((p) =>
+			Uri.file(p),
+		);
 		return max !== undefined ? uris.slice(0, max) : uris;
 	},
 	asRelativePath: (pathOrUri: string | Uri): string => {
@@ -474,6 +487,7 @@ export function _resetMockState(): void {
 	statusBarItems.length = 0;
 	watchers.length = 0;
 	fileStore.clear();
+	byteStore.clear();
 	quickPickResponder = undefined;
 	warningResponder = undefined;
 	workspace.workspaceFolders = undefined;

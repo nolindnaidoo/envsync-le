@@ -8,6 +8,7 @@ import {
 	_respondToWarning,
 	_setConfig,
 	_setFile,
+	_setFileBytes,
 	_setFindFilesError,
 	_shownMessages,
 	_statusBarItems,
@@ -128,6 +129,17 @@ describe('commands (through the real wiring)', () => {
 		expect(doc?.getText()).toContain('ws/.env.local: Line 2: Invalid key format');
 		expect(_statusBarItems()[0]?.visible).toBe(true);
 		expect(_statusBarItems()[0]?.text).toBe('$(file) 1');
+	});
+
+	it('showIssues names a file that is not UTF-8 text', async () => {
+		_setFile('/ws/.env', 'A=1');
+		_setFileBytes('/ws/.env.latin1', Uint8Array.from([0x41, 0x3d, 0xe9, 0x0a]));
+
+		await commands.executeCommand('envsync-le.showIssues');
+
+		const doc = _openedDocuments().at(-1);
+		expect(doc?.getText()).toContain('ws/.env.latin1: not UTF-8 text');
+		expect(doc?.getText()).not.toContain('Invalid key format');
 	});
 
 	it('compareSelected names files that could not be parsed', async () => {
