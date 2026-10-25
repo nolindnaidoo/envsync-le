@@ -43,6 +43,12 @@ version and releases from one tag.
   event was dropped, so the status bar kept showing the state from before
   the edit until something else changed. One more check now follows the
   one in flight.
+- **`compare_env_files` finds a template named by the name it ends in**, as
+  the Rust server already did. Named as `./.env.example`, `sub/.env.example`
+  or an absolute path for a file labelled `.env.example`, the npm server
+  found no template and fell back to the union, with `extraKeys` emptied and
+  nothing said. The two servers now answer identically, held by the shared
+  corpus, and the npm command line's template matching is the comparator's.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,

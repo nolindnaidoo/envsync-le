@@ -121,6 +121,65 @@
 		}
 	},
 	{
+		"name": "a template named with a leading ./ is the same file",
+		"files": [
+			".env",
+			".env.example",
+			".env.production"
+		],
+		"arguments": {
+			"mode": "template",
+			"templatePath": "./.env.example"
+		},
+		"expected": {
+			"ok": true,
+			"data": {
+				"status": "missing-keys",
+				"files": [
+					{
+						"path": ".env",
+						"type": "base",
+						"keyCount": 4
+					},
+					{
+						"path": ".env.example",
+						"type": "example",
+						"keyCount": 4
+					},
+					{
+						"path": ".env.production",
+						"type": "production",
+						"keyCount": 4
+					}
+				],
+				"missingKeys": [
+					{
+						"filepath": ".env",
+						"keys": [
+							"SENTRY_DSN"
+						],
+						"reference": ".env.example"
+					}
+				],
+				"extraKeys": [
+					{
+						"filepath": ".env",
+						"keys": [
+							"LOCAL_ONLY"
+						],
+						"reference": ".env.example"
+					}
+				]
+			},
+			"diagnostics": [],
+			"meta": {
+				"tool": "compare_env_files",
+				"count": 2,
+				"truncated": false
+			}
+		}
+	},
+	{
 		"name": "case-insensitive keys",
 		"files": [
 			".env.casing",

@@ -8,6 +8,15 @@ in this repository carries one version and releases from one tag.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The shared corpus pins that `compare_env_files` matches a template by the
+  name it ends in, as `./.env.example` or `sub/.env.example` for a file
+  labelled `.env.example`. The crate already did; the npm server did not,
+  and fell back to the union with `extraKeys` emptied.
+
 ## [2.4.5] - 2026-10-18
 
 ### Changed

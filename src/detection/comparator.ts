@@ -82,11 +82,50 @@ function collectTemplateKeys(
 	return new Set(template.keys);
 }
 
+/**
+ * The template, by exact path first and then by the name it ends in.
+ *
+ * A caller names the template as a person types it beside a directory:
+ * `./.env.example`, `sub/.env.example`, an absolute path. The files carry
+ * the paths they were discovered or labelled with, so an exact match
+ * alone sent `./.env.example` through to the union silently, with
+ * `extraKeys` emptied. The crate matched by trailing component already;
+ * `compare_env_files` is one tool on both servers, so this does too.
+ */
 function findTemplateFile(
 	files: readonly DotenvFile[],
 	templatePath: string,
 ): DotenvFile | undefined {
-	return files.find((file) => file.path === templatePath);
+	return (
+		files.find((file) => file.path === templatePath) ??
+		files.find((file) => sameFile(file.path, templatePath))
+	);
+}
+
+/**
+ * Whether a discovered path and a named template are the same file: equal,
+ * or one a suffix of the other on a component boundary, with either
+ * separator, and a leading `./` or `.\` on neither. `config/.env.example`
+ * does not answer for `other/.env.example`, and `.env.example` not for
+ * `my.env.example`.
+ */
+export function sameFile(discovered: string, named: string): boolean {
+	const left = withoutLeadingDot(discovered);
+	const right = withoutLeadingDot(named);
+	if (left === right) return true;
+	const [long, short] =
+		left.length >= right.length ? [left, right] : [right, left];
+	if (!long.endsWith(short)) return false;
+	const prefix = long.slice(0, long.length - short.length);
+	return prefix === '' || prefix.endsWith('/') || prefix.endsWith('\\');
+}
+
+/** `trim_start_matches("./").trim_start_matches(".\\")`, in that order. */
+function withoutLeadingDot(path: string): string {
+	let rest = path;
+	while (rest.startsWith('./')) rest = rest.slice(2);
+	while (rest.startsWith('.\\')) rest = rest.slice(2);
+	return rest;
 }
 
 function collectAllKeys(files: readonly DotenvFile[]): Set<string> {
