@@ -24,11 +24,11 @@
 	"manifest.settings.case-sensitive.desc": "大文字小文字を区別するキー",
 	"manifest.settings.telemetry.desc": "ローカルログを有効化",
 	"manifest.settings.comparison-mode.desc": "比較モード",
-	"manifest.settings.comparison-mode.option.auto": "自動比較すべて",
+	"manifest.settings.comparison-mode.option.auto": "すべてを自動比較",
 	"manifest.settings.comparison-mode.option.manual": "手動比較",
 	"manifest.settings.comparison-mode.option.template": "テンプレートと比較",
 	"manifest.settings.compare-only-files.desc": "手動比較対象ファイル",
 	"manifest.settings.template-file.desc": "テンプレートファイル",
 	"manifest.settings.temporary-ignore.desc": "一時的に無視されたファイル",
-	"manifest.mcp.label": "エージェントモード向けの EnvSync-LE と dotenv の比較ツール"
+	"manifest.mcp.label": "EnvSync-LE: エージェントモード向けの dotenv 比較ツール"
 }

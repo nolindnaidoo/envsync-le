@@ -30,5 +30,5 @@
 	"manifest.settings.compare-only-files.desc": "수동 비교 파일",
 	"manifest.settings.template-file.desc": "템플릿 파일",
 	"manifest.settings.temporary-ignore.desc": "일시적으로 무시된 파일",
-	"manifest.mcp.label": "에이전트 모드용 EnvSync-LE와 dotenv 비교 도구"
+	"manifest.mcp.label": "EnvSync-LE: 에이전트 모드용 dotenv 비교 도구"
 }

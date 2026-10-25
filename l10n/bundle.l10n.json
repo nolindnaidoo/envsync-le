@@ -30,7 +30,7 @@
   "Failed to compare files: {0}": "Failed to compare files: {0}",
   "All dotenv files are in sync": "All dotenv files are in sync",
   "Dotenv files out of sync - click for details": "Dotenv files out of sync - click for details",
-  "Error checking dotenv files - click for settings": "Error checking dotenv files - click for settings",
+  "Error checking dotenv files - click for details": "Error checking dotenv files - click for details",
   "Missing keys in {0}: {1}": "Missing keys in {0}: {1}",
   "Extra keys in {0}: {1}": "Extra keys in {0}: {1}",
   "Failed to parse {0}: {1}": "Failed to parse {0}: {1}",

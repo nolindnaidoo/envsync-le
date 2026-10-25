@@ -80,6 +80,19 @@ version and releases from one tag.
   mechanism. Each goes through it now, in all twelve languages, and a unit
   test reads the sources for a literal handed to a notification, a prompt
   or a dialog button.
+- **Forty-one translated values said something other than their source.**
+  "Extra keys" was rendered as keyboard keys in German, Spanish, Russian
+  and Ukrainian, and as game shortcuts in Vietnamese; "Stop ignoring all
+  {0} files?" read the count as a path or a directory in seven languages;
+  "No longer ignoring {0}" named a website in Russian and had the
+  placeholder glued into a truncated word in Indonesian; the status bar's
+  error tooltip said "click for settings" where the click opens the
+  details, and five languages rendered "error checking" as "checking for
+  errors"; "Failed to ignore file: {0}" treated the error message as a
+  file name in Japanese and Korean; the agent-mode label read "EnvSync-LE
+  and dotenv comparison tools" in all twelve manifests; and the Brazilian
+  Portuguese manifest was in European Portuguese. Each value now says what
+  its source says.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,
