@@ -12,6 +12,14 @@ Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- **`mcp` answers a malformed frame as the npm servers do.** A line that
+  was not JSON, or not a JSON-RPC 2.0 request, was dropped without a word;
+  it is answered with a parse error, so the client that sent it learns what
+  happened. A frame is capped at 16 MiB and refused past it rather than
+  held, a null id is a notification, a last line with no newline is a
+  partial frame rather than a request, a line of invalid bytes is read with
+  replacement characters, and an unknown method, an unknown tool and a
+  nameless call are worded as the extension's server words them.
 - **`compare_env_files` refuses a malformed call as the npm server does.**
   `mode: "template"` with no `templatePath`, and a mode the tool does not
   have, fell through to auto mode silently; a file entry without `content`

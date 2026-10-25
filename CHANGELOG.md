@@ -62,6 +62,16 @@ version and releases from one tag.
   which answers those names with a function, so `envsync-le constructor`
   was refused as an option that needs a value where the Rust one walks the
   directory. Both now name it missing in the same words.
+- **The three MCP servers answer a malformed frame in the same words.** The
+  extension's server, `envsync-le mcp` from npm and the Rust binary each
+  read a frame their own way: a line that was not JSON or not a request was
+  answered by one and dropped by the others, a null id was a notification
+  to one and a request to the others, a frame over 16 MiB was refused by
+  one and held by the others, a last line with no newline was answered by
+  two, `initialize` echoed the client's version from one, and an unknown
+  method, an unknown tool and a nameless call were worded three ways.
+  Every server now frames, trims and refuses as the extension's does, so a
+  client cannot tell them apart by what it sent.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,
