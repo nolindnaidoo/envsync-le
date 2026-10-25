@@ -8,6 +8,33 @@ in this repository carries one version and releases from one tag.
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`mcp` answers a malformed frame as the npm servers do.** A line that
+  was not JSON, or not a JSON-RPC 2.0 request, was dropped without a word;
+  it is answered with a parse error, so the client that sent it learns what
+  happened. A frame is capped at 16 MiB and refused past it rather than
+  held, a null id is a notification, a last line with no newline is a
+  partial frame rather than a request, a line of invalid bytes is read with
+  replacement characters, and an unknown method, an unknown tool and a
+  nameless call are worded as the extension's server words them.
+- **`compare_env_files` refuses a malformed call as the npm server does.**
+  `mode: "template"` with no `templatePath`, and a mode the tool does not
+  have, fell through to auto mode silently; a file entry without `content`
+  got the generic refusal rather than `files[0] must have string \`path\`
+  and \`content\``; a `maxResults` of `1e20`, or `5.0`, was refused where the
+  npm server clamps or accepts it. A `caseSensitive` that is not `true` or
+  `false` is now refused on both servers rather than read as `true`.
+
+### Changed
+
+- The shared corpus pins that `compare_env_files` matches a template by the
+  name it ends in, as `./.env.example` or `sub/.env.example` for a file
+  labelled `.env.example`. The crate already did; the npm server did not,
+  and fell back to the union with `extraKeys` emptied.
+
 ## [2.4.5] - 2026-10-18
 
 ### Changed

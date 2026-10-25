@@ -98,7 +98,7 @@ async function promptUserForFiles(
 async function findAllEnvFiles(
 	fileSystem: FileSystem,
 ): Promise<Array<{ fsPath: string }>> {
-	const fileInfos = await fileSystem.findFiles('**/.env*', null, 50);
+	const fileInfos = await fileSystem.findFiles('**/.env*', null);
 	return fileInfos.map((info) => ({ fsPath: info.filepath }));
 }
 
@@ -224,7 +224,10 @@ function showComparisonCompleteMessage(
 	ui: UserInterface,
 ): void {
 	ui.showInformationMessage(
-		`Compared ${fileCount} files. Check status bar for results.`,
+		vscode.l10n.t(
+			'Compared {0} files. Check status bar for results.',
+			fileCount,
+		),
 	);
 }
 

@@ -7,6 +7,7 @@ import {
 	_respondToQuickPick,
 	_setConfig,
 	_setFile,
+	_setFileBytes,
 	_shownMessages,
 	_statusBarItems,
 	_watchers,
@@ -57,6 +58,18 @@ describe('vscodeConfiguration', () => {
 		expect(configuration.has('debounceMs')).toBe(true);
 		expect(configuration.has('missing')).toBe(false);
 	});
+
+	it('reads a value changed after it was created', () => {
+		// The host hands out a snapshot, so an adapter that kept the object it
+		// was given at activation read every setting from that moment for the
+		// life of the session: nothing took effect without a reload.
+		const configuration = makeConfiguration();
+		expect(configuration.get('debounceMs', 1000)).toBe(1000);
+
+		_setConfig('envsync-le.debounceMs', 250);
+		expect(configuration.get('debounceMs', 1000)).toBe(250);
+		expect(configuration.has('debounceMs')).toBe(true);
+	});
 });
 
 describe('vscodeCommand', () => {
@@ -93,9 +106,6 @@ describe('vscodeFileSystem', () => {
 		expect(stats.isFile).toBe(true);
 		expect(stats.size).toBe(3);
 
-		expect(await fileSystem.fileExists('/ws/.env')).toBe(true);
-		expect(await fileSystem.fileExists('/ws/.env.missing')).toBe(false);
-
 		const found = await fileSystem.findFiles('**/.env*');
 		expect(found).toEqual([{ filepath: '/ws/.env', uri: 'file:///ws/.env' }]);
 
@@ -105,6 +115,34 @@ describe('vscodeFileSystem', () => {
 	it('propagates read errors for missing files', async () => {
 		const fileSystem = makeFileSystem();
 		await expect(fileSystem.readFile('/nope')).rejects.toThrow('ENOENT');
+	});
+
+	it('refuses a file that is not UTF-8 text, in the words the CLI uses', async () => {
+		// Decoding leniently turned a Latin-1 or UTF-16 file into text with
+		// replacement characters, which the parser then reported as a line it
+		// could not read, so the user was told the key was malformed rather
+		// than that the file was never read as text.
+		_setFileBytes('/ws/.env.latin1', Uint8Array.from([0x41, 0x3d, 0xe9, 0x0a]));
+		_setFileBytes(
+			'/ws/.env.utf16',
+			Uint8Array.from([0xff, 0xfe, 0x41, 0x00, 0x3d, 0x00, 0x31, 0x00]),
+		);
+		const fileSystem = makeFileSystem();
+		await expect(fileSystem.readFile('/ws/.env.latin1')).rejects.toThrow(
+			'not UTF-8 text',
+		);
+		await expect(fileSystem.readFile('/ws/.env.utf16')).rejects.toThrow(
+			'not UTF-8 text',
+		);
+	});
+
+	it('drops a leading byte order mark and keeps one inside the text', async () => {
+		_setFileBytes(
+			'/ws/.env.bom',
+			Uint8Array.from([0xef, 0xbb, 0xbf, 0x41, 0x3d, 0x31]),
+		);
+		const fileSystem = makeFileSystem();
+		expect(await fileSystem.readFile('/ws/.env.bom')).toBe('A=1');
 	});
 });
 

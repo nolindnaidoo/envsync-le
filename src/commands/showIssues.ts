@@ -29,12 +29,12 @@ export function registerShowIssuesCommand(
 				const report = await detector.checkSync();
 
 				if (shouldShowNoFilesMessage(report)) {
-					showNoFilesMessage();
+					showNoFilesMessage(ui);
 					return;
 				}
 
 				if (shouldShowInSyncMessage(report)) {
-					showInSyncMessage();
+					showInSyncMessage(ui);
 					// Not awaited: it resolves when the toast is answered, and a command that
 					// waited on that would stay pending for as long as the toast is ignored.
 					void ratingPrompt.recordSuccess();
@@ -51,16 +51,16 @@ function shouldShowNoFilesMessage(report: { status: string }): boolean {
 	return report.status === 'no-files';
 }
 
-function showNoFilesMessage(): void {
-	vscode.window.showInformationMessage('No .env files found in workspace');
+function showNoFilesMessage(ui: UserInterface): void {
+	ui.showInformationMessage(vscode.l10n.t('No .env files found in workspace'));
 }
 
 function shouldShowInSyncMessage(report: { status: string }): boolean {
 	return report.status === 'in-sync';
 }
 
-function showInSyncMessage(): void {
-	vscode.window.showInformationMessage('Selected .env files are in sync');
+function showInSyncMessage(ui: UserInterface): void {
+	ui.showInformationMessage(vscode.l10n.t('Selected .env files are in sync'));
 }
 
 async function displayIssuesReport(

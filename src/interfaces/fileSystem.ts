@@ -34,9 +34,4 @@ export interface FileSystem {
 	 * Convert absolute path to workspace-relative path
 	 */
 	asRelativePath(filepath: string): string;
-
-	/**
-	 * Check if a file exists
-	 */
-	fileExists(filepath: string): Promise<boolean>;
 }

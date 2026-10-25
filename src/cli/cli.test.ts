@@ -89,6 +89,20 @@ describe('parse', () => {
 		expect(() => parse(['--file'])).toThrow('--file needs a path');
 	});
 
+	it('takes a directory named like a property of Object as a directory', () => {
+		// `constructor`, `toString` and `__proto__` are names every plain
+		// object answers, so a lookup table written as a literal read them as
+		// options: `envsync-le constructor` was refused as an option with no
+		// value, where the crate walks the directory and names it missing.
+		for (const name of [
+			'constructor',
+			'toString',
+			'__proto__',
+			'hasOwnProperty',
+		])
+			expect(parse([name]).root, name).toBe(name);
+	});
+
 	it('takes one directory, defaulting to the working one', () => {
 		expect(parse([]).root).toBe('.');
 		expect(parse(['src']).root).toBe('src');
@@ -264,6 +278,17 @@ describe('run', () => {
 		const root = tree({ 'notes.txt': 'A=1' });
 		expect(capture([root]).stderr).toBe('no dotenv files found\n');
 		expect(capture([root]).code).toBe(0);
+	});
+
+	it('names a missing directory called constructor as the crate does', () => {
+		expect(capture(['constructor'])).toEqual({
+			code: 2,
+			stdout: '',
+			stderr:
+				process.platform === 'win32'
+					? 'envsync-le: constructor: The system cannot find the path specified. (os error 3)\n'
+					: 'envsync-le: constructor: No such file or directory (os error 2)\n',
+		});
 	});
 
 	it('refuses a malformed question with 2', () => {

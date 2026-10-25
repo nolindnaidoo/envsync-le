@@ -1,13 +1,15 @@
 /**
- * `<tool> mcp`: the crate's MCP server (`crate/src/mcp/mod.rs`), not the
+ * `envsync-le mcp`: the crate's MCP server (`crate/src/mcp/mod.rs`), not the
  * extension's. The tools are the extension's own handlers; the protocol
  * around them is the crate's, so a request answers the same from either
- * binary, the malformed ones included.
+ * binary, the malformed ones included, and in the words the extension's
+ * server uses, so a client cannot tell the three apart by what it sent.
  */
 import type { ServerInfo, ToolDefinition } from '../mcp/transport';
-import { requests } from './frames';
+import { frames, type Request } from './frames';
 
 const PROTOCOL_VERSION = '2025-06-18';
+const PARSE_ERROR = -32700;
 const INVALID_PARAMS = -32602;
 const METHOD_NOT_FOUND = -32601;
 
@@ -15,18 +17,32 @@ type Handled =
 	| { readonly result: unknown }
 	| { readonly error: { readonly code: number; readonly message: string } };
 
-/** Serves until stdin closes, one request at a time, in order. */
+/**
+ * Serves until stdin closes, one request at a time, in order, over the
+ * crate's framing in `frames.ts`. A frame the framing refuses is answered
+ * with a parse error, as the crate answers it.
+ */
 export async function serve(
 	input: AsyncIterable<Uint8Array>,
 	write: (line: string) => void,
 	info: ServerInfo,
 	tools: readonly ToolDefinition[],
 ): Promise<number> {
-	for await (const request of requests(input)) {
-		const response = await handle(request, info, tools);
+	for await (const frame of frames(input)) {
+		if ('refusal' in frame) {
+			write(
+				`${reply({ id: null, error: { code: PARSE_ERROR, message: frame.refusal } })}\n`,
+			);
+			continue;
+		}
+		const response = await handle(frame.request, info, tools);
 		if (response !== undefined) write(`${response}\n`);
 	}
 	return 0;
+}
+
+function reply(body: Record<string, unknown>): string {
+	return JSON.stringify({ jsonrpc: '2.0', ...body });
 }
 
 /** serde_json's `get`: a field of an object, and nothing for anything else. */
@@ -39,22 +55,15 @@ function isObject(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-/**
- * No `jsonrpc` check, and a null id is still an id: the crate asks only for a
- * string method and an id that is present.
- */
 export async function handle(
-	request: unknown,
+	request: Request,
 	info: ServerInfo,
 	tools: readonly ToolDefinition[],
 ): Promise<string | undefined> {
-	const method = field(request, 'method');
-	if (typeof method !== 'string') return undefined;
-	const id = field(request, 'id');
-	// A notification carries no id and gets no reply.
-	if (id === undefined) return undefined;
-	const handled = await dispatch(method, field(request, 'params'), info, tools);
-	return JSON.stringify({ jsonrpc: '2.0', id, ...handled });
+	// A notification carries no id, or a null one, and gets no reply.
+	if (request.id === undefined || request.id === null) return undefined;
+	const handled = await dispatch(request.method, request.params, info, tools);
+	return reply({ id: request.id, ...handled });
 }
 
 async function dispatch(
@@ -83,10 +92,7 @@ async function dispatch(
 	if (method === 'tools/call') return callTool(params, tools);
 	if (method === 'ping') return { result: {} };
 	return {
-		error: {
-			code: METHOD_NOT_FOUND,
-			message: `this server does not implement ${method}`,
-		},
+		error: { code: METHOD_NOT_FOUND, message: `Unknown method: ${method}` },
 	};
 }
 
@@ -99,28 +105,25 @@ async function callTool(
 	params: unknown,
 	tools: readonly ToolDefinition[],
 ): Promise<Handled> {
-	if (params === undefined) {
-		return {
-			error: { code: INVALID_PARAMS, message: 'no tool call was supplied' },
-		};
-	}
 	const name = field(params, 'name');
 	if (typeof name !== 'string') {
 		return {
-			error: { code: INVALID_PARAMS, message: 'the tool call named no tool' },
+			error: {
+				code: INVALID_PARAMS,
+				message: 'tools/call requires a string `name`',
+			},
 		};
 	}
 	const tool = tools.find((candidate) => candidate.name === name);
 	if (!tool) {
 		return {
-			error: {
-				code: INVALID_PARAMS,
-				message: `this server offers no tool named ${name}`,
-			},
+			error: { code: INVALID_PARAMS, message: `Unknown tool: ${name}` },
 		};
 	}
-	// serde_json answers `get` on anything but an object with nothing, so
-	// arguments that are not an object read as an empty one.
+	// Absent or null arguments are an empty object, which the tool then
+	// refuses for what it lacks; arguments that are not an object read the
+	// same way, as serde_json answers `get` on anything but an object with
+	// nothing.
 	const raw = field(params, 'arguments');
 	const args = isObject(raw) ? raw : {};
 	let envelope: unknown;

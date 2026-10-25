@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DotenvFile } from '../types';
-import { areFilesInSync, compareFiles } from './comparator';
+import { compareFiles, sameFile } from './comparator';
 
 describe('compareFiles', () => {
 	it('should handle empty file list', () => {
@@ -149,88 +149,41 @@ describe('compareFiles', () => {
 	});
 });
 
-describe('areFilesInSync', () => {
-	it('should return true for empty file list', () => {
-		expect(areFilesInSync([])).toBe(true);
+describe('a template named by the name it ends in', () => {
+	const file = (path: string, keys: string[]): DotenvFile => ({
+		path,
+		type: 'base',
+		keys: Object.freeze(keys),
+		lastModified: 0,
+	});
+	const files = [file('.env.example', ['A']), file('.env', ['A', 'LOCAL'])];
+
+	it.each([
+		'.env.example',
+		'./.env.example',
+		'sub/.env.example',
+		'/abs/.env.example',
+		'C:\\abs\\.env.example',
+	])('%s is the template, so LOCAL is extra', (templatePath) => {
+		const result = compareFiles(files, { mode: 'template', templatePath });
+		expect(result.extraKeys).toEqual([
+			{ filepath: '.env', keys: ['LOCAL'], reference: '.env.example' },
+		]);
 	});
 
-	it('should return true for single file', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(true);
-	});
-
-	it('should return true for identical files', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(true);
-	});
-
-	it('should return false for different key counts', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(false);
-	});
-
-	it('should return false for different keys', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1', 'KEY3'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(false);
-	});
-
-	it('should handle undefined keys gracefully', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{ path: '.env.local', type: 'local', keys: [], lastModified: Date.now() },
-		];
-		expect(areFilesInSync(files)).toBe(false);
+	it('a partial component is not the same file', () => {
+		for (const [discovered, named] of [
+			['.env.example', 'my.env.example'],
+			['config/.env', 'other/.env.example'],
+			['.env', '.env.local'],
+		]) {
+			expect(sameFile(discovered as string, named as string)).toBe(false);
+		}
+		const result = compareFiles(files, {
+			mode: 'template',
+			templatePath: 'my.env.example',
+		});
+		expect(result.extraKeys).toEqual([]);
 	});
 });
 

@@ -97,10 +97,11 @@ If that prints the tool name, the server works.
 | `caseSensitive` | boolean | Compare key names case-sensitively. Default `true`. |
 | `maxResults` | number | Default `500`, ceiling `5000`. |
 
-Returns the overall `status` — `in-sync`, `missing-keys`, `extra-keys` or
-`parse-error` — each file with its key count, and the keys missing from each
-file (and, in `template` mode, extra in it) **by name only**. A value never
-leaves the tool. `maxResults` caps the mismatches returned, and
+Returns the overall `status` — `in-sync`, `missing-keys` or `extra-keys` —
+each file with its key count, and the keys missing from each file (and, in
+`template` mode, extra in it) **by name only**. A value never leaves the
+tool. A file that will not parse cleanly makes `ok` false, with a
+`diagnostics` entry naming the file and the line; its keys still count. `maxResults` caps the mismatches returned, and
 `meta.truncated` says whether any were dropped.
 
 ```json

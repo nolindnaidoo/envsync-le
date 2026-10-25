@@ -5,7 +5,7 @@
  * about the set of files.
  */
 import { statSync } from 'node:fs';
-import { compareFiles } from '../detection/comparator';
+import { compareFiles, sameFile } from '../detection/comparator';
 import type { KeyMismatch, SyncStatus } from '../types';
 import {
 	DEFAULT_DISCOVER,
@@ -151,7 +151,8 @@ function mismatch(entry: KeyMismatch): Mismatch {
  * The crate matches a template by the name it ends in when no file has the
  * exact spelling, so `./.env.example` or `sub/.env.example` finds the file the
  * walk calls `.env.example`. A template that matches nothing falls back to
- * the union, as it does there.
+ * the union, as it does there. The rule itself lives in the comparator, which
+ * applies it for the shared MCP tool as well.
  */
 function templateOf(
 	files: readonly EnvFile[],
@@ -161,25 +162,6 @@ function templateOf(
 		files.find((file) => file.path === named) ??
 		files.find((file) => sameFile(file.path, named))
 	);
-}
-
-function sameFile(discovered: string, named: string): boolean {
-	const left = withoutLeadingDot(discovered);
-	const right = withoutLeadingDot(named);
-	if (left === right) return true;
-	const [long, short] =
-		left.length >= right.length ? [left, right] : [right, left];
-	if (!long.endsWith(short)) return false;
-	const prefix = long.slice(0, long.length - short.length);
-	return prefix === '' || prefix.endsWith('/') || prefix.endsWith('\\');
-}
-
-/** `trim_start_matches("./").trim_start_matches(".\\")`, in that order. */
-function withoutLeadingDot(path: string): string {
-	let rest = path;
-	while (rest.startsWith('./')) rest = rest.slice(2);
-	while (rest.startsWith('.\\')) rest = rest.slice(2);
-	return rest;
 }
 
 /**

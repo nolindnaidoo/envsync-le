@@ -13,7 +13,7 @@
 	"Cleared ignore list. All .env files will be checked again.": "已清空忽略列表。所有 .env 文件都将重新进行检查。",
 	"Cleared template. Returned to automatic comparison.": "已清除模板。恢复为自动比较模式。",
 	"Dotenv files out of sync - click for details": "Dotenv 文件不同步——点击查看详情",
-	"Error checking dotenv files - click for settings": "检查 dotenv 文件时出错——点击查看设置",
+	"Error checking dotenv files - click for details": "检查 dotenv 文件时出错——点击查看详情",
 	"Extra keys in {0}: {1}": "{0} 中的额外键：{1}",
 	"Failed to check dotenv sync: {0}": "无法检查 dotenv 同步：{0}",
 	"Failed to parse {0}: {1}": "无法解析 {0}：{1}",
@@ -24,7 +24,7 @@
 	"Please select at least 2 .env files": "请至少选择 2 个 .env 文件",
 	"Please select at least 2 .env files to compare": "请至少选择 2 个 .env 文件进行比较",
 	"Selected .env files are in sync": "选定的 .env 文件已同步",
-	"Some files are missing keys. See status bar.": "某些文件缺少密钥。请参见状态栏。",
+	"Some files are missing keys. See status bar.": "某些文件缺少键。请查看状态栏。",
 	"Some files could not be parsed. See status bar.": "无法解析某些文件。请查看状态栏。",
 	"Failed to clear template: {0}": "无法清除模板：{0}",
 	"Failed to compare files: {0}": "文件比较失败：{0}",
@@ -34,5 +34,14 @@
 	"No longer ignoring {0}": "不再忽略 {0}",
 	"Set {0} as template. All .env files will be compared against it.": "将 {0} 设为模板。所有 .env 文件都将与该文件进行比对。",
 	"Stop ignoring all {0} files?": "停止忽略所有 {0} 文件？",
-	"EnvSync-LE could not finish: {0}": "EnvSync-LE 无法完成：{0}"
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE 无法完成：{0}",
+	"Compared {0} files. Check status bar for results.": "已比较 {0} 个文件。结果见状态栏。",
+	"{0} is already being ignored": "{0} 已被忽略",
+	"Temporarily ignoring {0}. Run Unignore File to check it again.": "已暂时忽略 {0}。运行“取消忽略文件”可重新检查。",
+	"{0} is not currently being ignored": "{0} 当前未被忽略",
+	"Failed to stop ignoring file: {0}": "无法取消忽略文件：{0}",
+	"Failed to clear ignore list: {0}": "无法清空忽略列表：{0}",
+	"Yes": "是",
+	"No": "否",
+	"Failed to check selected files: {0}": "无法检查选定的文件：{0}"
 }

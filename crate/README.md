@@ -122,8 +122,9 @@ writes a file.
 
 Ported from the extension, which is the reference implementation:
 
-- A key must match `^[a-zA-Z_][a-zA-Z0-9_-]*$`. Anything else to the left
-  of `=` is a parse error naming that line.
+- A key must match `^[a-zA-Z_][a-zA-Z0-9_.-]*$`, so dotted names such as
+  `spring.datasource.url` count. Anything else to the left of `=` is a
+  parse error naming that line.
 - `export FOO=bar` is accepted; the prefix is stripped.
 - A duplicate key counts once — dotenv itself keeps one occurrence.
 - **A quoted value may span lines**, and its continuation lines are
@@ -159,7 +160,9 @@ make the default find nothing at all.
 --ignore-case        compare key names case-insensitively
 --exclude <glob>     skip files matching this pattern; repeatable
 --hidden             descend hidden directories too
---no-ignore          walk files that .gitignore excludes
+--no-ignore          accepted and now the default: a dotenv file is
+                     git-ignored by design, so honouring the ignore
+                     rules found nothing and reported it as in sync
 --strict             exit 2 if any file could not be read, rather than
                      naming it and comparing the rest
 ```

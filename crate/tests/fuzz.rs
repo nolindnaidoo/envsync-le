@@ -211,7 +211,7 @@ const NAMES: [&str; 8] = [
 ];
 
 /// Values are never reported, so every one is written with a marker that
-/// cannot occur in a key: keys are `[A-Za-z_][A-Za-z0-9_-]*` and a
+/// cannot occur in a key: keys are `[A-Za-z_][A-Za-z0-9_.-]*` and a
 /// marker contains a `~`.
 fn marker(seeded: &mut Seeded) -> String {
     format!("~v{}~", seeded.next() % 1_000_000)

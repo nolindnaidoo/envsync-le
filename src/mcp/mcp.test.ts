@@ -142,6 +142,14 @@ describe('compare_env_files: arguments', () => {
 		);
 	});
 
+	it('refuses a caseSensitive that is not true or false', async () => {
+		// `"false"` once read as true: the caller asked for a case-insensitive
+		// comparison the wrong way and got a case-sensitive one in silence.
+		await expect(
+			call({ files: [EXAMPLE], caseSensitive: 'false' }),
+		).rejects.toThrow('caseSensitive must be true or false');
+	});
+
 	it('requires a non-empty files array', async () => {
 		await expect(call({})).rejects.toThrow(/files is required/);
 		await expect(call({ files: [] })).rejects.toThrow(/files is required/);
@@ -160,25 +168,71 @@ describe('protocol', () => {
 		TOOLS,
 	);
 
-	it('echoes the protocol version the client asked for', async () => {
+	it("answers with its own protocol version, as the crate's server does", async () => {
 		const reply = await respond({
 			jsonrpc: '2.0',
 			id: 1,
 			method: 'initialize',
 			params: { protocolVersion: '2024-11-05' },
 		});
-		expect(reply?.result?.protocolVersion).toBe('2024-11-05');
+		expect(reply?.result?.protocolVersion).toBe('2025-06-18');
+		expect(reply?.result?.capabilities).toEqual({ tools: {} });
 		expect(reply?.result?.serverInfo).toEqual({
 			name: 'envsync-le',
 			version: '1.0.0',
 		});
 	});
 
-	it('does not reply to a notification', async () => {
+	it('does not reply to a notification, a null id included', async () => {
 		// A reply to a notification is the classic way to wedge a client.
 		expect(
 			await respond({ jsonrpc: '2.0', method: 'notifications/initialized' }),
 		).toBeNull();
+		expect(
+			await respond({ jsonrpc: '2.0', id: null, method: 'initialize' }),
+		).toBeNull();
+	});
+
+	it("refuses notifications/initialized sent with an id as a method it does not implement, as the crate's server does", async () => {
+		const reply = await respond({
+			jsonrpc: '2.0',
+			id: 7,
+			method: 'notifications/initialized',
+		});
+		expect(reply?.error?.code).toBe(-32601);
+	});
+
+	it('refuses in the words the other two servers use', async () => {
+		// Three servers ship from this repository; a client must not be able
+		// to tell them apart by what it sent.
+		expect(
+			(await respond({ jsonrpc: '2.0', id: 1, method: 'resources/list' }))
+				?.error?.message,
+		).toBe('Unknown method: resources/list');
+		expect(
+			(
+				await respond({
+					jsonrpc: '2.0',
+					id: 1,
+					method: 'tools/call',
+					params: { name: 'nope' },
+				})
+			)?.error?.message,
+		).toBe('Unknown tool: nope');
+		expect(
+			(await respond({ jsonrpc: '2.0', id: 1, method: 'tools/call' }))?.error
+				?.message,
+		).toBe('tools/call requires a string `name`');
+		expect(
+			(
+				await respond({
+					jsonrpc: '2.0',
+					id: 1,
+					method: 'tools/call',
+					params: { name: 3 },
+				})
+			)?.error?.message,
+		).toBe('tools/call requires a string `name`');
 	});
 
 	it('reports an unknown method as a JSON-RPC error', async () => {
@@ -282,6 +336,19 @@ describe('serve: the stdio loop', () => {
 		input.emit('data', '{"hello":"world"}\n');
 		await settle();
 		expect(replies()[0]?.error?.code).toBe(-32700);
+	});
+
+	it("refuses a frame led by a byte order mark as not JSON, as the crate's server does", async () => {
+		// JavaScript's trim strips the mark; Rust's does not, and serde_json
+		// refuses it. The loop trims as Rust trims.
+		const { input, replies } = harness();
+		input.emit('data', '\uFEFF{"jsonrpc":"2.0","id":1,"method":"ping"}\n');
+		input.emit('data', '\u0085 \t\n{"jsonrpc":"2.0","id":2,"method":"ping"}\n');
+		await settle();
+		expect(replies().map((r) => r.error?.message ?? r.id)).toEqual([
+			'Invalid JSON',
+			2,
+		]);
 	});
 
 	it('ignores blank lines', async () => {

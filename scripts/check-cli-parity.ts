@@ -199,6 +199,11 @@ function cases(): readonly Case[] {
 		{ args: ['repo', '--help'] },
 		{ args: ['repo', 'mcp'] },
 		{ args: ['--values'] },
+		// Names every plain object answers: a lookup table written as a
+		// literal once read them as options.
+		{ args: ['constructor'] },
+		{ args: ['toString'] },
+		{ args: ['__proto__'] },
 		{ args: [join(ROOT, 'crate', 'fixtures')] },
 		{ args: [join(ROOT, 'samples'), '--hidden'] },
 	];

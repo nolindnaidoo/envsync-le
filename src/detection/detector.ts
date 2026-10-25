@@ -7,11 +7,7 @@ import type { Telemetry } from '../interfaces/telemetry';
 import type { DotenvFile, ParseError, SyncReport } from '../types';
 import { errorMessage } from '../utils/errors';
 import { compareFiles } from './comparator';
-import {
-	discoverDotenvFiles,
-	loadSpecificFiles,
-	sanitizeParseMessage,
-} from './discovery';
+import { discoverDotenvFiles, loadSpecificFiles } from './discovery';
 
 export interface Detector {
 	checkSync(): Promise<SyncReport>;
@@ -55,14 +51,31 @@ export function createDetector(
 		);
 
 		const compareOptions = buildCompareOptions(files, config);
-		const report = compareFiles(files, compareOptions);
-		const finalReport = { ...report, errors: Object.freeze(errors) };
+		const finalReport = withErrors(compareFiles(files, compareOptions), errors);
 
 		updateUI(finalReport);
 		notifyUser(finalReport, errors, config);
 		trackTelemetry(finalReport, files);
 
 		return finalReport;
+	}
+
+	/**
+	 * A result with errors beside it is not a clean one.
+	 *
+	 * The comparator knows nothing of the files it was not given: one that
+	 * could not be read or parsed makes "in sync" and "no files" untrue, so
+	 * the status says so and the status bar shows it rather than reading
+	 * clean or hiding. A mismatch already says the files disagree; the
+	 * errors ride along in the report, and the bar counts them as issues.
+	 */
+	function withErrors(report: SyncReport, errors: ParseError[]): SyncReport {
+		const clean = report.status === 'in-sync' || report.status === 'no-files';
+		return {
+			...report,
+			status: errors.length > 0 && clean ? 'parse-error' : report.status,
+			errors: Object.freeze(errors),
+		};
 	}
 
 	function buildCompareOptions(
@@ -107,7 +120,10 @@ export function createDetector(
 	}
 
 	function updateUI(report: SyncReport): void {
-		const issueCount = report.missingKeys.length + report.extraKeys.length;
+		const issueCount =
+			report.missingKeys.length +
+			report.extraKeys.length +
+			report.errors.length;
 		statusBar.updateStatus(report.status, issueCount);
 	}
 
@@ -151,8 +167,7 @@ export function createDetector(
 		const errorsToShow = errors.slice(0, MAX_ERRORS_TO_SHOW);
 
 		for (const error of errorsToShow) {
-			const sanitizedMessage = sanitizeParseMessage(error.message);
-			notifier.showParseError(error.filepath, sanitizedMessage);
+			notifier.showParseError(error.filepath, error.message);
 		}
 	}
 
@@ -226,8 +241,7 @@ export function createDetector(
 		const config = readConfig(configuration);
 
 		const compareOptions = buildCompareOptions(files, config);
-		const report = compareFiles(files, compareOptions);
-		const finalReport = { ...report, errors: Object.freeze(errors) };
+		const finalReport = withErrors(compareFiles(files, compareOptions), errors);
 
 		updateUI(finalReport);
 		notifyUser(finalReport, errors, config);
@@ -255,7 +269,10 @@ export function createDetector(
 		const config = readConfig(configuration);
 		if (config.notificationLevel !== 'silent') {
 			notifier.showError(
-				`Failed to check selected files: ${errorMessage(error)}`,
+				vscode.l10n.t(
+					'Failed to check selected files: {0}',
+					errorMessage(error),
+				),
 			);
 		}
 

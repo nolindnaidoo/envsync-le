@@ -8,7 +8,7 @@
 	"manifest.command.set-template.title": "Đặt mẫu",
 	"manifest.command.clear-template.title": "Xóa mẫu",
 	"manifest.command.ignore-file.title": "Bỏ qua tệp",
-	"manifest.command.stop-ignoring.title": "Bỏ bỏ qua tệp",
+	"manifest.command.stop-ignoring.title": "Ngừng bỏ qua tệp",
 	"manifest.command.clear-all-ignored.title": "Xóa tệp bị bỏ qua",
 	"manifest.command.help.title": "Trợ giúp & Khắc phục sự cố",
 	"manifest.settings.title": "envsync-le",
@@ -30,5 +30,5 @@
 	"manifest.settings.compare-only-files.desc": "Tệp để so sánh thủ công",
 	"manifest.settings.template-file.desc": "Tệp mẫu",
 	"manifest.settings.temporary-ignore.desc": "Tệp bị bỏ qua tạm thời",
-	"manifest.mcp.label": "Các công cụ so sánh EnvSync-LE và dotenv cho chế độ đại lý"
+	"manifest.mcp.label": "EnvSync-LE: công cụ so sánh dotenv cho chế độ tác nhân"
 }

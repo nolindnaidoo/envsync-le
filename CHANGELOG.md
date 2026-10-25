@@ -14,6 +14,89 @@ version and releases from one tag.
 
 ### Fixed
 
+- **A setting changed while the extension was running did not take effect
+  until the window was reloaded.** The configuration was read once, at
+  activation, from an object VS Code hands out as a snapshot, so toggling the
+  status bar, changing the watch patterns or the notification level did
+  nothing, and `Unignore File` and `Clear Ignored Files` read the ignore list
+  as it was at activation. Every read now asks the host for the current value.
+- **A file that could not be read or parsed no longer reads as a clean
+  result.** The status bar showed `0` and `Show Details` said the files were
+  in sync when every key matched but one file had a line that would not
+  parse, and the bar hid altogether when a file could not be read or the
+  workspace search failed, as though there were no files. Such a result is
+  now `parse-error`: the bar shows the error count in red, `Show Details`
+  opens the report with its "Parse / Read Errors" section, and a mismatch
+  found beside an error keeps its own status with the error counted too.
+- **A file that is not UTF-8 text is named as such.** It was decoded
+  leniently, so a Latin-1 or UTF-16 `.env` was read as text full of
+  replacement characters and reported, line by line, as keys that would not
+  parse. The report now says `not UTF-8 text`, as the command line does.
+- **A comparison that stopped at a hundred files per pattern says so.** It
+  read the first hundred matches and said nothing about the rest, so a
+  monorepo with more dotenv files than that got a report that looked
+  complete. The cut is now an error in the report, and the file pickers
+  behind `Compare Files`, `Set Template` and `Ignore File` offer every env
+  file rather than the first fifty.
+- **A file edited while a check was already running is checked.** The
+  change arrived while the earlier check was reading the files, and its
+  event was dropped, so the status bar kept showing the state from before
+  the edit until something else changed. One more check now follows the
+  one in flight.
+- **`compare_env_files` finds a template named by the name it ends in**, as
+  the Rust server already did. Named as `./.env.example`, `sub/.env.example`
+  or an absolute path for a file labelled `.env.example`, the npm server
+  found no template and fell back to the union, with `extraKeys` emptied and
+  nothing said. The two servers now answer identically, held by the shared
+  corpus, and the npm command line's template matching is the comparator's.
+- **Both MCP servers refuse a malformed `compare_env_files` call in the same
+  words.** The Rust server fell through to auto mode on `mode: "template"`
+  with no `templatePath` and on a mode the tool does not have, named a
+  malformed file entry with the generic message, and refused a `maxResults`
+  of `1e20` that the npm server clamps. Both now refuse the same shapes
+  with the same messages, and a `caseSensitive` that is not `true` or
+  `false`, which both read as `true`, is refused too. Each shape is pinned
+  in the shared corpus.
+- **The npm command line takes a directory called `constructor`, `toString`
+  or `__proto__` as a directory.** Its option table was a plain object,
+  which answers those names with a function, so `envsync-le constructor`
+  was refused as an option that needs a value where the Rust one walks the
+  directory. Both now name it missing in the same words.
+- **The three MCP servers answer a malformed frame in the same words.** The
+  extension's server, `envsync-le mcp` from npm and the Rust binary each
+  read a frame their own way: a line that was not JSON or not a request was
+  answered by one and dropped by the others, a null id was a notification
+  to one and a request to the others, a frame over 16 MiB was refused by
+  one and held by the others, a last line with no newline was answered by
+  two, `initialize` echoed the client's version from one, and an unknown
+  method, an unknown tool and a nameless call were worded three ways.
+  Every server now frames, trims and refuses as the extension's does, so a
+  client cannot tell them apart by what it sent.
+- **Ten strings the extension shows were English in every locale.** The
+  "no files" and "in sync" toasts of `Show Details`, the "compared N files"
+  toast of `Compare Files`, five messages of the ignore commands, the Yes
+  and No buttons of `Clear Ignored Files` and one error of `Compare Files`
+  were handed to the editor as literals, outside the localization
+  mechanism. Each goes through it now, in all twelve languages, and a unit
+  test reads the sources for a literal handed to a notification, a prompt
+  or a dialog button.
+- **Forty-one translated values said something other than their source.**
+  "Extra keys" was rendered as keyboard keys in German, Spanish, Russian
+  and Ukrainian, and as game shortcuts in Vietnamese; "Stop ignoring all
+  {0} files?" read the count as a path or a directory in seven languages;
+  "No longer ignoring {0}" named a website in Russian and had the
+  placeholder glued into a truncated word in Indonesian; the status bar's
+  error tooltip said "click for settings" where the click opens the
+  details, and five languages rendered "error checking" as "checking for
+  errors"; "Failed to ignore file: {0}" treated the error message as a
+  file name in Japanese and Korean; the agent-mode label read "EnvSync-LE
+  and dotenv comparison tools" in all twelve manifests; and the Brazilian
+  Portuguese manifest was in European Portuguese. Each value now says what
+  its source says.
+- **The report lists files in path order.** It listed them in the order the
+  workspace search happened to return them, so two runs over one workspace
+  could order the files, and name the reference file for a mismatch,
+  differently.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error

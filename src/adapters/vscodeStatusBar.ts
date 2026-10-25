@@ -121,7 +121,7 @@ function configureErrorStatus(
 
 	statusBarItem.text = `$(file) ${displayCount}`;
 	statusBarItem.tooltip = vscode.l10n.t(
-		'Error checking dotenv files - click for settings',
+		'Error checking dotenv files - click for details',
 	);
 	statusBarItem.backgroundColor = new deps.ThemeColor(
 		'statusBarItem.errorBackground',

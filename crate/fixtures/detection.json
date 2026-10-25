@@ -274,6 +274,57 @@
 			}
 		},
 		{
+			"name": "template: matched by the name it ends in, as a person types it beside a directory",
+			"files": [
+				".env",
+				".env.example",
+				".env.production"
+			],
+			"options": {
+				"mode": "template",
+				"templatePath": "./.env.example"
+			},
+			"expected": {
+				"status": "missing-keys",
+				"files": [
+					{
+						"path": ".env",
+						"type": "base",
+						"keys": 4
+					},
+					{
+						"path": ".env.example",
+						"type": "example",
+						"keys": 4
+					},
+					{
+						"path": ".env.production",
+						"type": "production",
+						"keys": 4
+					}
+				],
+				"missingKeys": [
+					{
+						"filepath": ".env",
+						"keys": [
+							"SENTRY_DSN"
+						],
+						"reference": ".env.example"
+					}
+				],
+				"extraKeys": [
+					{
+						"filepath": ".env",
+						"keys": [
+							"LOCAL_ONLY"
+						],
+						"reference": ".env.example"
+					}
+				],
+				"errors": []
+			}
+		},
+		{
 			"name": "template: a template that is not present falls back to the union",
 			"files": [
 				".env",

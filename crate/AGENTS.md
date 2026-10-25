@@ -155,6 +155,22 @@ pixelactions and scrape-le:
 - **Refusals speak the caller's vocabulary.** An MCP caller has no
   command line; no message aimed at one mentions `--dedupe` or any other
   flag. A test asserts no MCP output contains `--`.
+- **A malformed `compare_env_files` call is refused in the npm server's
+  words, for the same shapes.** `mode` must be `auto` or `template`,
+  `template` needs a `templatePath`, a file entry is named by index,
+  `caseSensitive` is a boolean or absent, and `maxResults` is read as a
+  JSON number the way JavaScript reads it, so `1e20` clamps and `5.0` is
+  five. The crate once fell through to auto mode on a bad `mode`, so the
+  same call answered in template mode from one server and the union from
+  the other. Every shape is a case in `fixtures/mcp-compare-env-files.json`.
+- **A malformed frame is answered in the npm server's words.** `mcp/mod.rs`
+  (`serve_streams`) caps a frame at 16 MiB, reads invalid bytes with
+  replacement characters, answers a line that is not JSON or not a request
+  with a parse error rather than dropping it, reads a null id as a
+  notification, drops a partial frame at close, and words an unknown
+  method, an unknown tool and a nameless call as the extension's server
+  does. `scripts/check-cli-pipes.ts` feeds both binaries the malformed
+  frames and fails on any difference.
 - **`compare_env_files` belongs to both servers.** The npm server
   (`src/mcp/tools.ts`) and this one offer the same tool: same schema,
   same envelope, byte-identical output — **key names,

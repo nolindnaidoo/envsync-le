@@ -5,16 +5,16 @@
 	"manifest.command.category": "EnvSync-LE",
 	"manifest.command.show-issues.title": "Tampilkan Rincian",
 	"manifest.command.compare-selected.title": "Bandingkan Berkas",
-	"manifest.command.set-template.title": "Atur Template",
-	"manifest.command.clear-template.title": "Hapus Template",
+	"manifest.command.set-template.title": "Atur Templat",
+	"manifest.command.clear-template.title": "Hapus Templat",
 	"manifest.command.ignore-file.title": "Abaikan Berkas",
-	"manifest.command.stop-ignoring.title": "Batalkan Abaikan Berkas",
+	"manifest.command.stop-ignoring.title": "Berhenti Mengabaikan Berkas",
 	"manifest.command.clear-all-ignored.title": "Hapus Berkas yang Diabaikan",
 	"manifest.command.help.title": "Bantuan & Pemecahan Masalah",
 	"manifest.settings.title": "envsync-le",
 	"manifest.settings.enabled.desc": "Aktifkan pemeriksaan sinkronisasi .env",
-	"manifest.settings.watch-patterns.desc": "Polanya berkas yang akan dipantau",
-	"manifest.settings.exclude-patterns.desc": "Polanya berkas yang akan dikecualikan",
+	"manifest.settings.watch-patterns.desc": "Pola berkas yang dipantau",
+	"manifest.settings.exclude-patterns.desc": "Pola berkas yang dikecualikan",
 	"manifest.settings.notifications.level.desc": "Tingkat pemberitahuan",
 	"manifest.settings.notifications.level.option.all": "Semua pemberitahuan",
 	"manifest.settings.notifications.level.option.important": "Hanya yang penting",
@@ -30,5 +30,5 @@
 	"manifest.settings.compare-only-files.desc": "Berkas untuk perbandingan manual",
 	"manifest.settings.template-file.desc": "Berkas templat",
 	"manifest.settings.temporary-ignore.desc": "Berkas yang diabaikan sementara",
-	"manifest.mcp.label": "Perbandingan alat EnvSync-LE dan dotenv untuk mode agen"
+	"manifest.mcp.label": "EnvSync-LE: alat perbandingan dotenv untuk mode agen"
 }

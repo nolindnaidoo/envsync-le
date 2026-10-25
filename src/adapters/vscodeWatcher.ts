@@ -14,8 +14,32 @@ export function registerVSCodeWatchers(
 	// Debounced detection shared by all watchers
 	let timeoutId: NodeJS.Timeout | undefined;
 	let checkPromise: Promise<SyncReport> | undefined;
+	// A change that arrived while a check was in flight. The check read the
+	// files before the change, so its answer is stale the moment it lands;
+	// one more check after it, not one per event, covers everything that
+	// happened in the meantime.
+	let changedDuringCheck = false;
 	let disposed = false;
 	let watchers: vscode.FileSystemWatcher[] = [];
+
+	const runCheck = async (): Promise<void> => {
+		checkPromise = detector.checkSync().finally(() => {
+			checkPromise = undefined;
+		});
+
+		try {
+			await checkPromise;
+		} catch (error) {
+			// Only log if notifications are enabled - respect user's preference
+			if (readConfig(configuration).notificationLevel !== 'silent') {
+				console.error('File watcher sync check failed:', error);
+			}
+		}
+
+		if (disposed || !changedDuringCheck) return;
+		changedDuringCheck = false;
+		await runCheck();
+	};
 
 	const debouncedDetect = (): void => {
 		if (disposed) return; // Early exit if disposed
@@ -27,23 +51,10 @@ export function registerVSCodeWatchers(
 		timeoutId = setTimeout(async () => {
 			if (disposed) return; // Check again before executing
 			if (checkPromise) {
-				// Wait for existing check to complete instead of creating race condition
-				await checkPromise;
+				changedDuringCheck = true;
 				return;
 			}
-
-			checkPromise = detector.checkSync().finally(() => {
-				checkPromise = undefined;
-			});
-
-			try {
-				await checkPromise;
-			} catch (error) {
-				// Only log if notifications are enabled - respect user's preference
-				if (readConfig(configuration).notificationLevel !== 'silent') {
-					console.error('File watcher sync check failed:', error);
-				}
-			}
+			await runCheck();
 		}, config.debounceMs);
 	};
 

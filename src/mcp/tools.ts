@@ -81,10 +81,25 @@ function readMode(args: Record<string, unknown>): 'auto' | 'template' {
 	return raw;
 }
 
+/**
+ * A boolean or nothing. A string such as `"false"` was read as true before,
+ * so a caller asking for a case-insensitive comparison the wrong way got a
+ * case-sensitive one and no word about it.
+ */
+function readCaseSensitive(args: Record<string, unknown>): boolean {
+	const raw = args.caseSensitive;
+	if (raw === undefined) return true;
+	if (typeof raw !== 'boolean') {
+		throw new Error('caseSensitive must be true or false');
+	}
+	return raw;
+}
+
 function compare(args: Record<string, unknown>): Promise<unknown> {
 	const inputs = readFiles(args);
 	const maxResults = readMaxResults(args);
 	const mode = readMode(args);
+	const caseSensitive = readCaseSensitive(args);
 
 	const templatePath =
 		typeof args.templatePath === 'string' ? args.templatePath : undefined;
@@ -109,7 +124,7 @@ function compare(args: Record<string, unknown>): Promise<unknown> {
 
 	const report = compareFiles(files, {
 		mode,
-		caseSensitive: args.caseSensitive !== false,
+		caseSensitive,
 		...(templatePath ? { templatePath } : {}),
 	});
 

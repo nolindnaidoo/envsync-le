@@ -7,7 +7,8 @@ import type { ParseError, ParseResult } from '../types';
  * malformed entries.
  *
  * Intentional behavior (documented, not bugs):
- * - Keys must match /^[a-zA-Z_][a-zA-Z0-9_-]*$/; anything else on the
+ * - Keys must match /^[a-zA-Z_][a-zA-Z0-9_.-]*$/, dotted names such as
+ *   `spring.datasource.url` included; anything else on the
  *   left of '=' is reported as a parse error for that line.
  * - A leading 'export ' prefix is accepted and stripped.
  * - Duplicate keys count once (dotenv itself keeps one occurrence).

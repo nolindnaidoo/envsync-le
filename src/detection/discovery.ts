@@ -58,6 +58,16 @@ function createErrorLimitExceededError(): ParseError {
 	};
 }
 
+/**
+ * How many files one pattern contributes to a comparison.
+ *
+ * Asked for one more than this, so a match list exactly at the cap is told
+ * apart from one that was cut: the cut is reported, because a comparison
+ * over the first hundred of a monorepo's dotenv files that said nothing
+ * about the rest read as a comparison of all of them.
+ */
+const MAX_FILES_PER_PATTERN = 100;
+
 async function processPattern(
 	pattern: string,
 	fileSystem: FileSystem,
@@ -67,9 +77,14 @@ async function processPattern(
 	errors: ParseError[],
 ): Promise<void> {
 	try {
-		const fileInfos = await fileSystem.findFiles(pattern, null, 100);
+		const found = byPath(
+			await fileSystem.findFiles(pattern, null, MAX_FILES_PER_PATTERN + 1),
+		);
+		if (found.length > MAX_FILES_PER_PATTERN) {
+			errors.push(createPatternCapError(pattern));
+		}
 		await processFileInfos(
-			fileInfos,
+			found.slice(0, MAX_FILES_PER_PATTERN),
 			fileSystem,
 			excludePatterns,
 			config,
@@ -79,6 +94,29 @@ async function processPattern(
 	} catch (error) {
 		errors.push(createPatternSearchError(pattern, error));
 	}
+}
+
+/**
+ * The workspace search returns files in no promised order, and the report
+ * took them as they came: the files' order and the file named as the
+ * reference for a mismatch could differ between two runs over one
+ * workspace. Sorted by code unit, as the CLI sorts by byte, so the same
+ * workspace reads the same on every machine.
+ */
+function byPath<T extends { filepath: string }>(found: readonly T[]): T[] {
+	return [...found].sort((left, right) => {
+		if (left.filepath < right.filepath) return -1;
+		if (left.filepath > right.filepath) return 1;
+		return 0;
+	});
+}
+
+function createPatternCapError(pattern: string): ParseError {
+	return {
+		type: 'read-error',
+		message: `More than ${MAX_FILES_PER_PATTERN} files match ${pattern}; only the first ${MAX_FILES_PER_PATTERN} were compared`,
+		filepath: 'pattern-search',
+	};
 }
 
 function createPatternSearchError(pattern: string, error: unknown): ParseError {
@@ -243,8 +281,4 @@ function isFileInCompareList(
 ): boolean {
 	const relativePath = fileSystem.asRelativePath(file.path);
 	return config.compareOnlyFiles.includes(relativePath);
-}
-
-export function sanitizeParseMessage(message: string): string {
-	return message.replace(/^Failed to parse[^:]*:\s*/, '');
 }

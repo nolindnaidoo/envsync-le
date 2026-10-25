@@ -90,24 +90,15 @@ pub(crate) fn definition() -> Value {
 pub(crate) fn run(arguments: &Value) -> Result<Value, String> {
     let files = read_files(arguments)?;
     let max_results = read_max_results(arguments)?;
-
-    let template = arguments
-        .get("templatePath")
-        .and_then(Value::as_str)
-        .map(str::to_string);
-    let mode = match (arguments.get("mode").and_then(Value::as_str), &template) {
-        (Some("template"), Some(path)) => Mode::Template(path),
-        _ => Mode::Auto,
-    };
+    let template = read_template(arguments)?;
+    let mode = template.as_deref().map_or(Mode::Auto, Mode::Template);
+    let case_sensitive = read_case_sensitive(arguments)?;
 
     let mut report = compare(
         &files,
         Options {
             mode,
-            case_sensitive: arguments
-                .get("caseSensitive")
-                .and_then(Value::as_bool)
-                .unwrap_or(true),
+            case_sensitive,
         },
     );
 
@@ -161,6 +152,11 @@ pub(crate) fn run(arguments: &Value) -> Result<Value, String> {
     ))
 }
 
+/// Every refusal here is in the npm server's words, for the same shape of
+/// argument: `compare_env_files` is one tool, and a caller must not be
+/// able to tell the servers apart by sending it something wrong. Each
+/// shape is pinned in the shared corpus, so a server that answered one
+/// of them its own way again would fail a build.
 fn read_files(arguments: &Value) -> Result<Vec<EnvFile>, String> {
     let invalid =
         "files is required and must be a non-empty array of { path, content }".to_string();
@@ -174,15 +170,14 @@ fn read_files(arguments: &Value) -> Result<Vec<EnvFile>, String> {
 
     items
         .iter()
-        .map(|item| {
-            let path = item
-                .get("path")
-                .and_then(Value::as_str)
-                .ok_or_else(|| invalid.clone())?;
+        .enumerate()
+        .map(|(index, item)| {
+            let entry = || format!("files[{index}] must have string `path` and `content`");
+            let path = item.get("path").and_then(Value::as_str).ok_or_else(entry)?;
             let content = item
                 .get("content")
                 .and_then(Value::as_str)
-                .ok_or_else(|| invalid.clone())?;
+                .ok_or_else(entry)?;
             let parsed = parse(content);
             Ok(EnvFile {
                 kind: detect_file_type(path),
@@ -194,19 +189,56 @@ fn read_files(arguments: &Value) -> Result<Vec<EnvFile>, String> {
         .collect()
 }
 
+/// The template's path when the mode asks for one, else nothing. A mode
+/// the engine does not have, or template mode with no path, is refused:
+/// both once fell through to auto mode silently, so a caller asking for
+/// "template" and forgetting the path got the union and no word about it.
+fn read_template(arguments: &Value) -> Result<Option<String>, String> {
+    let template = arguments
+        .get("templatePath")
+        .and_then(Value::as_str)
+        .map(str::to_string);
+    match arguments.get("mode") {
+        None => Ok(None),
+        Some(Value::String(mode)) if mode == "auto" => Ok(None),
+        Some(Value::String(mode)) if mode == "template" => template
+            .map(Some)
+            .ok_or_else(|| "templatePath is required when mode is \"template\"".to_string()),
+        Some(_) => Err("mode must be \"auto\" or \"template\"".to_string()),
+    }
+}
+
+fn read_case_sensitive(arguments: &Value) -> Result<bool, String> {
+    match arguments.get("caseSensitive") {
+        None => Ok(true),
+        Some(Value::Bool(flag)) => Ok(*flag),
+        Some(_) => Err("caseSensitive must be true or false".to_string()),
+    }
+}
+
 /// Clamp quietly, reject loudly — the npm server's asymmetry.
+///
+/// Read as a float, because JSON has one number type and the npm server
+/// reads it as JavaScript does: `1e20` and `5.0` are integers there, so
+/// they are here, and a fraction or anything that is not a number is not.
 fn read_max_results(arguments: &Value) -> Result<usize, String> {
     let Some(raw) = arguments.get("maxResults") else {
         return Ok(DEFAULT_MAX_RESULTS);
     };
     let invalid = "maxResults must be a positive integer".to_string();
-    let value = raw.as_u64().ok_or(invalid.clone())?;
-    if value < 1 {
+    let value = raw.as_f64().ok_or_else(|| invalid.clone())?;
+    if !value.is_finite() || value.fract() != 0.0 || value < 1.0 {
         return Err(invalid);
     }
-    Ok(usize::try_from(value)
-        .unwrap_or(MAX_MAX_RESULTS)
-        .min(MAX_MAX_RESULTS))
+    // A whole number, printed and read back as an integer rather than cast:
+    // `5.0` prints as `5`, and one too large for a `u64`, such as `1e20`,
+    // reads back as nothing and is clamped, as the npm server clamps it.
+    let whole = value
+        .to_string()
+        .parse::<u64>()
+        .ok()
+        .and_then(|count| usize::try_from(count).ok());
+    Ok(whole.unwrap_or(MAX_MAX_RESULTS).min(MAX_MAX_RESULTS))
 }
 
 #[cfg(test)]
