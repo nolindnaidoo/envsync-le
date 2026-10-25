@@ -43,6 +43,10 @@ version and releases from one tag.
   event was dropped, so the status bar kept showing the state from before
   the edit until something else changed. One more check now follows the
   one in flight.
+- **The report lists files in path order.** It listed them in the order the
+  workspace search happened to return them, so two runs over one workspace
+  could order the files, and name the reference file for a mismatch,
+  differently.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error

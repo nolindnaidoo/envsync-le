@@ -299,6 +299,54 @@ describe('createDetector', () => {
 		expect(statusBar.updateStatus).toHaveBeenCalledWith('missing-keys', 2);
 	});
 
+	it('orders the report by path, whatever order the workspace listed the files in', async () => {
+		// The workspace search returns files in no promised order, and the
+		// report took them as they came: two runs over one workspace could
+		// list the files and name the reference file differently.
+		const telemetry = createMockTelemetry();
+		const notifier = createMockNotifier();
+		const statusBar = createMockStatusBar();
+		const configuration = createMockConfiguration();
+		const fileSystem = createMockFileSystem();
+
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
+			{ filepath: '/w/.env.production', uri: 'file:///w/.env.production' },
+			{ filepath: '/w/.env', uri: 'file:///w/.env' },
+			{ filepath: '/w/.env.local', uri: 'file:///w/.env.local' },
+		]);
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) =>
+				Promise.resolve(filepath === '/w/.env.local' ? 'A=1' : 'A=1\nB=2'),
+		);
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
+			mtime: new Date(),
+			size: 3,
+			isFile: true,
+			isDirectory: false,
+		});
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => filepath.slice(3),
+		);
+
+		const detector = createDetector({
+			telemetry,
+			notifier,
+			statusBar,
+			configuration,
+			fileSystem,
+		});
+		const result = await detector.checkSync();
+
+		expect(result.files.map((file) => file.path)).toEqual([
+			'/w/.env',
+			'/w/.env.local',
+			'/w/.env.production',
+		]);
+		expect(result.missingKeys).toEqual([
+			{ filepath: '/w/.env.local', keys: ['B'], reference: '/w/.env' },
+		]);
+	});
+
 	it('says so when more files match a pattern than it compares', async () => {
 		const telemetry = createMockTelemetry();
 		const notifier = createMockNotifier();
