@@ -161,6 +161,43 @@ describe('registerVSCodeWatchers', () => {
 		expect(detector.calls).toBe(1);
 	});
 
+	it('checks once more for a change that arrived while a check was in flight', async () => {
+		// The check reads the files it was told about; a file edited after
+		// that read and before the check returned was never read, and the
+		// event for it used to be dropped, so the status bar showed the
+		// state before the edit until something else changed.
+		vi.useFakeTimers();
+		let calls = 0;
+		const releases: Array<() => void> = [];
+		const detector = {
+			checkSync: () => {
+				calls += 1;
+				return new Promise<SyncReport>((resolve) => {
+					releases.push(() => resolve(EMPTY_REPORT));
+				});
+			},
+			checkSyncForFiles: async () => EMPTY_REPORT,
+			dispose: () => {},
+		} as unknown as Detector;
+		registerVSCodeWatchers(makeContext(), detector, configuration, fileSystem);
+
+		_watchers()[0]?.fireChange(Uri.file('/w/.env'));
+		await vi.advanceTimersByTimeAsync(1000);
+		expect(calls).toBe(1); // suspended inside the first check
+
+		_watchers()[0]?.fireChange(Uri.file('/w/.env'));
+		await vi.advanceTimersByTimeAsync(1000);
+		expect(calls).toBe(1); // not a second check while one is in flight
+
+		releases[0]?.();
+		await vi.advanceTimersByTimeAsync(0);
+		expect(calls).toBe(2); // the change made during the check is checked
+
+		releases[1]?.();
+		await vi.advanceTimersByTimeAsync(1000);
+		expect(calls).toBe(2); // and once is enough
+	});
+
 	it('re-registers watchers when the patterns setting changes', async () => {
 		registerVSCodeWatchers(
 			makeContext(),

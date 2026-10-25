@@ -38,6 +38,11 @@ version and releases from one tag.
   complete. The cut is now an error in the report, and the file pickers
   behind `Compare Files`, `Set Template` and `Ignore File` offer every env
   file rather than the first fifty.
+- **A file edited while a check was already running is checked.** The
+  change arrived while the earlier check was reading the files, and its
+  event was dropped, so the status bar kept showing the state from before
+  the edit until something else changed. One more check now follows the
+  one in flight.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error
