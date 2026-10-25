@@ -52,7 +52,6 @@ const createMockFileSystem = (): FileSystem => ({
 	readFile: vi.fn(),
 	getFileStats: vi.fn(),
 	asRelativePath: vi.fn(),
-	fileExists: vi.fn(),
 });
 
 describe('createDetector', () => {

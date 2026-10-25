@@ -7,11 +7,7 @@ import type { Telemetry } from '../interfaces/telemetry';
 import type { DotenvFile, ParseError, SyncReport } from '../types';
 import { errorMessage } from '../utils/errors';
 import { compareFiles } from './comparator';
-import {
-	discoverDotenvFiles,
-	loadSpecificFiles,
-	sanitizeParseMessage,
-} from './discovery';
+import { discoverDotenvFiles, loadSpecificFiles } from './discovery';
 
 export interface Detector {
 	checkSync(): Promise<SyncReport>;
@@ -171,8 +167,7 @@ export function createDetector(
 		const errorsToShow = errors.slice(0, MAX_ERRORS_TO_SHOW);
 
 		for (const error of errorsToShow) {
-			const sanitizedMessage = sanitizeParseMessage(error.message);
-			notifier.showParseError(error.filepath, sanitizedMessage);
+			notifier.showParseError(error.filepath, error.message);
 		}
 	}
 

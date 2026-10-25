@@ -282,7 +282,3 @@ function isFileInCompareList(
 	const relativePath = fileSystem.asRelativePath(file.path);
 	return config.compareOnlyFiles.includes(relativePath);
 }
-
-export function sanitizeParseMessage(message: string): string {
-	return message.replace(/^Failed to parse[^:]*:\s*/, '');
-}

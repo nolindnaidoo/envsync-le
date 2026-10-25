@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DotenvFile } from '../types';
-import { areFilesInSync, compareFiles, sameFile } from './comparator';
+import { compareFiles, sameFile } from './comparator';
 
 describe('compareFiles', () => {
 	it('should handle empty file list', () => {
@@ -146,91 +146,6 @@ describe('compareFiles', () => {
 		expect(Object.isFrozen(result.missingKeys)).toBe(true);
 		expect(Object.isFrozen(result.extraKeys)).toBe(true);
 		expect(Object.isFrozen(result.errors)).toBe(true);
-	});
-});
-
-describe('areFilesInSync', () => {
-	it('should return true for empty file list', () => {
-		expect(areFilesInSync([])).toBe(true);
-	});
-
-	it('should return true for single file', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(true);
-	});
-
-	it('should return true for identical files', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(true);
-	});
-
-	it('should return false for different key counts', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(false);
-	});
-
-	it('should return false for different keys', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{
-				path: '.env.local',
-				type: 'local',
-				keys: ['KEY1', 'KEY3'],
-				lastModified: Date.now(),
-			},
-		];
-		expect(areFilesInSync(files)).toBe(false);
-	});
-
-	it('should handle undefined keys gracefully', () => {
-		const files: DotenvFile[] = [
-			{
-				path: '.env',
-				type: 'base',
-				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
-			},
-			{ path: '.env.local', type: 'local', keys: [], lastModified: Date.now() },
-		];
-		expect(areFilesInSync(files)).toBe(false);
 	});
 });
 

@@ -106,9 +106,6 @@ describe('vscodeFileSystem', () => {
 		expect(stats.isFile).toBe(true);
 		expect(stats.size).toBe(3);
 
-		expect(await fileSystem.fileExists('/ws/.env')).toBe(true);
-		expect(await fileSystem.fileExists('/ws/.env.missing')).toBe(false);
-
 		const found = await fileSystem.findFiles('**/.env*');
 		expect(found).toEqual([{ filepath: '/ws/.env', uri: 'file:///ws/.env' }]);
 

@@ -46,16 +46,6 @@ export function createVSCodeFileSystem(deps: VSCodeDependencies): FileSystem {
 		asRelativePath(filepath: string): string {
 			return deps.asRelativePath(filepath);
 		},
-
-		async fileExists(filepath: string): Promise<boolean> {
-			try {
-				const uri = deps.Uri.file(filepath);
-				const stat = await deps.workspaceFs.stat(uri);
-				return (stat.type & deps.FileType.File) !== 0;
-			} catch {
-				return false;
-			}
-		},
 	};
 }
 
