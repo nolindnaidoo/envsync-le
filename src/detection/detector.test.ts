@@ -203,9 +203,128 @@ describe('createDetector', () => {
 
 		const result = await detector.checkSync();
 
-		// Should continue processing and return a valid result
-		expect(result.status).toBe('no-files');
+		// A file that could not be read is not "no files": the error is the
+		// status, and the status bar shows it rather than hiding.
+		expect(result.status).toBe('parse-error');
 		expect(result.files).toHaveLength(0); // No files successfully loaded
+		expect(result.errors).toHaveLength(1);
+		expect(statusBar.updateStatus).toHaveBeenCalledWith('parse-error', 1);
+	});
+
+	it('does not announce files as in sync when one of them could not be parsed', async () => {
+		const telemetry = createMockTelemetry();
+		const notifier = createMockNotifier();
+		const statusBar = createMockStatusBar();
+		const configuration = createMockConfiguration();
+		const fileSystem = createMockFileSystem();
+
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
+			{ filepath: '.env', uri: 'file://.env' },
+			{ filepath: '.env.local', uri: 'file://.env.local' },
+		]);
+		// The same keys on both sides, and one line .env.local cannot parse.
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) =>
+				Promise.resolve(
+					filepath === '.env' ? 'KEY1=1\nKEY2=2' : 'KEY1=1\n2BAD=x\nKEY2=2',
+				),
+		);
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
+			mtime: new Date(),
+			size: 100,
+			isFile: true,
+			isDirectory: false,
+		});
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => filepath,
+		);
+
+		const detector = createDetector({
+			telemetry,
+			notifier,
+			statusBar,
+			configuration,
+			fileSystem,
+		});
+		const result = await detector.checkSync();
+
+		expect(result.status).toBe('parse-error');
+		expect(result.errors.map((error) => error.message)).toEqual([
+			'Line 2: Invalid key format',
+		]);
+		expect(statusBar.updateStatus).toHaveBeenCalledWith('parse-error', 1);
+		expect(notifier.showParseError).toHaveBeenCalledWith(
+			'.env.local',
+			'Line 2: Invalid key format',
+		);
+	});
+
+	it('keeps a mismatch as the status and counts the errors beside it', async () => {
+		const telemetry = createMockTelemetry();
+		const notifier = createMockNotifier();
+		const statusBar = createMockStatusBar();
+		const configuration = createMockConfiguration();
+		const fileSystem = createMockFileSystem();
+
+		(fileSystem.findFiles as ReturnType<typeof vi.fn>).mockResolvedValue([
+			{ filepath: '.env', uri: 'file://.env' },
+			{ filepath: '.env.local', uri: 'file://.env.local' },
+		]);
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) =>
+				Promise.resolve(filepath === '.env' ? 'KEY1=1\nKEY2=2' : '2BAD=x'),
+		);
+		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
+			mtime: new Date(),
+			size: 100,
+			isFile: true,
+			isDirectory: false,
+		});
+		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
+			(filepath: string) => filepath,
+		);
+
+		const detector = createDetector({
+			telemetry,
+			notifier,
+			statusBar,
+			configuration,
+			fileSystem,
+		});
+		const result = await detector.checkSync();
+
+		expect(result.status).toBe('missing-keys');
+		expect(result.errors).toHaveLength(1);
+		// One mismatch and one error: both are issues the bar counts.
+		expect(statusBar.updateStatus).toHaveBeenCalledWith('missing-keys', 2);
+	});
+
+	it('reports selected files that could not be read as an error, not as no files', async () => {
+		const telemetry = createMockTelemetry();
+		const notifier = createMockNotifier();
+		const statusBar = createMockStatusBar();
+		const configuration = createMockConfiguration();
+		const fileSystem = createMockFileSystem();
+
+		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+			new Error('EACCES: permission denied'),
+		);
+
+		const detector = createDetector({
+			telemetry,
+			notifier,
+			statusBar,
+			configuration,
+			fileSystem,
+		});
+		const result = await detector.checkSyncForFiles(['.env', '.env.local']);
+
+		expect(result.status).toBe('parse-error');
+		expect(result.errors.map((error) => error.filepath)).toEqual([
+			'.env',
+			'.env.local',
+		]);
+		expect(statusBar.updateStatus).toHaveBeenCalledWith('parse-error', 2);
 	});
 
 	it('should check sync for specific files', async () => {
@@ -279,9 +398,10 @@ describe('createDetector', () => {
 
 		const result = await detector.checkSync();
 
-		// With new error handling, file discovery errors are collected and returned
-		// instead of causing the entire sync check to fail
-		expect(result.status).toBe('no-files'); // No files found due to discovery error
+		// A discovery error is collected into the report rather than failing
+		// the whole check, and it is the status: a search that failed is not a
+		// workspace with no files, and the status bar must not hide.
+		expect(result.status).toBe('parse-error');
 		expect(result.files).toEqual([]);
 		expect(result.missingKeys).toEqual([]);
 		expect(result.extraKeys).toEqual([]);
@@ -291,7 +411,7 @@ describe('createDetector', () => {
 		expect(result.errors[0]?.filepath).toBe('pattern-search');
 
 		// Verify error handling UI updates
-		expect(statusBar.updateStatus).toHaveBeenCalledWith('no-files', 0);
+		expect(statusBar.updateStatus).toHaveBeenCalledWith('parse-error', 1);
 		// Parse errors are shown if notification level allows
 		expect(notifier.showParseError).toHaveBeenCalled();
 	});

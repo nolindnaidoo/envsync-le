@@ -113,6 +113,39 @@ describe('commands (through the real wiring)', () => {
 		expect(doc?.getText()).toContain('- B');
 	});
 
+	it('showIssues opens the report, not the in-sync toast, when a file could not be parsed', async () => {
+		_setFile('/ws/.env', 'A=1\nB=2');
+		_setFile('/ws/.env.local', 'A=1\n2BAD=x\nB=2');
+
+		await commands.executeCommand('envsync-le.showIssues');
+
+		expect(
+			_shownMessages().some((m) => m.message.includes('are in sync')),
+		).toBe(false);
+		const doc = _openedDocuments().at(-1);
+		expect(doc?.getText()).toContain('Status: parse-error');
+		expect(doc?.getText()).toContain('Parse / Read Errors');
+		expect(doc?.getText()).toContain('ws/.env.local: Line 2: Invalid key format');
+		expect(_statusBarItems()[0]?.visible).toBe(true);
+		expect(_statusBarItems()[0]?.text).toBe('$(file) 1');
+	});
+
+	it('compareSelected names files that could not be parsed', async () => {
+		_setFile('/ws/.env', 'A=1');
+		_setFile('/ws/.env.local', 'A=1\nBROKEN');
+
+		await commands.executeCommand('envsync-le.compareSelected', undefined, [
+			Uri.file('/ws/.env'),
+			Uri.file('/ws/.env.local'),
+		]);
+
+		expect(
+			_shownMessages().some((m) =>
+				m.message.includes('Some files could not be parsed'),
+			),
+		).toBe(true);
+	});
+
 	it('compareSelected compares the given uris', async () => {
 		_setFile('/ws/.env', 'A=1');
 		_setFile('/ws/.env.local', 'A=1');

@@ -20,6 +20,14 @@ version and releases from one tag.
   status bar, changing the watch patterns or the notification level did
   nothing, and `Unignore File` and `Clear Ignored Files` read the ignore list
   as it was at activation. Every read now asks the host for the current value.
+- **A file that could not be read or parsed no longer reads as a clean
+  result.** The status bar showed `0` and `Show Details` said the files were
+  in sync when every key matched but one file had a line that would not
+  parse, and the bar hid altogether when a file could not be read or the
+  workspace search failed, as though there were no files. Such a result is
+  now `parse-error`: the bar shows the error count in red, `Show Details`
+  opens the report with its "Parse / Read Errors" section, and a mismatch
+  found beside an error keeps its own status with the error counted too.
 - The MCP server held every byte of a frame until its newline, with no
   ceiling, so a client that streamed without one grew the process without
   bound and got no answer. A frame over 16 MiB is refused with a parse error

@@ -4,7 +4,7 @@ export type SyncStatus =
 	| 'in-sync' // All files have matching keys
 	| 'missing-keys' // Some files missing keys from others
 	| 'extra-keys' // Some files have extra keys
-	| 'parse-error' // Cannot parse one or more files
+	| 'parse-error' // A file could not be read or parsed, and nothing else was found wrong
 	| 'no-files'; // No dotenv files found
 
 export type DotenvFileType =
