@@ -57,6 +57,11 @@ version and releases from one tag.
   with the same messages, and a `caseSensitive` that is not `true` or
   `false`, which both read as `true`, is refused too. Each shape is pinned
   in the shared corpus.
+- **The npm command line takes a directory called `constructor`, `toString`
+  or `__proto__` as a directory.** Its option table was a plain object,
+  which answers those names with a function, so `envsync-le constructor`
+  was refused as an option that needs a value where the Rust one walks the
+  directory. Both now name it missing in the same words.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,
