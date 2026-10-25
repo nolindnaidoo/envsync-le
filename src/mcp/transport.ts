@@ -218,8 +218,19 @@ export function serve(
 	// as it arrives, so the oversized message is never held.
 	let discarding = false;
 
+	// A client that reads slowly fills the pipe, and every reply after that
+	// sits in this process until it drains. Reading stops while the pipe is
+	// full, so what is held is bounded by the requests already in flight
+	// rather than by everything the client has sent.
+	let waitingForDrain = false;
 	const write = (message: unknown): void => {
-		output.write(`${JSON.stringify(message)}\n`);
+		if (output.write(`${JSON.stringify(message)}\n`) || waitingForDrain) return;
+		waitingForDrain = true;
+		input.pause();
+		output.once('drain', () => {
+			waitingForDrain = false;
+			input.resume();
+		});
 	};
 
 	const frameRefusal = () => ({

@@ -21,6 +21,12 @@ version and releases from one tag.
 
 ### Fixed
 
+- **A client that read replies slowly could hold every reply in the server.**
+  Both npm servers wrote each reply without looking at whether the pipe had
+  taken it, so a client that sent many requests and read slowly left the
+  replies queued in the server's memory. Each server now stops reading while
+  the pipe is full and goes on when it drains, as the crate's blocking write
+  already did.
 - **Two ignore commands run at once could lose one.** `Ignore File`, `Unignore
   File` and `Clear Ignored Files` each read the ignore list and wrote it back,
   and the host lands a write after the call returns, so two started together

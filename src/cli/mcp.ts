@@ -20,23 +20,26 @@ type Handled =
 /**
  * Serves until stdin closes, one request at a time, in order, over the
  * crate's framing in `frames.ts`. A frame the framing refuses is answered
- * with a parse error, as the crate answers it.
+ * with a parse error, as the crate answers it. `write` answers with a
+ * promise when the pipe is full, and the next frame waits on it, as the
+ * crate's blocking write waits: a client that reads slowly holds its
+ * replies in the pipe, not in this process.
  */
 export async function serve(
 	input: AsyncIterable<Uint8Array>,
-	write: (line: string) => void,
+	write: (line: string) => Promise<void> | undefined,
 	info: ServerInfo,
 	tools: readonly ToolDefinition[],
 ): Promise<number> {
 	for await (const frame of frames(input)) {
 		if ('refusal' in frame) {
-			write(
+			await write(
 				`${reply({ id: null, error: { code: PARSE_ERROR, message: frame.refusal } })}\n`,
 			);
 			continue;
 		}
 		const response = await handle(frame.request, info, tools);
-		if (response !== undefined) write(`${response}\n`);
+		if (response !== undefined) await write(`${response}\n`);
 	}
 	return 0;
 }
