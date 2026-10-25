@@ -95,6 +95,30 @@ describe('registerVSCodeWatchers', () => {
 		expect(detector.calls).toBeGreaterThan(0);
 	});
 
+	it('waits the configured debounce, not the default', async () => {
+		// Every other setting had a test showing its effect; this one was only
+		// read back from the configuration.
+		vi.useFakeTimers();
+		_setConfig('envsync-le.debounceMs', 250);
+		const detector = makeDetector();
+		registerVSCodeWatchers(
+			makeContext(),
+			detector,
+			{
+				get: <T>(key: string, fallback: T): T =>
+					key === 'debounceMs' ? (250 as T) : fallback,
+				has: () => false,
+			} as unknown as Configuration,
+			fileSystem,
+		);
+
+		_watchers()[0]?.fireChange(Uri.file('/w/.env'));
+		await vi.advanceTimersByTimeAsync(240);
+		expect(detector.calls).toBe(0);
+		await vi.advanceTimersByTimeAsync(10);
+		expect(detector.calls).toBe(1);
+	});
+
 	it('collapses a burst of events into one check', async () => {
 		vi.useFakeTimers();
 		const detector = makeDetector();
