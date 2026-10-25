@@ -217,7 +217,7 @@
 		]
 	},
 	"description": "Env sync and check for .env and dotenv files: compare env keys across a workspace and find the missing ones",
-	"displayName": "EnvSync-LE: .env Sync & Dotenv Checker",
+	"displayName": "EnvSync-LE: .env Sync, Dotenv & Environment Variables Checker",
 	"engines": {
 		"vscode": "^1.101.0",
 		"node": ">=20.0.0"

@@ -23,6 +23,10 @@ version and releases from one tag.
   compared was also stat'ed, for a `lastModified` field nothing displayed or
   compared, and a file that vanished between the read and the stat was dropped
   with an error for it. The field and the stat are gone; the goldens lose it.
+- **The name says "Environment Variables".** The phrase was a keyword only,
+  and Open VSX ranks a match in the name five times one in the description, so
+  a search for "environment variables" put the extension 33rd. The name is
+  "EnvSync-LE: .env Sync, Dotenv & Environment Variables Checker".
 
 ### Fixed
 
