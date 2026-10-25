@@ -83,7 +83,6 @@ describe('comparator characterization', () => {
 			path,
 			type: detectFileType(path),
 			keys: Object.freeze(keys),
-			lastModified: 1700000000000,
 		};
 	}
 

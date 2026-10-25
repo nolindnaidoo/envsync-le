@@ -15,20 +15,17 @@ describe('compareFiles', () => {
 	});
 
 	it('should use template keys as reference in template mode', () => {
-		const now = Date.now();
 		const files: DotenvFile[] = [
 			{
 				path: '.env.template',
 				type: 'example',
 				keys: ['K1', 'K2'],
-				lastModified: now,
 			},
-			{ path: '.env', type: 'base', keys: ['K1'], lastModified: now },
+			{ path: '.env', type: 'base', keys: ['K1'] },
 			{
 				path: '.env.local',
 				type: 'local',
 				keys: ['K1', 'K2', 'K3'],
-				lastModified: now,
 			},
 		];
 
@@ -50,19 +47,16 @@ describe('compareFiles', () => {
 				path: '.env',
 				type: 'base',
 				keys: ['KEY1', 'KEY2', 'KEY3'],
-				lastModified: Date.now(),
 			},
 			{
 				path: '.env.local',
 				type: 'local',
 				keys: ['KEY1', 'KEY2', 'KEY3'],
-				lastModified: Date.now(),
 			},
 			{
 				path: '.env.production',
 				type: 'production',
 				keys: ['KEY1', 'KEY2', 'KEY3'],
-				lastModified: Date.now(),
 			},
 		];
 
@@ -80,19 +74,16 @@ describe('compareFiles', () => {
 				path: '.env',
 				type: 'base',
 				keys: ['KEY1', 'KEY2', 'KEY3'],
-				lastModified: Date.now(),
 			},
 			{
 				path: '.env.local',
 				type: 'local',
 				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
 			},
 			{
 				path: '.env.production',
 				type: 'production',
 				keys: ['KEY1', 'KEY2', 'KEY3', 'KEY4'],
-				lastModified: Date.now(),
 			},
 		];
 
@@ -117,13 +108,11 @@ describe('compareFiles', () => {
 				path: '.env',
 				type: 'base',
 				keys: ['KEY1', 'KEY2'],
-				lastModified: Date.now(),
 			},
 			{
 				path: '.env.local',
 				type: 'local',
 				keys: ['KEY3', 'KEY4'],
-				lastModified: Date.now(),
 			},
 		];
 
@@ -137,7 +126,7 @@ describe('compareFiles', () => {
 
 	it('should return frozen arrays for immutability', () => {
 		const files: DotenvFile[] = [
-			{ path: '.env', type: 'base', keys: ['KEY1'], lastModified: Date.now() },
+			{ path: '.env', type: 'base', keys: ['KEY1'] },
 		];
 
 		const result = compareFiles(files);
@@ -154,7 +143,6 @@ describe('a template named by the name it ends in', () => {
 		path,
 		type: 'base',
 		keys: Object.freeze(keys),
-		lastModified: 0,
 	});
 	const files = [file('.env.example', ['A']), file('.env', ['A', 'LOCAL'])];
 
@@ -192,7 +180,6 @@ describe('caseSensitive option', () => {
 		path,
 		type: 'base',
 		keys: Object.freeze(keys),
-		lastModified: 1700000000000,
 	});
 
 	it('treats differently-cased keys as distinct by default', () => {

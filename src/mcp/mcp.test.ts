@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events';
+import { PassThrough } from 'node:stream';
 import { describe, expect, it } from 'vitest';
 import { capped, isOk, readMaxResults, toDiagnostics } from './envelope';
 import { TOOLS } from './tools';
@@ -404,5 +405,71 @@ describe('serve: the stdio loop', () => {
 			},
 			{ jsonrpc: '2.0', id: 9, result: {} },
 		]);
+	});
+});
+
+describe('serve: a client that reads slowly', () => {
+	// The pipe to the client fills; `write` answers false. Every reply after
+	// that would sit in this process until the client drained the pipe, so
+	// the server stops reading until it does: what it holds is bounded by
+	// the requests already in flight, not by everything the client sent.
+	function slowReader() {
+		const input = new PassThrough();
+		const written: string[] = [];
+		let full = false;
+		const output = Object.assign(new EventEmitter(), {
+			write: (chunk: string) => {
+				written.push(chunk);
+				return !full;
+			},
+		});
+		serve(
+			{ name: 'envsync-le', version: '1.0.0' },
+			TOOLS,
+			input,
+			output as never,
+		);
+		return {
+			input,
+			output,
+			written,
+			fill: () => {
+				full = true;
+			},
+			drain: () => {
+				full = false;
+				output.emit('drain');
+			},
+		};
+	}
+
+	const settle = () => new Promise((r) => setTimeout(r, 20));
+	const ping = (id: number) => `{"jsonrpc":"2.0","id":${id},"method":"ping"}\n`;
+
+	it('stops reading while the pipe is full and resumes when it drains', async () => {
+		const reader = slowReader();
+		reader.fill();
+		reader.input.write(ping(1));
+		await settle();
+		expect(reader.written).toHaveLength(1);
+		expect(reader.input.isPaused()).toBe(true);
+
+		reader.input.write(ping(2));
+		await settle();
+		expect(reader.written).toHaveLength(1);
+
+		reader.drain();
+		await settle();
+		expect(reader.input.isPaused()).toBe(false);
+		expect(reader.written).toHaveLength(2);
+		expect(JSON.parse(reader.written[1] ?? '').id).toBe(2);
+	});
+
+	it('reads on while the pipe accepts every reply', async () => {
+		const reader = slowReader();
+		reader.input.write(ping(1) + ping(2) + ping(3));
+		await settle();
+		expect(reader.written).toHaveLength(3);
+		expect(reader.input.isPaused()).toBe(false);
 	});
 });

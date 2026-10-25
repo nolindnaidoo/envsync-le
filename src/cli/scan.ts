@@ -99,7 +99,7 @@ export function reportFor(
 	const template =
 		options.template === null ? undefined : templateOf(files, options.template);
 	const compared = compareFiles(
-		files.map((file) => ({ ...file, lastModified: 0 })),
+		files,
 		template
 			? {
 					mode: 'template',

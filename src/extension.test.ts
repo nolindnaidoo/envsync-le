@@ -2,16 +2,20 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
 	_createExtensionContext,
 	_getConfigUpdates,
+	_holdConfigUpdates,
 	_openedDocuments,
 	_registeredCommands,
+	_releaseConfigUpdates,
 	_resetMockState,
 	_respondToQuickPick,
 	_respondToWarning,
 	_setConfig,
+	_setConfigUpdateError,
 	_setFile,
 	_setFileBytes,
 	_setFindFilesError,
 	_setOpenDocumentError,
+	_setShowDocumentError,
 	_shownMessages,
 	_statusBarItems,
 	commands,
@@ -149,6 +153,22 @@ describe('commands (through the real wiring)', () => {
 				.filter((m) => m.kind === 'error')
 				.map((m) => m.message),
 		).toEqual(['Failed to show issues: no window']);
+	});
+
+	it('showIssues reports a report the host would not show', async () => {
+		// The document opened; the editor refused it. The second await in the
+		// command's try had no test, because the mock could not refuse it.
+		_setFile('/ws/.env', 'A=1\nB=2');
+		_setFile('/ws/.env.local', 'A=1');
+		_setShowDocumentError(new Error('no editor group'));
+
+		await commands.executeCommand('envsync-le.showIssues');
+
+		expect(
+			_shownMessages()
+				.filter((m) => m.kind === 'error')
+				.map((m) => m.message),
+		).toEqual(['Failed to show issues: no editor group']);
 	});
 
 	it('showIssues names a file that is not UTF-8 text', async () => {
@@ -328,6 +348,129 @@ describe('commands (through the real wiring)', () => {
 		await commands.executeCommand('envsync-le.clearAllIgnored');
 
 		expect(_getConfigUpdates()).toHaveLength(0);
+	});
+
+	describe('a configuration write the host refuses', () => {
+		// settings.json read-only, or the workspace gone: `update` rejects.
+		// Each command that writes a setting catches it and names the command
+		// that failed; before the mock could refuse a write, none of the five
+		// arms ran in a test.
+		const errors = () =>
+			_shownMessages()
+				.filter((m) => m.kind === 'error')
+				.map((m) => m.message);
+
+		beforeEach(() => {
+			_setConfigUpdateError(new Error('settings.json is read-only'));
+		});
+
+		it('ignoreFile', async () => {
+			await commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.local'),
+			);
+			expect(errors()).toEqual([
+				'Failed to ignore file: settings.json is read-only',
+			]);
+		});
+
+		it('stopIgnoring', async () => {
+			_setConfig('envsync-le.temporaryIgnore', ['ws/.env.local']);
+			await commands.executeCommand(
+				'envsync-le.stopIgnoring',
+				Uri.file('/ws/.env.local'),
+			);
+			expect(errors()).toEqual([
+				'Failed to stop ignoring file: settings.json is read-only',
+			]);
+		});
+
+		it('clearAllIgnored', async () => {
+			_setConfig('envsync-le.temporaryIgnore', ['a/.env']);
+			_respondToWarning(() => 'Yes');
+			await commands.executeCommand('envsync-le.clearAllIgnored');
+			expect(errors()).toEqual([
+				'Failed to clear ignore list: settings.json is read-only',
+			]);
+		});
+
+		it('setTemplate', async () => {
+			await commands.executeCommand(
+				'envsync-le.setTemplate',
+				Uri.file('/ws/.env.example'),
+			);
+			expect(errors()).toEqual([
+				'Failed to set template: settings.json is read-only',
+			]);
+		});
+
+		it('clearTemplate', async () => {
+			await commands.executeCommand('envsync-le.clearTemplate');
+			expect(errors()).toEqual([
+				'Failed to clear template: settings.json is read-only',
+			]);
+		});
+
+		it('a later write lands once the host accepts it again', async () => {
+			// The queue behind the ignore list carries on past a failed step.
+			await commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.local'),
+			);
+			_setConfigUpdateError(undefined);
+			await commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.test'),
+			);
+			expect(_getConfigUpdates().at(-1)?.value).toEqual(['ws/.env.test']);
+		});
+	});
+
+	describe('two ignore commands started within one host write', () => {
+		// The host lands a configuration write after the call returns. Each of
+		// these commands reads the list and writes it back, so two started
+		// together would each read the list from before the other's write, and
+		// the last write would drop the first. The mock holds every write until
+		// released, as the host holds it until it lands.
+		const ignoreList = () =>
+			_getConfigUpdates()
+				.filter((update) => update.key === 'envsync-le.temporaryIgnore')
+				.at(-1)?.value;
+
+		it('ignoreFile twice: both files end up ignored', async () => {
+			_holdConfigUpdates();
+			const first = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.local'),
+			);
+			const second = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.test'),
+			);
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			_releaseConfigUpdates();
+			await Promise.all([first, second]);
+
+			expect(ignoreList()).toEqual(['ws/.env.local', 'ws/.env.test']);
+		});
+
+		it('ignoreFile beside stopIgnoring: the add survives the removal', async () => {
+			_setConfig('envsync-le.temporaryIgnore', ['ws/.env.local']);
+			_holdConfigUpdates();
+			const add = commands.executeCommand(
+				'envsync-le.ignoreFile',
+				Uri.file('/ws/.env.test'),
+			);
+			const remove = commands.executeCommand(
+				'envsync-le.stopIgnoring',
+				Uri.file('/ws/.env.local'),
+			);
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			_releaseConfigUpdates();
+			await Promise.all([add, remove]);
+
+			expect(ignoreList()).toEqual(['ws/.env.test']);
+		});
 	});
 });
 

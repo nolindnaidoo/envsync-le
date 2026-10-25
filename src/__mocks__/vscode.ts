@@ -131,11 +131,46 @@ let findFilesError: Error | undefined;
 /** Make configuration reads throw, for error-path tests. */
 let configReadError: Error | undefined;
 
+/**
+ * Hold every configuration write until `_releaseConfigUpdates()`, landing it
+ * then, as a host lands a write after the call returns. Two commands that
+ * each read a list and write it back can both be made to read it before
+ * either write has landed.
+ */
+let heldUpdates: Array<() => void> | undefined;
+
+export function _holdConfigUpdates(): void {
+	heldUpdates = [];
+}
+
+export function _releaseConfigUpdates(): void {
+	const held = heldUpdates ?? [];
+	heldUpdates = undefined;
+	for (const land of held) land();
+}
+
 /** Make workspace.openTextDocument reject, so a command's report path can fail. */
 let openDocumentError: Error | undefined;
 
 export function _setOpenDocumentError(error: Error | undefined): void {
 	openDocumentError = error;
+}
+
+/** Make window.showTextDocument reject once the document exists. */
+let showDocumentError: Error | undefined;
+
+export function _setShowDocumentError(error: Error | undefined): void {
+	showDocumentError = error;
+}
+
+/**
+ * Make every configuration write reject, as the host does when settings.json
+ * cannot be written: read-only, or a workspace that has gone away.
+ */
+let configUpdateError: Error | undefined;
+
+export function _setConfigUpdateError(error: Error | undefined): void {
+	configUpdateError = error;
 }
 
 export function _setConfigReadError(error: Error | undefined): void {
@@ -234,9 +269,23 @@ export const workspace = {
 				return snapshot.has(full);
 			},
 			update: async (key: string, value: unknown, target?: unknown) => {
+				if (configUpdateError) throw configUpdateError;
 				const full = section ? `${section}.${key}` : key;
-				configStore.set(full, value);
-				configUpdates.push({ key: full, value, target });
+				const land = () => {
+					configStore.set(full, value);
+					configUpdates.push({ key: full, value, target });
+				};
+				const held = heldUpdates;
+				if (held === undefined) {
+					land();
+					return;
+				}
+				await new Promise<void>((resolve) => {
+					held.push(() => {
+						land();
+						resolve();
+					});
+				});
 			},
 		};
 	},
@@ -398,7 +447,10 @@ export const window = {
 	},
 	showQuickPick: async (items: unknown[], _options?: unknown) =>
 		quickPickResponder ? quickPickResponder(items) : undefined,
-	showTextDocument: async (_document: unknown, _column?: unknown) => undefined,
+	showTextDocument: async (_document: unknown, _column?: unknown) => {
+		if (showDocumentError) throw showDocumentError;
+		return undefined;
+	},
 	setStatusBarMessage: (_message: string, _timeout?: number) => ({
 		dispose: () => {},
 	}),
@@ -571,7 +623,10 @@ export function _resetMockState(): void {
 	env.appName = 'Visual Studio Code';
 	findFilesError = undefined;
 	configReadError = undefined;
+	heldUpdates = undefined;
+	configUpdateError = undefined;
 	openDocumentError = undefined;
+	showDocumentError = undefined;
 	outputChannels.length = 0;
 	mcpProviders.length = 0;
 	_setLmApi(false);

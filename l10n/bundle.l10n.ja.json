@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "無視リストをクリアできませんでした：{0}",
 	"Yes": "はい",
 	"No": "いいえ",
-	"Failed to check selected files: {0}": "選択したファイルを確認できませんでした：{0}"
+	"Failed to check selected files: {0}": "選択したファイルを確認できませんでした：{0}",
+	"envsync-le Sync Report": "envsync-le 同期レポート",
+	"Checked files: {0}": "確認したファイル：{0}",
+	"Status: {0}": "ステータス：{0}",
+	"Missing Keys": "不足しているキー",
+	"Compared to: {0}": "比較対象：{0}",
+	"other files": "他のファイル",
+	"Parse / Read Errors": "解析 / 読み取りエラー"
 }

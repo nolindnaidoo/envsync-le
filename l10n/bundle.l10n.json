@@ -43,5 +43,12 @@
   "Failed to clear ignore list: {0}": "Failed to clear ignore list: {0}",
   "Yes": "Yes",
   "No": "No",
-  "Failed to check selected files: {0}": "Failed to check selected files: {0}"
+  "Failed to check selected files: {0}": "Failed to check selected files: {0}",
+  "envsync-le Sync Report": "envsync-le Sync Report",
+  "Checked files: {0}": "Checked files: {0}",
+  "Status: {0}": "Status: {0}",
+  "Missing Keys": "Missing Keys",
+  "Compared to: {0}": "Compared to: {0}",
+  "other files": "other files",
+  "Parse / Read Errors": "Parse / Read Errors"
 }

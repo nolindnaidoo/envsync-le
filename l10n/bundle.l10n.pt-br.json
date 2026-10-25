@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "Não foi possível limpar a lista de ignorados: {0}",
 	"Yes": "Sim",
 	"No": "Não",
-	"Failed to check selected files: {0}": "Não foi possível verificar os arquivos selecionados: {0}"
+	"Failed to check selected files: {0}": "Não foi possível verificar os arquivos selecionados: {0}",
+	"envsync-le Sync Report": "Relatório de sincronização do envsync-le",
+	"Checked files: {0}": "Arquivos verificados: {0}",
+	"Status: {0}": "Status: {0}",
+	"Missing Keys": "Chaves ausentes",
+	"Compared to: {0}": "Comparado com: {0}",
+	"other files": "outros arquivos",
+	"Parse / Read Errors": "Erros de análise / leitura"
 }

@@ -91,7 +91,6 @@ function harness(
 	const fileSystem = {
 		findFiles: async () => files.map((path) => ({ path, name: path })),
 		readFile: async () => 'KEY=value\n',
-		getFileStats: async () => ({ size: 10, mtime: 0 }),
 		asRelativePath: (p: string) => p,
 	} as unknown as FileSystem;
 

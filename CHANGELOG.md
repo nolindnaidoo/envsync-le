@@ -12,8 +12,31 @@ version and releases from one tag.
 
 ## [Unreleased]
 
+### Changed
+
+- **The report's headings are in the editor's language.** The title, the
+  checked-file count, the status line, the Missing Keys and Parse / Read
+  Errors headings and the "Compared to" line go through the runtime catalogue
+  like every other string the extension shows. File names, key names and the
+  status code stay as they are. The help page is still English.
+- **A file's modification time is no longer read.** Every file the extension
+  compared was also stat'ed, for a `lastModified` field nothing displayed or
+  compared, and a file that vanished between the read and the stat was dropped
+  with an error for it. The field and the stat are gone; the goldens lose it.
+
 ### Fixed
 
+- **A client that read replies slowly could hold every reply in the server.**
+  Both npm servers wrote each reply without looking at whether the pipe had
+  taken it, so a client that sent many requests and read slowly left the
+  replies queued in the server's memory. Each server now stops reading while
+  the pipe is full and goes on when it drains, as the crate's blocking write
+  already did.
+- **Two ignore commands run at once could lose one.** `Ignore File`, `Unignore
+  File` and `Clear Ignored Files` each read the ignore list and wrote it back,
+  and the host lands a write after the call returns, so two started together
+  each read the list from before the other's write and the last one won. The
+  three now take turns at the list.
 - **A setting changed while the extension was running did not take effect
   until the window was reloaded.** The configuration was read once, at
   activation, from an object VS Code hands out as a snapshot, so toggling the

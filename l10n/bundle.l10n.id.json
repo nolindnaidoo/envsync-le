@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "Gagal menghapus daftar abaikan: {0}",
 	"Yes": "Ya",
 	"No": "Tidak",
-	"Failed to check selected files: {0}": "Gagal memeriksa berkas yang dipilih: {0}"
+	"Failed to check selected files: {0}": "Gagal memeriksa berkas yang dipilih: {0}",
+	"envsync-le Sync Report": "Laporan Sinkronisasi envsync-le",
+	"Checked files: {0}": "Berkas yang diperiksa: {0}",
+	"Status: {0}": "Status: {0}",
+	"Missing Keys": "Kunci yang Hilang",
+	"Compared to: {0}": "Dibandingkan dengan: {0}",
+	"other files": "berkas lain",
+	"Parse / Read Errors": "Kesalahan Parsing / Pembacaan"
 }

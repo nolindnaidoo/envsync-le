@@ -50,7 +50,6 @@ const createMockConfiguration = (): Configuration => ({
 const createMockFileSystem = (): FileSystem => ({
 	findFiles: vi.fn(),
 	readFile: vi.fn(),
-	getFileStats: vi.fn(),
 	asRelativePath: vi.fn(),
 });
 
@@ -133,14 +132,6 @@ describe('createDetector', () => {
 				return Promise.resolve('');
 			},
 		);
-
-		// Mock file stats
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
 
 		// Mock relative path conversion
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
@@ -228,12 +219,6 @@ describe('createDetector', () => {
 					filepath === '.env' ? 'KEY1=1\nKEY2=2' : 'KEY1=1\n2BAD=x\nKEY2=2',
 				),
 		);
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
 		);
@@ -273,12 +258,6 @@ describe('createDetector', () => {
 			(filepath: string) =>
 				Promise.resolve(filepath === '.env' ? 'KEY1=1\nKEY2=2' : '2BAD=x'),
 		);
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
 		);
@@ -317,12 +296,6 @@ describe('createDetector', () => {
 			(filepath: string) =>
 				Promise.resolve(filepath === '/w/.env.local' ? 'A=1' : 'A=1\nB=2'),
 		);
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 3,
-			isFile: true,
-			isDirectory: false,
-		});
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath.slice(3),
 		);
@@ -364,12 +337,6 @@ describe('createDetector', () => {
 				Promise.resolve(found.slice(0, maxResults)),
 		);
 		(fileSystem.readFile as ReturnType<typeof vi.fn>).mockResolvedValue('A=1');
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 3,
-			isFile: true,
-			isDirectory: false,
-		});
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
 		);
@@ -439,14 +406,6 @@ describe('createDetector', () => {
 				return Promise.resolve('');
 			},
 		);
-
-		// Mock file stats
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
 
 		const detector = createDetector({
 			telemetry,
@@ -540,14 +499,6 @@ describe('createDetector', () => {
 			Promise.resolve('KEY1=value1'),
 		);
 
-		// Mock file stats
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
-
 		// Mock relative path conversion
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(filepath: string) => filepath,
@@ -605,12 +556,6 @@ describe('createDetector', () => {
 				return Promise.resolve('');
 			},
 		);
-		(fileSystem.getFileStats as ReturnType<typeof vi.fn>).mockResolvedValue({
-			mtime: new Date(),
-			size: 100,
-			isFile: true,
-			isDirectory: false,
-		});
 		(fileSystem.asRelativePath as ReturnType<typeof vi.fn>).mockImplementation(
 			(p: string) => p,
 		);

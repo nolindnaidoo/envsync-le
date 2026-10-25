@@ -1,5 +1,5 @@
 import type { Uri, FileSystem as VSCodeFileSystemAPI } from 'vscode'; // Import types
-import type { FileInfo, FileStats, FileSystem } from '../interfaces';
+import type { FileInfo, FileSystem } from '../interfaces';
 
 interface VSCodeDependencies {
 	Uri: typeof Uri;
@@ -30,17 +30,6 @@ export function createVSCodeFileSystem(deps: VSCodeDependencies): FileSystem {
 		async readFile(filepath: string): Promise<string> {
 			const uri = deps.Uri.file(filepath);
 			return decodeUtf8(await deps.workspaceFs.readFile(uri));
-		},
-
-		async getFileStats(filepath: string): Promise<FileStats> {
-			const uri = deps.Uri.file(filepath);
-			const stat = await deps.workspaceFs.stat(uri);
-			return {
-				mtime: new Date(stat.mtime),
-				size: stat.size,
-				isFile: (stat.type & deps.FileType.File) !== 0,
-				isDirectory: (stat.type & deps.FileType.Directory) !== 0,
-			};
 		},
 
 		asRelativePath(filepath: string): string {

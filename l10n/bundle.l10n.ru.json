@@ -43,5 +43,12 @@
 	"Failed to clear ignore list: {0}": "Не удалось очистить список игнорируемых файлов: {0}",
 	"Yes": "Да",
 	"No": "Нет",
-	"Failed to check selected files: {0}": "Не удалось проверить выбранные файлы: {0}"
+	"Failed to check selected files: {0}": "Не удалось проверить выбранные файлы: {0}",
+	"envsync-le Sync Report": "Отчёт о синхронизации envsync-le",
+	"Checked files: {0}": "Проверено файлов: {0}",
+	"Status: {0}": "Статус: {0}",
+	"Missing Keys": "Отсутствующие ключи",
+	"Compared to: {0}": "Сравнение с: {0}",
+	"other files": "другими файлами",
+	"Parse / Read Errors": "Ошибки разбора / чтения"
 }

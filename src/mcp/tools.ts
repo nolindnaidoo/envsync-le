@@ -115,10 +115,6 @@ function compare(args: Record<string, unknown>): Promise<unknown> {
 			path: input.path,
 			type: detectFileType(input.path),
 			keys: parsed.keys,
-			// The engine's field, used only for template selection tie-breaks.
-			// Content arrives without a mtime, and inventing one would make the
-			// result depend on the order the caller happened to pass files in.
-			lastModified: 0,
 		};
 	});
 
