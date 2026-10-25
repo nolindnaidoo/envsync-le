@@ -34,5 +34,14 @@
   "Missing keys in {0}: {1}": "Missing keys in {0}: {1}",
   "Extra keys in {0}: {1}": "Extra keys in {0}: {1}",
   "Failed to parse {0}: {1}": "Failed to parse {0}: {1}",
-  "EnvSync-LE could not finish: {0}": "EnvSync-LE could not finish: {0}"
+  "EnvSync-LE could not finish: {0}": "EnvSync-LE could not finish: {0}",
+  "Compared {0} files. Check status bar for results.": "Compared {0} files. Check status bar for results.",
+  "{0} is already being ignored": "{0} is already being ignored",
+  "Temporarily ignoring {0}. Run Unignore File to check it again.": "Temporarily ignoring {0}. Run Unignore File to check it again.",
+  "{0} is not currently being ignored": "{0} is not currently being ignored",
+  "Failed to stop ignoring file: {0}": "Failed to stop ignoring file: {0}",
+  "Failed to clear ignore list: {0}": "Failed to clear ignore list: {0}",
+  "Yes": "Yes",
+  "No": "No",
+  "Failed to check selected files: {0}": "Failed to check selected files: {0}"
 }

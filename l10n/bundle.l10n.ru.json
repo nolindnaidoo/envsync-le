@@ -34,5 +34,14 @@
 	"No longer ignoring {0}": "Больше не игнорируем сайт {0}",
 	"Set {0} as template. All .env files will be compared against it.": "Укажите файл «{0}» в качестве шаблона. Все файлы .env будут сравниваться с ним.",
 	"Stop ignoring all {0} files?": "Перестать игнорировать все файлы {0}?",
-	"EnvSync-LE could not finish: {0}": "EnvSync-LE не удалось завершить: {0}"
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE не удалось завершить: {0}",
+	"Compared {0} files. Check status bar for results.": "Сравнено файлов: {0}. Результат — в строке состояния.",
+	"{0} is already being ignored": "{0} уже игнорируется",
+	"Temporarily ignoring {0}. Run Unignore File to check it again.": "{0} временно игнорируется. «Отменить игнорирование файла» снова включит его в проверку.",
+	"{0} is not currently being ignored": "{0} сейчас не игнорируется",
+	"Failed to stop ignoring file: {0}": "Не удалось отменить игнорирование файла: {0}",
+	"Failed to clear ignore list: {0}": "Не удалось очистить список игнорируемых файлов: {0}",
+	"Yes": "Да",
+	"No": "Нет",
+	"Failed to check selected files: {0}": "Не удалось проверить выбранные файлы: {0}"
 }

@@ -72,6 +72,14 @@ version and releases from one tag.
   method, an unknown tool and a nameless call were worded three ways.
   Every server now frames, trims and refuses as the extension's does, so a
   client cannot tell them apart by what it sent.
+- **Ten strings the extension shows were English in every locale.** The
+  "no files" and "in sync" toasts of `Show Details`, the "compared N files"
+  toast of `Compare Files`, five messages of the ignore commands, the Yes
+  and No buttons of `Clear Ignored Files` and one error of `Compare Files`
+  were handed to the editor as literals, outside the localization
+  mechanism. Each goes through it now, in all twelve languages, and a unit
+  test reads the sources for a literal handed to a notification, a prompt
+  or a dialog button.
 - **The report lists files in path order.** It listed them in the order the
   workspace search happened to return them, so two runs over one workspace
   could order the files, and name the reference file for a mismatch,

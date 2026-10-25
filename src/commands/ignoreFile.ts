@@ -85,7 +85,7 @@ export function registerIgnoreFileCommand(
 
 					if (currentIgnored.includes(relativePath)) {
 						ui.showInformationMessage(
-							`${relativePath} is already being ignored`,
+							vscode.l10n.t('{0} is already being ignored', relativePath),
 						);
 						return;
 					}
@@ -102,7 +102,10 @@ export function registerIgnoreFileCommand(
 					await detector.checkSync();
 
 					ui.showInformationMessage(
-						`Temporarily ignoring ${relativePath}. Use "Unignore File" to re-enable.`,
+						vscode.l10n.t(
+							'Temporarily ignoring {0}. Run Unignore File to check it again.',
+							relativePath,
+						),
 					);
 				} catch (error) {
 					ui.showErrorMessage(
@@ -138,7 +141,7 @@ export function registerIgnoreFileCommand(
 
 				if (!currentIgnored.includes(targetPath)) {
 					ui.showInformationMessage(
-						`${targetPath} is not currently being ignored`,
+						vscode.l10n.t('{0} is not currently being ignored', targetPath),
 					);
 					return;
 				}
@@ -162,7 +165,10 @@ export function registerIgnoreFileCommand(
 					);
 				} catch (error) {
 					ui.showErrorMessage(
-						`Failed to stop ignoring file: ${errorMessage(error)}`,
+						vscode.l10n.t(
+							'Failed to stop ignoring file: {0}',
+							errorMessage(error),
+						),
 					);
 				}
 			}),
@@ -185,13 +191,17 @@ export function registerIgnoreFileCommand(
 					return;
 				}
 
+				// Bound once and compared below: the dialog returns the clicked
+				// label, so an English literal would read every translated click
+				// as a refusal.
+				const yes = vscode.l10n.t('Yes');
 				const confirmed = await ui.showWarningMessage(
 					vscode.l10n.t('Stop ignoring all {0} files?', currentIgnored.length),
-					'Yes',
-					'No',
+					yes,
+					vscode.l10n.t('No'),
 				);
 
-				if (confirmed !== 'Yes') return;
+				if (confirmed !== yes) return;
 
 				try {
 					const config = vscode.workspace.getConfiguration('envsync-le');
@@ -210,7 +220,10 @@ export function registerIgnoreFileCommand(
 					);
 				} catch (error) {
 					ui.showErrorMessage(
-						`Failed to clear ignore list: ${errorMessage(error)}`,
+						vscode.l10n.t(
+							'Failed to clear ignore list: {0}',
+							errorMessage(error),
+						),
 					);
 				}
 			}),

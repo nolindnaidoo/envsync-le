@@ -34,5 +34,14 @@
 	"No longer ignoring {0}": "不再忽略 {0}",
 	"Set {0} as template. All .env files will be compared against it.": "将 {0} 设为模板。所有 .env 文件都将与该文件进行比对。",
 	"Stop ignoring all {0} files?": "停止忽略所有 {0} 文件？",
-	"EnvSync-LE could not finish: {0}": "EnvSync-LE 无法完成：{0}"
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE 无法完成：{0}",
+	"Compared {0} files. Check status bar for results.": "已比较 {0} 个文件。结果见状态栏。",
+	"{0} is already being ignored": "{0} 已被忽略",
+	"Temporarily ignoring {0}. Run Unignore File to check it again.": "已暂时忽略 {0}。运行“取消忽略文件”可重新检查。",
+	"{0} is not currently being ignored": "{0} 当前未被忽略",
+	"Failed to stop ignoring file: {0}": "无法取消忽略文件：{0}",
+	"Failed to clear ignore list: {0}": "无法清空忽略列表：{0}",
+	"Yes": "是",
+	"No": "否",
+	"Failed to check selected files: {0}": "无法检查选定的文件：{0}"
 }

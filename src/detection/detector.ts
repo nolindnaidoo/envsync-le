@@ -274,7 +274,10 @@ export function createDetector(
 		const config = readConfig(configuration);
 		if (config.notificationLevel !== 'silent') {
 			notifier.showError(
-				`Failed to check selected files: ${errorMessage(error)}`,
+				vscode.l10n.t(
+					'Failed to check selected files: {0}',
+					errorMessage(error),
+				),
 			);
 		}
 

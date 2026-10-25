@@ -34,5 +34,14 @@
 	"No longer ignoring {0}": "{0} nicht länger ignorieren",
 	"Set {0} as template. All .env files will be compared against it.": "Legen Sie „{0}“ als Vorlage fest. Alle .env-Dateien werden mit dieser Datei abgeglichen.",
 	"Stop ignoring all {0} files?": "Soll man die Dateien unter „{0}“ nicht mehr ignorieren?",
-	"EnvSync-LE could not finish: {0}": "EnvSync-LE konnte nicht abschließen: {0}"
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE konnte nicht abschließen: {0}",
+	"Compared {0} files. Check status bar for results.": "{0} Dateien verglichen. Das Ergebnis steht in der Statusleiste.",
+	"{0} is already being ignored": "{0} wird bereits ignoriert",
+	"Temporarily ignoring {0}. Run Unignore File to check it again.": "{0} wird vorübergehend ignoriert. „Datei nicht mehr ignorieren“ nimmt die Datei wieder auf.",
+	"{0} is not currently being ignored": "{0} wird derzeit nicht ignoriert",
+	"Failed to stop ignoring file: {0}": "Das Ignorieren der Datei konnte nicht beendet werden: {0}",
+	"Failed to clear ignore list: {0}": "Die Ignorierliste konnte nicht gelöscht werden: {0}",
+	"Yes": "Ja",
+	"No": "Nein",
+	"Failed to check selected files: {0}": "Die ausgewählten Dateien konnten nicht überprüft werden: {0}"
 }

@@ -224,7 +224,10 @@ function showComparisonCompleteMessage(
 	ui: UserInterface,
 ): void {
 	ui.showInformationMessage(
-		`Compared ${fileCount} files. Check status bar for results.`,
+		vscode.l10n.t(
+			'Compared {0} files. Check status bar for results.',
+			fileCount,
+		),
 	);
 }
 

@@ -34,5 +34,14 @@
 	"No longer ignoring {0}": "더 이상 {0}을 무시하지 않겠습니다",
 	"Set {0} as template. All .env files will be compared against it.": "{0}를 템플릿으로 설정합니다. 모든 .env 파일이 이 파일과 비교됩니다.",
 	"Stop ignoring all {0} files?": "{0}에 있는 모든 파일을 더 이상 무시하지 않도록 할까요?",
-	"EnvSync-LE could not finish: {0}": "EnvSync-LE을(를) 완료할 수 없습니다: {0}"
+	"EnvSync-LE could not finish: {0}": "EnvSync-LE을(를) 완료할 수 없습니다: {0}",
+	"Compared {0} files. Check status bar for results.": "{0}개 파일을 비교했습니다. 결과는 상태 표시줄에 있습니다.",
+	"{0} is already being ignored": "{0}은(는) 이미 무시되고 있습니다",
+	"Temporarily ignoring {0}. Run Unignore File to check it again.": "{0}을(를) 일시적으로 무시합니다. '무시 해제'를 실행하면 다시 확인합니다.",
+	"{0} is not currently being ignored": "{0}은(는) 현재 무시되고 있지 않습니다",
+	"Failed to stop ignoring file: {0}": "파일 무시를 해제하지 못했습니다: {0}",
+	"Failed to clear ignore list: {0}": "무시 목록을 지우지 못했습니다: {0}",
+	"Yes": "예",
+	"No": "아니요",
+	"Failed to check selected files: {0}": "선택한 파일을 확인하지 못했습니다: {0}"
 }
