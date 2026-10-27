@@ -105,7 +105,7 @@ jobs:
           # curl's on the request, python's on a body that is not the
           # version list. A crate that was never published answers with an
           # `errors` body, and that alone is read as "no versions".
-          body=$(curl -sS "https://crates.io/api/v1/crates/envsync-le/versions")
+          body=$(curl -sS -H 'User-Agent: envsync-le release workflow (https://github.com/nolindnaidoo/envsync-le)' "https://crates.io/api/v1/crates/envsync-le/versions")
           published=$(printf '%s' "$body" | python3 -c '
           import json, sys
           answer = json.load(sys.stdin)
