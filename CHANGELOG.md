@@ -10,7 +10,7 @@ npm command line. The Rust CLI in `crate/` keeps its own
 [CHANGELOG](crate/CHANGELOG.md). From 2.4.0 every surface carries one
 version and releases from one tag.
 
-## [Unreleased]
+## [2.5.0] - 2026-10-27
 
 ### Changed
 

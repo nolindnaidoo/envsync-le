@@ -273,9 +273,9 @@ setting of its own.
 <!-- performance:start -->
 | Input | Size | Found | Time | Rate | Scan speed |
 | --- | --- | --- | --- | --- | --- |
-| 4 files x 500 keys | 0.02 MB | 1,910 | 0.18 ms | 10,816,443/sec | 102.3 MB/s |
-| 24 files x 500 keys | 0.11 MB | 11,103 | 0.84 ms | 13,263,252/sec | 125.5 MB/s |
-| 4 files x 8,000 keys | 0.32 MB | 31,172 | 1.48 ms | 21,071,644/sec | 218.4 MB/s |
+| 4 files x 500 keys | 0.02 MB | 1,910 | 0.29 ms | 6,690,018/sec | 63.2 MB/s |
+| 24 files x 500 keys | 0.11 MB | 11,103 | 1.11 ms | 9,994,077/sec | 94.5 MB/s |
+| 4 files x 8,000 keys | 0.32 MB | 31,172 | 2.04 ms | 15,279,763/sec | 158.4 MB/s |
 
 Median of 7 runs after warmup, on Apple M5 Pro, 24 GB RAM, Node 24.3.0. Inputs are generated
 by `scripts/benchmark.ts` rather than checked in, so the sizes above are
@@ -295,7 +295,7 @@ a build only tells you how busy the runner was.
 | Functions | 91.86% |
 | Lines | 91.51% |
 
-351 test cases across 28 files, plus an integration suite that runs
+353 test cases across 28 files, plus an integration suite that runs
 in a real VS Code extension host and an end-to-end test that installs the
 built `.vsix` into a clean profile.
 
